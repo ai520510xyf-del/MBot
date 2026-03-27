@@ -3,20 +3,20 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'routing/app_router.dart';
 import 'theme/app_theme.dart';
 
-/// QClaw Mobile - 口袋里的小龙虾
+/// MBot Mobile - AI Agent 移动端
 ///
 /// 一个基于 Flutter 的移动应用，集成内嵌 Gateway 和云端 AI 模型
 void main() {
   runApp(
     const ProviderScope(
-      child: QClawMobileApp(),
+      child: MBotMobileApp(),
     ),
   );
 }
 
 /// 应用根组件
-class QClawMobileApp extends ConsumerWidget {
-  const QClawMobileApp({super.key});
+class MBotMobileApp extends ConsumerWidget {
+  const MBotMobileApp({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -24,7 +24,7 @@ class QClawMobileApp extends ConsumerWidget {
 
     return MaterialApp.router(
       // 应用标题
-      title: 'QClaw Mobile',
+      title: 'MBot Mobile',
 
       // 主题配置
       theme: AppTheme.darkTheme,

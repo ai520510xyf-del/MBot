@@ -10,7 +10,7 @@ class ConversationListPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('QClaw'),
+        title: const Text('MBot'),
         actions: [
           IconButton(
             icon: const Icon(Icons.add_circle_outline),
@@ -34,7 +34,7 @@ class ConversationListPage extends StatelessWidget {
             ('🤖', 'AI 写作助手', '帮我写一封邮件给客户...', '10:30'),
             ('💻', 'AI 编程助手', '这段代码为什么报错...', '09:15'),
             ('💬', '闲聊', '今天天气怎么样...', '昨天'),
-            ('🎨', 'AI 绘画', '画一只可爱的小龙虾...', '昨天'),
+            ('🎨', 'AI 绘画', '帮你生成一张精美图片...', '昨天'),
             ('📊', '数据分析', '帮我分析这份数据...', '周一'),
           ];
           final (emoji, title, msg, time) = items[index];

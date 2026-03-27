@@ -3,7 +3,7 @@ import 'package:flutter/services.dart';
 import 'app_colors.dart';
 import 'app_radius.dart';
 
-/// QClaw Mobile 完整主题配置
+/// MBot Mobile 完整主题配置
 class AppTheme {
   AppTheme._();
 

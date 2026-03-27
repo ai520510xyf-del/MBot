@@ -1,4 +1,4 @@
-# QClaw Mobile — 设计系统 v2.0
+# MBot Mobile — 设计系统 v2.0
 
 > **口袋里的小龙虾** — 移动端 UI/UX 设计规范
 >
@@ -31,7 +31,7 @@
 
 ```
 ┌─────────────────────────────────────────────────────────────────────┐
-│                        QClaw 设计 DNA                               │
+│                        MBot 设计 DNA                               │
 ├─────────────────────────────────────────────────────────────────────┤
 │                                                                     │
 │   🔴 能量红        深邃黑        科技感        移动优先              │
@@ -58,11 +58,11 @@
 
 ## 2. 品牌色系
 
-### 2.1 主色调 — QClaw 红
+### 2.1 主色调 — MBot 红
 
 ```
 ┌─────────────────────────────────────────────────────────────────────┐
-│                           QClaw 红色系                              │
+│                           MBot 红色系                              │
 ├─────────────────────────────────────────────────────────────────────┤
 │                                                                     │
 │   🔴 Primary Red          🌸 Light Red           💋 Dark Red        │
@@ -953,7 +953,7 @@ class ConversationItem extends StatelessWidget {
 │   │  ┌─────────────────────────────────────────────────────┐   │  │
 │   │  │ 🔘 小龙虾                                           │   │  │
 │   │  │                                                     │   │  │
-│   │  │ 你好！我是 QClaw AI 助手...                        │   │  │
+│   │  │ 你好！我是 MBot AI 助手...                        │   │  │
 │   │  │                                                     │   │  │
 │   │  │                    10:30                           │   │  │
 │   │  └─────────────────────────────────────────────────────┘   │  │
@@ -1398,16 +1398,16 @@ import 'package:flutter/material.dart';
 import 'theme/app_theme.dart';
 
 void main() {
-  runApp(const QClawApp());
+  runApp(const MBotApp());
 }
 
-class QClawApp extends StatelessWidget {
-  const QClawApp({super.key});
+class MBotApp extends StatelessWidget {
+  const MBotApp({super.key});
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'QClaw Mobile',
+      title: 'MBot Mobile',
       theme: AppTheme.darkTheme,
       home: const HomePage(),
     );

@@ -1,9 +1,9 @@
-# QClaw Mobile — 产品设计文档 v4.0
+# MBot Mobile — 产品设计文档 v4.0
 
 > 作者：白云（AI CTO）
 > 日期：2026-03-27
 > 状态：架构修正版
-> 定位：口袋里的小龙虾 —— 下载即用的完整 AI Agent 系统
+> 定位：口袋里的MBot —— 下载即用的完整 AI Agent 系统
 
 ---
 
@@ -11,7 +11,7 @@
 
 ### 1.1 一句话定位
 
-> **口袋里的小龙虾 —— 下载 App 就拥有完整 AI Agent 系统，无需任何服务器部署**
+> **口袋里的MBot —— 下载 App 就拥有完整 AI Agent 系统，无需任何服务器部署**
 
 ### 1.2 核心价值
 
@@ -69,7 +69,7 @@
 
 ### 2.3 使用场景
 
-| 场景 | 用户行为 | QClaw 价值 |
+| 场景 | 用户行为 | MBot 价值 |
 |------|---------|-----------|
 | 日常咨询 | 微信里问"今天天气" | 不用切换 App |
 | 学习辅导 | QQ 里问"解释这段代码" | AI Agent 深度分析 |
@@ -84,7 +84,7 @@
 
 ### 3.1 竞品对比
 
-| | ChatGPT App | 豆包 | 文心一言 | **QClaw Mobile** |
+| | ChatGPT App | 豆包 | 文心一言 | **MBot Mobile** |
 |---|---|---|---|---|
 | 需要电脑 | ❌ | ❌ | ❌ | ❌ |
 | 微信/QQ 通道 | ❌ | ❌ | ❌ | ✅ |
@@ -156,7 +156,7 @@
 │         └─────────────────┼─────────────────┘                        │
 │                           ▼                                          │
 │  ┌────────────────────────────────────────────────────────────────┐  │
-│  │                    QClaw Mobile App                            │  │
+│  │                    MBot Mobile App                            │  │
 │  │                                                                │  │
 │  │  ┌─────────────────────────────────────────────────────────┐  │  │
 │  │  │                    Flutter UI 层                        │  │  │
@@ -256,7 +256,7 @@
 | 层级 | 技术选型 | 理由 |
 |------|---------|------|
 | **Node.js 集成** | nodejs-mobile | 官方支持，稳定 |
-| **Gateway 框架** | OpenClaw Gateway | 与 QClaw 桌面端统一 |
+| **Gateway 框架** | OpenClaw Gateway | 与 MBot 桌面端统一 |
 | **JS 运行时** | Node.js 20+ / Bun | OpenClaw 原生支持 |
 | **通信桥接** | Platform Channel | Flutter ↔ Native 通信 |
 | **内存管理** | 智能回收 + 按需加载 | 控制资源消耗 |
@@ -498,7 +498,7 @@
 |------|------|
 | AGP | Agent Gateway Protocol，消息协议 |
 | OpenClaw | 腾讯开源的 AI Agent 框架 |
-| ClawHub | QClaw 技能市场 |
+| ClawHub | MBot 技能市场 |
 | Gateway | AI Agent 核心引擎（本地运行） |
 | 通道绑定 | 微信/QQ/Telegram 等 IM 通道的绑定 |
 | nodejs-mobile | Flutter 中嵌入 Node.js 的官方方案 |

@@ -1,5 +1,5 @@
-name: qclaw_mobile
-description: "QClaw Mobile - 口袋里的小龙虾"
+name: mbot_mobile
+description: "MBot Mobile - AI Agent 移动端"
 publish_to: 'none'
 
 version: 1.0.0+1

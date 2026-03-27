@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 
-/// QClaw Mobile 色彩系统
+/// MBot Mobile 色彩系统
 /// 基于 DESIGN_SYSTEM.md v2.0
 class AppColors {
   AppColors._();
 
-  // ========== 主色调 — QClaw 红 ==========
+  // ========== 主色调 — MBot 红 ==========
   static const Color primary = Color(0xFFFF3B30);
   static const Color primaryLight = Color(0xFFFF6961);
   static const Color primaryDark = Color(0xFFD62828);

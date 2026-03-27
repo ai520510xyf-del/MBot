@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'app_colors.dart';
 
-/// QClaw Mobile 阴影系统
+/// MBot Mobile 阴影系统
 class AppShadow {
   AppShadow._();
 

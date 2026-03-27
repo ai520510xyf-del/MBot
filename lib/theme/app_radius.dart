@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-/// QClaw Mobile 圆角系统
+/// MBot Mobile 圆角系统
 class AppRadius {
   AppRadius._();
 

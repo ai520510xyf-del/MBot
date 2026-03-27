@@ -32,7 +32,7 @@ class ChatPage extends StatelessWidget {
               ),
               children: [
                 // 占位 AI 消息
-                _buildAiBubble(context, '你好！我是小龙虾 AI 助手 🦞\n有什么可以帮你的吗？'),
+                _buildAiBubble(context, '你好！我是 MBot AI 助手 🤖\n有什么可以帮你的吗？'),
                 const SizedBox(height: AppSpace.s2),
                 // 占位用户消息
                 _buildUserBubble(context, '你好，最近怎么样？'),
@@ -91,7 +91,7 @@ class ChatPage extends StatelessWidget {
                   ),
                   const SizedBox(width: 6),
                   const Text(
-                    '小龙虾',
+                    'MBot',
                     style: TextStyle(
                       fontSize: 12,
                       fontWeight: FontWeight.w500,

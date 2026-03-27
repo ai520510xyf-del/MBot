@@ -1,4 +1,4 @@
-/// QClaw Mobile 间距系统
+/// MBot Mobile 间距系统
 /// 基于 4px 基准网格
 class AppSpace {
   AppSpace._();

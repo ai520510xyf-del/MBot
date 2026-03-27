@@ -119,7 +119,7 @@ class SettingsPage extends StatelessWidget {
           const SizedBox(height: AppSpace.s6),
 
           // 其他
-          _buildSettingItem(context, icon: Icons.info_outline, title: '关于 QClaw', onTap: () {}),
+          _buildSettingItem(context, icon: Icons.info_outline, title: '关于 MBot', onTap: () {}),
           _buildSettingItem(context, icon: Icons.help_outline, title: '帮助与反馈', onTap: () {}),
           _buildSettingItem(
             context,
@@ -134,7 +134,7 @@ class SettingsPage extends StatelessWidget {
           // 版本号
           Center(
             child: Text(
-              'QClaw Mobile v0.1.0',
+              'MBot Mobile v0.1.0',
               style: const TextStyle(
                 fontSize: 12,
                 color: AppColors.textTertiary,
@@ -174,7 +174,7 @@ class SettingsPage extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 const Text(
-                  'QClaw 用户',
+                  'MBot 用户',
                   style: TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.w600,
