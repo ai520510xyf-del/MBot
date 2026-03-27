@@ -1,0 +1,122 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
+import '../features/conversations/presentation/conversation_list_page.dart';
+import '../features/chat/presentation/chat_page.dart';
+import '../features/skills/presentation/skill_market_page.dart';
+import '../features/settings/presentation/settings_page.dart';
+import '../features/dashboard/presentation/dashboard_page.dart';
+
+/// 根导航索引 Provider
+final rootNavIndexProvider = StateProvider<int>((ref) => 0);
+
+/// GoRouter 配置
+final goRouterProvider = Provider<GoRouter>((ref) {
+  return GoRouter(
+    initialLocation: '/',
+    debugLogDiagnostics: true,
+    routes: [
+      // 带底部导航的 Shell Route
+      ShellRoute(
+        builder: (context, state, child) {
+          return ScaffoldWithNavBar(child: child);
+        },
+        routes: [
+          GoRoute(
+            path: '/',
+            pageBuilder: (context, state) =>
+                const NoTransitionPage(child: ConversationListPage()),
+          ),
+          GoRoute(
+            path: '/skills',
+            pageBuilder: (context, state) =>
+                const NoTransitionPage(child: SkillMarketPage()),
+          ),
+          GoRoute(
+            path: '/settings',
+            pageBuilder: (context, state) =>
+                const NoTransitionPage(child: SettingsPage()),
+          ),
+          GoRoute(
+            path: '/dashboard',
+            pageBuilder: (context, state) =>
+                const NoTransitionPage(child: DashboardPage()),
+          ),
+        ],
+      ),
+      // 聊天页 — 不带底部导航
+      GoRoute(
+        path: '/chat/:id',
+        pageBuilder: (context, state) {
+          final chatId = state.pathParameters['id'] ?? '';
+          return MaterialPage(
+            child: ChatPage(chatId: chatId),
+          );
+        },
+      ),
+    ],
+  );
+});
+
+/// 带底部导航栏的 Scaffold
+class ScaffoldWithNavBar extends ConsumerWidget {
+  final Widget child;
+
+  const ScaffoldWithNavBar({super.key, required this.child});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    return Scaffold(
+      body: child,
+      bottomNavigationBar: BottomNavigationBar(
+        currentIndex: _calculateSelectedIndex(context),
+        onTap: (index) => _onItemTapped(index, ref),
+        items: const [
+          BottomNavigationBarItem(
+            icon: Icon(Icons.chat_bubble_outline),
+            activeIcon: Icon(Icons.chat_bubble),
+            label: '对话',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.widgets_outlined),
+            activeIcon: Icon(Icons.widgets),
+            label: '技能',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.dashboard_outlined),
+            activeIcon: Icon(Icons.dashboard),
+            label: '仪表盘',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.settings_outlined),
+            activeIcon: Icon(Icons.settings),
+            label: '设置',
+          ),
+        ],
+      ),
+    );
+  }
+
+  int _calculateSelectedIndex(BuildContext context) {
+    final location = GoRouterState.of(context).uri.path;
+    if (location.startsWith('/chat')) return -1;
+    if (location.startsWith('/skills')) return 1;
+    if (location.startsWith('/dashboard')) return 2;
+    if (location.startsWith('/settings')) return 3;
+    return 0;
+  }
+
+  void _onItemTapped(int index, WidgetRef ref) {
+    ref.read(rootNavIndexProvider.notifier).state = index;
+    switch (index) {
+      case 0:
+        ref.read(goRouterProvider).go('/');
+      case 1:
+        ref.read(goRouterProvider).go('/skills');
+      case 2:
+        ref.read(goRouterProvider).go('/dashboard');
+      case 3:
+        ref.read(goRouterProvider).go('/settings');
+    }
+  }
+}

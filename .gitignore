@@ -1,0 +1,29 @@
+# QClaw Mobile
+evolver/
+
+# Flutter
+.dart_tool/
+.flutter-plugins
+.flutter-plugins-dependencies
+.packages
+build/
+*.iml
+.metadata
+
+# IDE
+.idea/
+*.swp
+.vscode/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Build
+ios/Pods/
+*.xcworkspace/
+*.xcuserdata/
+
+# Generated
+*.g.dart
+*.freezed.dart

@@ -1,0 +1,21 @@
+import 'package:flutter/material.dart';
+
+/// QClaw Mobile 圆角系统
+class AppRadius {
+  AppRadius._();
+
+  static const double xs = 4.0;
+  static const double sm = 8.0;
+  static const double md = 12.0;
+  static const double lg = 16.0;
+  static const double xl = 24.0;
+  static const double full = 9999.0;
+
+  // 预定义 BorderRadius
+  static const BorderRadius radiusXS = BorderRadius.all(Radius.circular(xs));
+  static const BorderRadius radiusSM = BorderRadius.all(Radius.circular(sm));
+  static const BorderRadius radiusMD = BorderRadius.all(Radius.circular(md));
+  static const BorderRadius radiusLG = BorderRadius.all(Radius.circular(lg));
+  static const BorderRadius radiusXL = BorderRadius.all(Radius.circular(xl));
+  static const BorderRadius radiusFull = BorderRadius.all(Radius.circular(full));
+}
