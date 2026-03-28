@@ -17,7 +17,7 @@ enum AppThemeMode {
 
 /// 主题设置 Notifier
 @riverpod
-class ThemeMode extends _$ThemeMode {
+class ThemeModeNotifier extends _$ThemeModeNotifier {
   static const String _key = 'theme_mode';
 
   @override

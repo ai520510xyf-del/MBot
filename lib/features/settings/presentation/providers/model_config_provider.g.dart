@@ -10,14 +10,14 @@ part of 'model_config_provider.dart';
 // ignore_for_file: type=lint, type=warning
 /// 模型配置 Provider
 
-@ProviderFor(ModelConfig)
-final modelConfigProvider = ModelConfigProvider._();
+@ProviderFor(ModelConfigNotifier)
+final modelConfigProvider = ModelConfigNotifierProvider._();
 
 /// 模型配置 Provider
-final class ModelConfigProvider
-    extends $NotifierProvider<ModelConfig, ModelConfig> {
+final class ModelConfigNotifierProvider
+    extends $NotifierProvider<ModelConfigNotifier, ModelConfig> {
   /// 模型配置 Provider
-  ModelConfigProvider._()
+  ModelConfigNotifierProvider._()
     : super(
         from: null,
         argument: null,
@@ -29,11 +29,11 @@ final class ModelConfigProvider
       );
 
   @override
-  String debugGetCreateSourceHash() => _$modelConfigHash();
+  String debugGetCreateSourceHash() => _$modelConfigNotifierHash();
 
   @$internal
   @override
-  ModelConfig create() => ModelConfig();
+  ModelConfigNotifier create() => ModelConfigNotifier();
 
   /// {@macro riverpod.override_with_value}
   Override overrideWithValue(ModelConfig value) {
@@ -44,11 +44,12 @@ final class ModelConfigProvider
   }
 }
 
-String _$modelConfigHash() => r'c388af7f239d2c6b54c55e8061bd24615c95861d';
+String _$modelConfigNotifierHash() =>
+    r'b3f48c2c39f606a34dd60bffde2c513b71a979a5';
 
 /// 模型配置 Provider
 
-abstract class _$ModelConfig extends $Notifier<ModelConfig> {
+abstract class _$ModelConfigNotifier extends $Notifier<ModelConfig> {
   ModelConfig build();
   @$mustCallSuper
   @override

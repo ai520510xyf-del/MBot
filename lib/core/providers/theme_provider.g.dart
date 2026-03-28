@@ -10,14 +10,14 @@ part of 'theme_provider.dart';
 // ignore_for_file: type=lint, type=warning
 /// 主题设置 Notifier
 
-@ProviderFor(ThemeMode)
-final themeModeProvider = ThemeModeProvider._();
+@ProviderFor(ThemeModeNotifier)
+final themeModeProvider = ThemeModeNotifierProvider._();
 
 /// 主题设置 Notifier
-final class ThemeModeProvider
-    extends $NotifierProvider<ThemeMode, AppThemeMode> {
+final class ThemeModeNotifierProvider
+    extends $NotifierProvider<ThemeModeNotifier, AppThemeMode> {
   /// 主题设置 Notifier
-  ThemeModeProvider._()
+  ThemeModeNotifierProvider._()
     : super(
         from: null,
         argument: null,
@@ -29,11 +29,11 @@ final class ThemeModeProvider
       );
 
   @override
-  String debugGetCreateSourceHash() => _$themeModeHash();
+  String debugGetCreateSourceHash() => _$themeModeNotifierHash();
 
   @$internal
   @override
-  ThemeMode create() => ThemeMode();
+  ThemeModeNotifier create() => ThemeModeNotifier();
 
   /// {@macro riverpod.override_with_value}
   Override overrideWithValue(AppThemeMode value) {
@@ -44,11 +44,11 @@ final class ThemeModeProvider
   }
 }
 
-String _$themeModeHash() => r'5b07254656332823659ef6dc4a8618933eed9ad9';
+String _$themeModeNotifierHash() => r'8f102c5d7b5954ada38ee64178e426bca6a7fd75';
 
 /// 主题设置 Notifier
 
-abstract class _$ThemeMode extends $Notifier<AppThemeMode> {
+abstract class _$ThemeModeNotifier extends $Notifier<AppThemeMode> {
   AppThemeMode build();
   @$mustCallSuper
   @override

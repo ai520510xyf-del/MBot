@@ -30,6 +30,21 @@ class AppColors {
     end: Alignment.bottomRight,
     colors: [primary, primaryLight],
   );
+
+  // ========== 语义色别名（默认使用深色主题值）==========
+  static const Color background = DarkColors.background;
+  static const Color surface = DarkColors.surface;
+  static const Color surfaceElevated = DarkColors.surfaceElevated;
+  static const Color surfaceHighlight = DarkColors.surfaceHighlight;
+  static const Color border = DarkColors.border;
+  static const Color textPrimary = DarkColors.textPrimary;
+  static const Color textSecondary = DarkColors.textSecondary;
+  static const Color textTertiary = DarkColors.textTertiary;
+  static const Color textInverse = DarkColors.textInverse;
+  static const Color textLink = DarkColors.textLink;
+  static const LinearGradient aiBubbleGradient = DarkColors.aiBubbleGradient;
+  static const LinearGradient cardGradient = DarkColors.cardGradient;
+  static const LinearGradient disabledGradient = DarkColors.disabledGradient;
 }
 
 /// 深色主题色彩

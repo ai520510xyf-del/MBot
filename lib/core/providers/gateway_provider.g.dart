@@ -44,7 +44,7 @@ final class GatewayStateProvider
   }
 }
 
-String _$gatewayStateHash() => r'd4762f5dc486dbaa187b356010e9737a5eb2bbff';
+String _$gatewayStateHash() => r'c7348545f7685c4e1f1182c398be7f3f28be73ac';
 
 /// 网关状态 Notifier
 
