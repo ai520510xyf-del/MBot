@@ -1,14 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import '../core/providers/root_nav_provider.dart';
 import '../features/conversations/presentation/conversation_list_page.dart';
 import '../features/chat/presentation/chat_page.dart';
 import '../features/skills/presentation/skill_market_page.dart';
 import '../features/settings/presentation/settings_page.dart';
 import '../features/dashboard/presentation/dashboard_page.dart';
-
-/// 根导航索引 Provider
-final rootNavIndexProvider = StateProvider<int>((ref) => 0);
 
 /// GoRouter 配置
 final goRouterProvider = Provider<GoRouter>((ref) {
@@ -107,7 +105,7 @@ class ScaffoldWithNavBar extends ConsumerWidget {
   }
 
   void _onItemTapped(int index, WidgetRef ref) {
-    ref.read(rootNavIndexProvider.notifier).state = index;
+    ref.read(rootNavIndexProvider.notifier).setIndex(index);
     switch (index) {
       case 0:
         ref.read(goRouterProvider).go('/');

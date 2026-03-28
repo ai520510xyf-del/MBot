@@ -1,4 +1,6 @@
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:riverpod_annotation/riverpod_annotation.dart';
+
+part 'settings_provider.g.dart';
 
 /// 用户设置模型
 class UserSettings {
@@ -22,7 +24,7 @@ class UserSettings {
     this.avatarUrl,
     this.notificationsEnabled = true,
     this.language = 'zh-CN',
-    this.gatewayUrl = 'http://localhost:8080',
+    this.gatewayUrl = 'ws://localhost:8080/ws',
   });
 
   /// 复制并修改部分字段
@@ -43,7 +45,33 @@ class UserSettings {
   }
 }
 
-/// 用户设置 Provider
-final userSettingsProvider = StateProvider<UserSettings>((ref) {
-  return const UserSettings();
-});
+/// 用户设置 Notifier
+@riverpod
+class UserSettingsState extends _$UserSettingsState {
+  @override
+  UserSettings build() {
+    return const UserSettings();
+  }
+
+  /// 更新设置
+  void update(UserSettings newSettings) {
+    state = newSettings;
+  }
+
+  /// 更新昵称
+  void updateNickname(String nickname) {
+    state = state.copyWith(nickname: nickname);
+  }
+
+  /// 更新网关地址
+  void updateGatewayUrl(String url) {
+    state = state.copyWith(gatewayUrl: url);
+  }
+
+  /// 切换通知
+  void toggleNotifications() {
+    state = state.copyWith(
+      notificationsEnabled: !state.notificationsEnabled,
+    );
+  }
+}

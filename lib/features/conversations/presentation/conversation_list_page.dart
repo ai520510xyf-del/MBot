@@ -23,7 +23,7 @@ class ConversationListPage extends StatelessWidget {
       body: ListView.separated(
         padding: const EdgeInsets.symmetric(vertical: AppSpace.s2),
         itemCount: 5,
-        separatorBuilder: (_, __) => Divider(
+        separatorBuilder: (context, index) => Divider(
           height: 1,
           indent: AppSpace.s4 + 48 + AppSpace.s3,
           color: AppColors.border,

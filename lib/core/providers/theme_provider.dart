@@ -1,4 +1,6 @@
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:riverpod_annotation/riverpod_annotation.dart';
+
+part 'theme_provider.g.dart';
 
 /// 主题模式枚举
 enum AppThemeMode {
@@ -12,7 +14,21 @@ enum AppThemeMode {
   light,
 }
 
-/// 主题设置 Provider
-final themeModeProvider = StateProvider<AppThemeMode>((ref) {
-  return AppThemeMode.dark;
-});
+/// 主题设置 Notifier
+@riverpod
+class ThemeMode extends _$ThemeMode {
+  @override
+  AppThemeMode build() {
+    return AppThemeMode.dark;
+  }
+
+  /// 更新主题模式
+  void setMode(AppThemeMode mode) {
+    state = mode;
+  }
+
+  /// 切换深色模式
+  void toggleDark() {
+    state = state == AppThemeMode.dark ? AppThemeMode.light : AppThemeMode.dark;
+  }
+}

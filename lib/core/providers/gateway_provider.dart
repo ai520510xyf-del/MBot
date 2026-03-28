@@ -1,4 +1,6 @@
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:riverpod_annotation/riverpod_annotation.dart';
+
+part 'gateway_provider.g.dart';
 
 /// 网关连接状态
 enum GatewayConnectionState {
@@ -15,7 +17,36 @@ enum GatewayConnectionState {
   failed,
 }
 
-/// 网关状态 Provider
-final gatewayStateProvider = StateProvider<GatewayConnectionState>((ref) {
-  return GatewayConnectionState.disconnected;
-});
+/// 网关状态 Notifier
+@riverpod
+class GatewayState extends _$GatewayState {
+  @override
+  GatewayConnectionState build() {
+    return GatewayConnectionState.disconnected;
+  }
+
+  /// 更新状态
+  void update(GatewayConnectionState newState) {
+    state = newState;
+  }
+
+  /// 连接中
+  void setConnecting() {
+    state = GatewayConnectionState.connecting;
+  }
+
+  /// 已连接
+  void setConnected() {
+    state = GatewayConnectionState.connected;
+  }
+
+  /// 连接失败
+  void setFailed() {
+    state = GatewayConnectionState.failed;
+  }
+
+  /// 断开连接
+  void setDisconnected() {
+    state = GatewayConnectionState.disconnected;
+  }
+}
