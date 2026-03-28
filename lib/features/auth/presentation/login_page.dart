@@ -5,15 +5,19 @@ import 'package:pinput/pinput.dart';
 import 'package:go_router/go_router.dart';
 import 'package:dio/dio.dart';
 import '../../../../theme/theme.dart';
+import '../../../../core/services/mock_api_service.dart';
 import 'providers/auth_provider.dart';
 import 'wechat_bind_page.dart';
 
 /// 登录状态
 enum LoginStep { phoneInput, verificationCode }
 
+/// 演示模式状态 - 使用 ValueNotifier 在页面间共享
+final demoModeNotifier = ValueNotifier<bool>(true);
+
 /// API 服务类 - 处理认证相关的网络请求
 class AuthApiService {
-  // TODO: 替换为真实的 API 地址
+  // API 基础地址（真实环境使用）
   static const String baseUrl = 'https://api.mbot.ai';
   static final Dio _dio = Dio(BaseOptions(
     baseUrl: baseUrl,
@@ -22,9 +26,19 @@ class AuthApiService {
     headers: {'Content-Type': 'application/json'},
   ));
 
+  /// 是否使用演示模式
+  static bool get useDemoMode => demoModeNotifier.value;
+  static set useDemoMode(bool value) => demoModeNotifier.value = value;
+
   /// 发送短信验证码
   /// 返回 {success: bool, message: String}
   static Future<Map<String, dynamic>> sendSmsCode(String phone) async {
+    // 演示模式：使用 Mock API
+    if (useDemoMode) {
+      return mockApiService.sendSmsCode(phone);
+    }
+
+    // 真实 API 调用
     try {
       final response = await _dio.post(
         '/api/auth/send-sms',
@@ -62,6 +76,37 @@ class AuthApiService {
       return {'success': false, 'message': errorMessage};
     } catch (e) {
       return {'success': false, 'message': '发送验证码失败: $e'};
+    }
+  }
+
+  /// 验证短信验证码
+  /// 返回 {success: bool, message: String}
+  static Future<Map<String, dynamic>> verifySmsCode(String phone, String code) async {
+    // 演示模式：使用 Mock API
+    if (useDemoMode) {
+      return mockApiService.verifySmsCode(phone, code);
+    }
+
+    // 真实 API 调用
+    try {
+      final response = await _dio.post(
+        '/api/auth/verify-sms',
+        data: {'phone': phone, 'code': code},
+      );
+      return {
+        'success': response.data['success'] ?? true,
+        'message': response.data['message'] ?? '验证成功',
+      };
+    } on DioException catch (e) {
+      String errorMessage;
+      if (e.type == DioExceptionType.badResponse) {
+        errorMessage = e.response?.data['message'] ?? '验证码错误';
+      } else {
+        errorMessage = '网络错误，请重试';
+      }
+      return {'success': false, 'message': errorMessage};
+    } catch (e) {
+      return {'success': false, 'message': '验证失败: $e'};
     }
   }
 }
@@ -182,7 +227,23 @@ class _LoginPageState extends ConsumerState<LoginPage> {
     });
 
     try {
-      // 调用 auth_provider 进行登录验证
+      // 先验证验证码
+      final verifyResult = await AuthApiService.verifySmsCode(
+        _phoneController.text,
+        _codeController.text,
+      );
+
+      if (!mounted) return;
+
+      if (verifyResult['success'] != true) {
+        _showStatusMessage(verifyResult['message'] ?? '验证码错误', isError: true);
+        setState(() {
+          _isVerifying = false;
+        });
+        return;
+      }
+
+      // 验证成功，调用 auth_provider 完成登录
       await ref.read(authProvider.notifier).loginWithPhone(
         phone: _phoneController.text,
         code: _codeController.text,
@@ -224,7 +285,60 @@ class _LoginPageState extends ConsumerState<LoginPage> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                const SizedBox(height: AppSpace.s8),
+                // 演示模式开关
+                ValueListenableBuilder<bool>(
+                  valueListenable: demoModeNotifier,
+                  builder: (context, demoMode, child) {
+                    return Container(
+                      margin: const EdgeInsets.only(bottom: AppSpace.s4),
+                      padding: const EdgeInsets.symmetric(horizontal: AppSpace.s3, vertical: AppSpace.s2),
+                      decoration: BoxDecoration(
+                        color: demoMode
+                            ? AppColors.success.withValues(alpha: 0.1)
+                            : AppColors.surfaceElevated,
+                        borderRadius: AppRadius.radiusMD,
+                        border: Border.all(
+                          color: demoMode
+                              ? AppColors.success.withValues(alpha: 0.3)
+                              : AppColors.border,
+                        ),
+                      ),
+                      child: Row(
+                        children: [
+                          Icon(
+                            demoMode ? Icons.science_outlined : Icons.cloud_outlined,
+                            size: 18,
+                            color: demoMode ? AppColors.success : AppColors.textSecondary,
+                          ),
+                          const SizedBox(width: AppSpace.s2),
+                          Expanded(
+                            child: Text(
+                              demoMode ? '演示模式（无需网络）' : '真实 API 模式',
+                              style: TextStyle(
+                                fontSize: 13,
+                                color: demoMode ? AppColors.success : AppColors.textSecondary,
+                                fontWeight: demoMode ? FontWeight.w500 : FontWeight.normal,
+                              ),
+                            ),
+                          ),
+                          Transform.scale(
+                            scale: 0.85,
+                            child: Switch(
+                              value: demoMode,
+                              onChanged: (value) {
+                                demoModeNotifier.value = value;
+                              },
+                              activeTrackColor: AppColors.success.withValues(alpha: 0.5),
+                              activeThumbColor: AppColors.success,
+                            ),
+                          ),
+                        ],
+                      ),
+                    );
+                  },
+                ),
+
+                const SizedBox(height: AppSpace.s4),
 
                 // Logo
                 Center(

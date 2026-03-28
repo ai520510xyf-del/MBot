@@ -4,7 +4,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 import '../../../../theme/theme.dart';
+import '../../../../core/services/mock_api_service.dart';
 import 'providers/auth_provider.dart';
+import 'login_page.dart';
 
 /// 扫码状态
 enum ScanStatus {
@@ -73,27 +75,46 @@ class _WechatBindPageState extends ConsumerState<WechatBindPage>
     });
 
     try {
-      // TODO: 调用真实 API 获取微信二维码
-      // GET /api/auth/wechat/qrcode
-      // Response: { "qrCodeUrl": "...", "qrCodeId": "...", "expireSeconds": 300 }
-      await Future.delayed(const Duration(milliseconds: 800));
+      // 获取演示模式状态
+      final demoMode = demoModeNotifier.value;
 
-      // 模拟 API 返回数据
-      // 实际应该从服务器获取真实的微信二维码 URL
-      const mockQrCodeUrl =
-          'https://open.weixin.qq.com/connect/qrcode/test-qr-code-id';
-      const mockQrCodeId = 'test-qr-code-id';
+      if (demoMode) {
+        // 演示模式：使用 Mock API
+        final result = await mockApiService.getWechatQrCode();
 
-      if (mounted) {
+        if (!mounted) return;
+
+        if (result['success'] == true) {
+          setState(() {
+            _qrCodeUrl = result['qrCodeUrl'] as String;
+            _qrCodeId = result['qrCodeId'] as String;
+            _isLoading = false;
+            _expireCountdown = result['expireSeconds'] as int;
+          });
+
+          _startExpireCountdown();
+          _startPollingScanStatus();
+        } else {
+          setState(() {
+            _isLoading = false;
+            _scanStatus = ScanStatus.error;
+            _errorMessage = result['message'] ?? '获取二维码失败';
+          });
+        }
+      } else {
+        // 真实 API 模式（暂未实现）
+        // TODO: 调用真实 API 获取微信二维码
+        // GET /api/auth/wechat/qrcode
+        // Response: { "qrCodeUrl": "...", "qrCodeId": "...", "expireSeconds": 300 }
+        await Future.delayed(const Duration(milliseconds: 800));
+
+        if (!mounted) return;
+
         setState(() {
-          _qrCodeUrl = mockQrCodeUrl;
-          _qrCodeId = mockQrCodeId;
           _isLoading = false;
-          _expireCountdown = 300; // 5分钟有效期
+          _scanStatus = ScanStatus.error;
+          _errorMessage = '真实 API 尚未配置，请开启演示模式';
         });
-
-        _startExpireCountdown();
-        _startPollingScanStatus();
       }
     } catch (e) {
       if (mounted) {
@@ -132,6 +153,9 @@ class _WechatBindPageState extends ConsumerState<WechatBindPage>
   /// 开始轮询扫码状态
   void _startPollingScanStatus() {
     _pollTimer?.cancel();
+
+    if (_qrCodeId == null) return;
+
     _pollTimer = Timer.periodic(const Duration(seconds: 2), (timer) async {
       if (!mounted) {
         timer.cancel();
@@ -145,19 +169,48 @@ class _WechatBindPageState extends ConsumerState<WechatBindPage>
       }
 
       try {
-        // TODO: 调用真实 API 检查扫码状态
-        // GET /api/auth/wechat/status?qrCodeId=xxx
-        // Response: { "status": "waiting|scanned|confirmed", "userId": "...", "token": "..." }
+        // 获取演示模式状态
+        final demoMode = demoModeNotifier.value;
 
-        // 模拟状态检查 - 实际应该调用 API
-        // 这里暂时不做任何操作，等待真实 API 集成
+        if (demoMode && _qrCodeId != null) {
+          // 演示模式：使用 Mock API 检查状态
+          final result = await mockApiService.checkWechatScanStatus(_qrCodeId!);
+
+          if (!mounted) return;
+
+          if (result['success'] == true) {
+            final status = result['status'] as String;
+
+            if (status == 'confirmed') {
+              // 已确认登录
+              timer.cancel();
+              await _handleScanConfirmed();
+            } else if (status == 'scanned') {
+              // 已扫码，等待确认
+              setState(() {
+                _scanStatus = ScanStatus.scanned;
+              });
+            } else if (status == 'expired') {
+              // 二维码过期
+              timer.cancel();
+              setState(() {
+                _scanStatus = ScanStatus.expired;
+              });
+            }
+          }
+        } else {
+          // 真实 API 模式（暂未实现）
+          // TODO: 调用真实 API 检查扫码状态
+          // GET /api/auth/wechat/status?qrCodeId=xxx
+          // Response: { "status": "waiting|scanned|confirmed", "userId": "...", "token": "..." }
+        }
       } catch (e) {
         debugPrint('轮询扫码状态失败: $e');
       }
     });
   }
 
-  /// 处理扫码确认（模拟用，实际由 API 回调触发）
+  /// 处理扫码确认
   Future<void> _handleScanConfirmed() async {
     _pollTimer?.cancel();
     _expireTimer?.cancel();
@@ -181,6 +234,21 @@ class _WechatBindPageState extends ConsumerState<WechatBindPage>
           _errorMessage = '登录失败: $e';
         });
       }
+    }
+  }
+
+  /// 模拟扫码确认（测试用，仅演示模式可用）
+  void _simulateScanConfirm() {
+    final demoMode = demoModeNotifier.value;
+    if (!demoMode) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('请先开启演示模式')),
+      );
+      return;
+    }
+
+    if (_qrCodeId != null) {
+      mockApiService.confirmWechatScan(_qrCodeId!);
     }
   }
 
@@ -522,7 +590,7 @@ class _WechatBindPageState extends ConsumerState<WechatBindPage>
             // 测试用按钮（模拟扫码确认）
             if (_scanStatus == ScanStatus.waiting)
               OutlinedButton.icon(
-                onPressed: _handleScanConfirmed,
+                onPressed: _simulateScanConfirm,
                 icon: const Icon(Icons.check, size: 20),
                 label: const Text('模拟扫码确认（测试用）'),
                 style: OutlinedButton.styleFrom(
