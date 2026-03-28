@@ -22,8 +22,6 @@ class _ChatPageState extends ConsumerState<ChatPage> {
   final TextEditingController _textController = TextEditingController();
   final ScrollController _scrollController = ScrollController();
   bool _isSending = false;
-  String _pendingAiContent = '';
-  StreamSubscription? _responseSubscription;
 
   @override
   void initState() {
@@ -36,27 +34,14 @@ class _ChatPageState extends ConsumerState<ChatPage> {
         // Failed to start listening - log error or show notification
         debugPrint('Failed to start chat service listening');
       }
-      _subscribeToResponses(chatService);
     });
   }
 
   @override
   void dispose() {
-    _responseSubscription?.cancel();
     _textController.dispose();
     _scrollController.dispose();
     super.dispose();
-  }
-
-  void _subscribeToResponses(ChatService chatService) {
-    _responseSubscription = chatService.responseStream.listen((response) {
-      if (mounted && response.sender == MessageSender.ai) {
-        setState(() {
-          _pendingAiContent = response.content;
-        });
-        _scrollToBottom();
-      }
-    });
   }
 
   Future<void> _sendMessage() async {
@@ -65,7 +50,6 @@ class _ChatPageState extends ConsumerState<ChatPage> {
 
     setState(() {
       _isSending = true;
-      _pendingAiContent = '';
     });
 
     _textController.clear();
@@ -122,11 +106,23 @@ class _ChatPageState extends ConsumerState<ChatPage> {
         stream: messageRepo.watchByConversation(widget.chatId),
         builder: (context, snapshot) {
           final messages = snapshot.data ?? [];
+          final chatService = ref.watch(chatServiceProvider);
 
           return Column(
             children: [
-              // 消息列表
-              Expanded(child: _buildMessagesList(messages)),
+              // 消息列表 + 流式响应
+              Expanded(
+                child: StreamBuilder<ChatResponse>(
+                  stream: chatService.responseStream,
+                  builder: (context, responseSnapshot) {
+                    final pendingContent = responseSnapshot.hasData
+                        ? responseSnapshot.data!.content
+                        : '';
+                    
+                    return _buildMessagesList(messages, pendingContent);
+                  },
+                ),
+              ),
 
               // 输入区域
               _buildInputArea(context),
@@ -137,7 +133,7 @@ class _ChatPageState extends ConsumerState<ChatPage> {
     );
   }
 
-  Widget _buildMessagesList(List<MessageData> messages) {
+  Widget _buildMessagesList(List<MessageData> messages, String pendingContent) {
     return ListView.builder(
       controller: _scrollController,
       padding: const EdgeInsets.symmetric(
@@ -146,12 +142,12 @@ class _ChatPageState extends ConsumerState<ChatPage> {
       ),
       itemCount:
           messages.length +
-          (_isSending || _pendingAiContent.isNotEmpty ? 1 : 0),
+          (_isSending || pendingContent.isNotEmpty ? 1 : 0),
       itemBuilder: (context, index) {
         // 显示待发送的 AI 消息
         if (index >= messages.length) {
-          if (_pendingAiContent.isNotEmpty) {
-            return _buildAiBubble(context, _pendingAiContent, isTyping: true);
+          if (pendingContent.isNotEmpty) {
+            return _buildAiBubble(context, pendingContent, isTyping: true);
           }
           return _buildAiBubble(context, '...', isTyping: true);
         }

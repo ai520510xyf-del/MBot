@@ -29,24 +29,4 @@ class GatewayState extends _$GatewayState {
   void update(GatewayConnectionState newState) {
     state = newState;
   }
-
-  /// 连接中
-  void setConnecting() {
-    state = GatewayConnectionState.connecting;
-  }
-
-  /// 已连接
-  void setConnected() {
-    state = GatewayConnectionState.connected;
-  }
-
-  /// 连接失败
-  void setFailed() {
-    state = GatewayConnectionState.failed;
-  }
-
-  /// 断开连接
-  void setDisconnected() {
-    state = GatewayConnectionState.disconnected;
-  }
 }

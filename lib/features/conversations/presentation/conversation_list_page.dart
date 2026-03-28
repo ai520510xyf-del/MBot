@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import '../../../../core/models/conversation.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../theme/theme.dart';
+import '../../../../core/repositories/conversation_repository.dart';
 
 /// 对话列表页
 class ConversationListPage extends ConsumerStatefulWidget {
@@ -13,51 +15,9 @@ class ConversationListPage extends ConsumerStatefulWidget {
 }
 
 class _ConversationListPageState extends ConsumerState<ConversationListPage> {
-  final List<Map<String, dynamic>> _mockConversations = [
-    {
-      'id': '1',
-      'emoji': '🤖',
-      'title': 'AI 写作助手',
-      'lastMessage': '帮我写一封邮件给客户，表达感谢并期待下次合作...',
-      'time': '10:30',
-      'updatedAt': DateTime.now().subtract(const Duration(minutes: 5)),
-    },
-    {
-      'id': '2',
-      'emoji': '💻',
-      'title': 'AI 编程助手',
-      'lastMessage': '这段代码为什么报错？提示空指针异常...',
-      'time': '09:15',
-      'updatedAt': DateTime.now().subtract(const Duration(hours: 1)),
-    },
-    {
-      'id': '3',
-      'emoji': '💬',
-      'title': '闲聊',
-      'lastMessage': '今天天气怎么样？适合外出吗...',
-      'time': '昨天',
-      'updatedAt': DateTime.now().subtract(const Duration(days: 1)),
-    },
-    {
-      'id': '4',
-      'emoji': '🎨',
-      'title': 'AI 绘画',
-      'lastMessage': '帮我生成一张精美的日落风景图...',
-      'time': '昨天',
-      'updatedAt': DateTime.now().subtract(const Duration(days: 1, hours: 3)),
-    },
-    {
-      'id': '5',
-      'emoji': '📊',
-      'title': '数据分析',
-      'lastMessage': '帮我分析这份数据报表，提取关键指标...',
-      'time': '周一',
-      'updatedAt': DateTime.now().subtract(const Duration(days: 2)),
-    },
-  ];
-
   @override
   Widget build(BuildContext context) {
+    final conversationRepo = ref.watch(conversationRepositoryProvider);
     return Scaffold(
       appBar: AppBar(
         title: const Text('MBot'),
@@ -73,26 +33,46 @@ class _ConversationListPageState extends ConsumerState<ConversationListPage> {
       body: RefreshIndicator(
         onRefresh: _handleRefresh,
         color: AppColors.primary,
-        child: ListView.separated(
-          padding: const EdgeInsets.symmetric(vertical: AppSpace.s2),
-          itemCount: _mockConversations.length,
-          separatorBuilder: (context, index) => Divider(
-            height: 1,
-            indent: AppSpace.s4 + 48 + AppSpace.s3,
-            color: DarkColors.border,
-          ),
-          itemBuilder: (context, index) {
-            final conversation = _mockConversations[index];
-            return _buildConversationItem(conversation, index);
+        child: StreamBuilder<List<ConversationData>>(
+          stream: conversationRepo.watchAll(),
+          builder: (context, snapshot) {
+            final conversations = snapshot.data ?? [];
+            
+            if (conversations.isEmpty && snapshot.connectionState == ConnectionState.active) {
+              return const Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(Icons.chat_bubble_outline, size: 64, color: DarkColors.textTertiary),
+                    SizedBox(height: AppSpace.s4),
+                    Text('暂无对话', style: TextStyle(color: DarkColors.textSecondary)),
+                  ],
+                ),
+              );
+            }
+
+            return ListView.separated(
+              padding: const EdgeInsets.symmetric(vertical: AppSpace.s2),
+              itemCount: conversations.length,
+              separatorBuilder: (context, index) => Divider(
+                height: 1,
+                indent: AppSpace.s4 + 48 + AppSpace.s3,
+                color: DarkColors.border,
+              ),
+              itemBuilder: (context, index) {
+                final conversation = conversations[index];
+                return _buildConversationItem(conversation, index);
+              },
+            );
           },
         ),
       ),
     );
   }
 
-  Widget _buildConversationItem(Map<String, dynamic> conversation, int index) {
+  Widget _buildConversationItem(ConversationData conversation, int index) {
     return Dismissible(
-      key: ValueKey(conversation['id']),
+      key: ValueKey(conversation.id),
       direction: DismissDirection.endToStart,
       background: _buildSwipeBackground(),
       confirmDismiss: (direction) async {
@@ -112,13 +92,13 @@ class _ConversationListPageState extends ConsumerState<ConversationListPage> {
           ),
           child: Center(
             child: Text(
-              conversation['emoji'],
+              '🤖',
               style: const TextStyle(fontSize: 24),
             ),
           ),
         ),
         title: Text(
-          conversation['title'],
+          conversation.title,
           style: const TextStyle(
             fontSize: 16,
             fontWeight: FontWeight.w500,
@@ -130,7 +110,7 @@ class _ConversationListPageState extends ConsumerState<ConversationListPage> {
           children: [
             const SizedBox(height: 4),
             Text(
-              conversation['lastMessage'],
+              '点击继续对话',
               style: const TextStyle(
                 fontSize: 14,
                 color: DarkColors.textSecondary,
@@ -145,31 +125,15 @@ class _ConversationListPageState extends ConsumerState<ConversationListPage> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Text(
-              conversation['time'],
+              _formatTime(conversation.updatedAt),
               style: const TextStyle(
                 fontSize: 12,
                 color: DarkColors.textTertiary,
               ),
             ),
-            const SizedBox(height: 4),
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-              decoration: BoxDecoration(
-                color: AppColors.primary.withValues(alpha: 0.1),
-                borderRadius: AppRadius.radiusXS,
-              ),
-              child: Text(
-                _formatMessageCount(conversation),
-                style: const TextStyle(
-                  fontSize: 10,
-                  color: AppColors.primary,
-                  fontWeight: FontWeight.w500,
-                ),
-              ),
-            ),
           ],
         ),
-        onTap: () => context.go('/chat/${conversation['id']}'),
+        onTap: () => context.go('/chat/${conversation.id}'),
         onLongPress: () {
           _showConversationOptions(context, conversation, index);
         },
@@ -233,7 +197,7 @@ class _ConversationListPageState extends ConsumerState<ConversationListPage> {
 
   void _showConversationOptions(
     BuildContext context,
-    Map<String, dynamic> conversation,
+    ConversationData conversation,
     int index,
   ) {
     showModalBottomSheet(
@@ -289,8 +253,8 @@ class _ConversationListPageState extends ConsumerState<ConversationListPage> {
     );
   }
 
-  void _showRenameDialog(Map<String, dynamic> conversation, int index) {
-    final controller = TextEditingController(text: conversation['title']);
+  void _showRenameDialog(ConversationData conversation, int index) {
+    final controller = TextEditingController(text: conversation.title);
 
     showDialog(
       context: context,
@@ -307,12 +271,13 @@ class _ConversationListPageState extends ConsumerState<ConversationListPage> {
             child: const Text('取消'),
           ),
           FilledButton(
-            onPressed: () {
+            onPressed: () async {
               if (controller.text.trim().isNotEmpty) {
-                setState(() {
-                  _mockConversations[index]['title'] = controller.text.trim();
-                });
-                Navigator.pop(context);
+                final updated = conversation.copyWith(title: controller.text.trim());
+                await ref.read(conversationRepositoryProvider).update(updated);
+                if (context.mounted) {
+                  Navigator.pop(context);
+                }
               }
             },
             child: const Text('保存'),
@@ -323,13 +288,13 @@ class _ConversationListPageState extends ConsumerState<ConversationListPage> {
   }
 
   Future<bool> _showDeleteConfirmDialog(
-    Map<String, dynamic> conversation,
+    ConversationData conversation,
   ) async {
     return await showDialog<bool>(
           context: context,
           builder: (context) => AlertDialog(
             title: const Text('删除对话'),
-            content: Text('确定要删除「${conversation['title']}」吗？此操作不可恢复。'),
+            content: Text('确定要删除「${conversation.title}」吗？此操作不可恢复。'),
             actions: [
               TextButton(
                 onPressed: () => Navigator.pop(context, false),
@@ -346,37 +311,39 @@ class _ConversationListPageState extends ConsumerState<ConversationListPage> {
         false;
   }
 
-  void _handleDeleteConversation(Map<String, dynamic> conversation, int index) {
-    setState(() {
-      _mockConversations.removeAt(index);
-    });
+  void _handleDeleteConversation(ConversationData conversation, int index) async {
+    await ref.read(conversationRepositoryProvider).delete(conversation.id);
 
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('已删除「${conversation['title']}」'),
-        action: SnackBarAction(
-          label: '撤销',
-          textColor: AppColors.primary,
-          onPressed: () {
-            setState(() {
-              _mockConversations.insert(index, conversation);
-            });
-          },
+    if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('已删除「${conversation.title}」'),
         ),
-      ),
-    );
+      );
+    }
   }
 
   Future<void> _handleRefresh() async {
-    // 模拟刷新
-    await Future.delayed(const Duration(seconds: 1));
-
-    // Conversation refresh completed
+    // Refresh is handled by StreamBuilder automatically
+    await ref.read(conversationRepositoryProvider).getAll();
   }
 
-  String _formatMessageCount(Map<String, dynamic> conversation) {
-    // 模拟未读消息数
-    final count = (int.parse(conversation['id']) * 2) % 10;
-    return count > 0 ? '$count' : '';
+  String _formatTime(DateTime time) {
+    final now = DateTime.now();
+    final difference = now.difference(time);
+    
+    if (difference.inMinutes < 1) {
+      return '刚刚';
+    } else if (difference.inMinutes < 60) {
+      return '${difference.inMinutes}分钟前';
+    } else if (difference.inHours < 24) {
+      return '${difference.inHours}小时前';
+    } else if (difference.inDays == 1) {
+      return '昨天';
+    } else if (difference.inDays < 7) {
+      return '${difference.inDays}天前';
+    } else {
+      return '${time.month}月${time.day}日';
+    }
   }
 }

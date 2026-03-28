@@ -167,9 +167,6 @@ class Memories extends Table {
 /// MBot 数据库类
 @DriftDatabase(tables: [Conversations, Messages, Skills, Agents, Memories])
 class MBotDatabase extends _$MBotDatabase {
-  /// Database access lock for synchronized operations
-  final Lock _lock = Lock();
-
   /// 构造函数
   MBotDatabase(super.e);
 
@@ -220,10 +217,5 @@ class MBotDatabase extends _$MBotDatabase {
       }
     });
     return MBotDatabase(executor);
-  }
-
-  /// Execute a database operation with synchronized access
-  Future<T> synchronized<T>(Future<T> Function() operation) async {
-    return await _lock.synchronized(operation);
   }
 }
