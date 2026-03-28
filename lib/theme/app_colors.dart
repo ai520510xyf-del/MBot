@@ -56,4 +56,10 @@ class AppColors {
     end: Alignment.bottomCenter,
     colors: [surfaceElevated, surface],
   );
+
+  static const LinearGradient disabledGradient = LinearGradient(
+    begin: Alignment.topLeft,
+    end: Alignment.bottomRight,
+    colors: [textTertiary, border],
+  );
 }

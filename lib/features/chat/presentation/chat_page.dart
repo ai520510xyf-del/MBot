@@ -1,14 +1,105 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../../../core/providers/providers.dart';
+import '../../../../core/models/message.dart';
 import '../../../../theme/theme.dart';
 
 /// 聊天页
-class ChatPage extends StatelessWidget {
+class ChatPage extends ConsumerStatefulWidget {
   final String chatId;
 
   const ChatPage({super.key, required this.chatId});
 
   @override
+  ConsumerState<ChatPage> createState() => _ChatPageState();
+}
+
+class _ChatPageState extends ConsumerState<ChatPage> {
+  final TextEditingController _textController = TextEditingController();
+  final ScrollController _scrollController = ScrollController();
+  bool _isSending = false;
+  String _pendingAiContent = '';
+  StreamSubscription? _responseSubscription;
+
+  @override
+  void initState() {
+    super.initState();
+    // 启动聊天服务监听
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final chatService = ref.read(chatServiceProvider);
+      chatService.startListening();
+      _subscribeToResponses(chatService);
+    });
+  }
+
+  @override
+  void dispose() {
+    _responseSubscription?.cancel();
+    _textController.dispose();
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  void _subscribeToResponses(ChatService chatService) {
+    _responseSubscription = chatService.responseStream.listen((response) {
+      if (mounted && response.sender == MessageSender.ai) {
+        setState(() {
+          _pendingAiContent = response.content;
+        });
+        _scrollToBottom();
+      }
+    });
+  }
+
+  Future<void> _sendMessage() async {
+    final content = _textController.text.trim();
+    if (content.isEmpty || _isSending) return;
+
+    setState(() {
+      _isSending = true;
+      _pendingAiContent = '';
+    });
+
+    _textController.clear();
+
+    try {
+      await ref.read(chatServiceProvider).sendMessage(
+        conversationId: widget.chatId,
+        content: content,
+      );
+      _scrollToBottom();
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('发送失败: $e')),
+        );
+      }
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isSending = false;
+        });
+      }
+    }
+  }
+
+  void _scrollToBottom() {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (_scrollController.hasClients) {
+        _scrollController.animateTo(
+          _scrollController.position.maxScrollExtent,
+          duration: const Duration(milliseconds: 300),
+          curve: Curves.easeOut,
+        );
+      }
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
+    final messageRepo = ref.watch(messageRepositoryProvider);
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('AI 助手'),
@@ -21,35 +112,62 @@ class ChatPage extends StatelessWidget {
           ),
         ],
       ),
-      body: Column(
-        children: [
-          // 消息列表
-          Expanded(
-            child: ListView(
-              padding: const EdgeInsets.symmetric(
-                horizontal: AppSpace.s4,
-                vertical: AppSpace.s3,
-              ),
-              children: [
-                // 占位 AI 消息
-                _buildAiBubble(context, '你好！我是 MBot AI 助手 🤖\n有什么可以帮你的吗？'),
-                const SizedBox(height: AppSpace.s2),
-                // 占位用户消息
-                _buildUserBubble(context, '你好，最近怎么样？'),
-                const SizedBox(height: AppSpace.s2),
-                _buildAiBubble(context, '我挺好的！随时准备为你服务。\n你可以问我任何问题，或者让我帮你完成各种任务。'),
-              ],
-            ),
-          ),
+      body: StreamBuilder<List<MessageData>>(
+        stream: messageRepo.watchByConversation(widget.chatId),
+        builder: (context, snapshot) {
+          final messages = snapshot.data ?? [];
 
-          // 输入区域
-          _buildInputArea(context),
-        ],
+          return Column(
+            children: [
+              // 消息列表
+              Expanded(
+                child: _buildMessagesList(messages),
+              ),
+
+              // 输入区域
+              _buildInputArea(context),
+            ],
+          );
+        },
       ),
     );
   }
 
-  Widget _buildAiBubble(BuildContext context, String content) {
+  Widget _buildMessagesList(List<MessageData> messages) {
+    return ListView.builder(
+      controller: _scrollController,
+      padding: const EdgeInsets.symmetric(
+        horizontal: AppSpace.s4,
+        vertical: AppSpace.s3,
+      ),
+      itemCount: messages.length + (_isSending || _pendingAiContent.isNotEmpty ? 1 : 0),
+      itemBuilder: (context, index) {
+        // 显示待发送的 AI 消息
+        if (index >= messages.length) {
+          if (_pendingAiContent.isNotEmpty) {
+            return _buildAiBubble(context, _pendingAiContent, isTyping: true);
+          }
+          return _buildAiBubble(context, '...', isTyping: true);
+        }
+
+        final message = messages[index];
+        final content = message.content.isEmpty && message.sender == MessageSender.ai
+            ? '...'
+            : message.content;
+
+        switch (message.sender) {
+          case MessageSender.user:
+            return _buildUserBubble(context, content);
+          case MessageSender.ai:
+            return _buildAiBubble(context, content);
+          case MessageSender.tool:
+            return _buildToolBubble(context, message);
+        }
+      },
+    );
+  }
+
+  Widget _buildAiBubble(BuildContext context, String content, {bool isTyping = false}) {
     return Align(
       alignment: Alignment.centerLeft,
       child: Container(
@@ -98,6 +216,19 @@ class ChatPage extends StatelessWidget {
                       color: AppColors.textSecondary,
                     ),
                   ),
+                  if (isTyping) ...[
+                    const SizedBox(width: 8),
+                    SizedBox(
+                      width: 12,
+                      height: 12,
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2,
+                        valueColor: const AlwaysStoppedAnimation<Color>(
+                          AppColors.textSecondary,
+                        ),
+                      ),
+                    ),
+                  ],
                 ],
               ),
             ),
@@ -147,6 +278,82 @@ class ChatPage extends StatelessWidget {
     );
   }
 
+  Widget _buildToolBubble(BuildContext context, MessageData message) {
+    return Align(
+      alignment: Alignment.center,
+      child: Container(
+        constraints: BoxConstraints(
+          maxWidth: MediaQuery.of(context).size.width * 0.6,
+        ),
+        padding: const EdgeInsets.symmetric(
+          horizontal: AppSpace.s3,
+          vertical: AppSpace.s2,
+        ),
+        decoration: BoxDecoration(
+          color: AppColors.surfaceHighlight,
+          borderRadius: AppRadius.radiusMD,
+          border: Border.all(color: AppColors.border),
+        ),
+        child: Column(
+          children: [
+            Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Icon(
+                  Icons.build,
+                  size: 14,
+                  color: AppColors.textTertiary,
+                ),
+                const SizedBox(width: 6),
+                Flexible(
+                  child: Text(
+                    message.toolName ?? '工具调用',
+                    style: const TextStyle(
+                      fontSize: 12,
+                      color: AppColors.textSecondary,
+                    ),
+                  ),
+                ),
+                if (message.status == MessageStatus.pending) ...[
+                  const SizedBox(width: 8),
+                  SizedBox(
+                    width: 10,
+                    height: 10,
+                    child: CircularProgressIndicator(
+                      strokeWidth: 1.5,
+                      valueColor: const AlwaysStoppedAnimation<Color>(
+                        AppColors.textTertiary,
+                      ),
+                    ),
+                  ),
+                ],
+              ],
+            ),
+            if (message.toolResult != null) ...[
+              const SizedBox(height: AppSpace.s1),
+              Container(
+                width: double.infinity,
+                padding: const EdgeInsets.all(AppSpace.s2),
+                decoration: BoxDecoration(
+                  color: AppColors.surface,
+                  borderRadius: AppRadius.radiusSM,
+                ),
+                child: Text(
+                  message.toolResult!,
+                  style: const TextStyle(
+                    fontSize: 11,
+                    color: AppColors.textSecondary,
+                    fontFamily: 'monospace',
+                  ),
+                ),
+              ),
+            ],
+          ],
+        ),
+      ),
+    );
+  }
+
   Widget _buildInputArea(BuildContext context) {
     return Container(
       padding: EdgeInsets.only(
@@ -171,10 +378,12 @@ class ChatPage extends StatelessWidget {
             ),
             Expanded(
               child: TextField(
+                controller: _textController,
                 style: const TextStyle(
                   fontSize: 15,
                   color: AppColors.textPrimary,
                 ),
+                enabled: !_isSending,
                 decoration: InputDecoration(
                   hintText: '输入消息...',
                   hintStyle: const TextStyle(color: AppColors.textTertiary),
@@ -189,21 +398,27 @@ class ChatPage extends StatelessWidget {
                     borderSide: BorderSide.none,
                   ),
                 ),
+                onSubmitted: (_) => _sendMessage(),
               ),
             ),
             const SizedBox(width: AppSpace.s1),
-            Container(
-              width: 40,
-              height: 40,
-              decoration: BoxDecoration(
-                gradient: AppColors.primaryGradient,
-                borderRadius: AppRadius.radiusFull,
-                boxShadow: AppShadow.glow,
-              ),
-              child: const Icon(
-                Icons.send_rounded,
-                color: Colors.white,
-                size: 20,
+            GestureDetector(
+              onTap: _isSending ? null : _sendMessage,
+              child: Container(
+                width: 40,
+                height: 40,
+                decoration: BoxDecoration(
+                  gradient: _isSending
+                      ? AppColors.disabledGradient
+                      : AppColors.primaryGradient,
+                  borderRadius: AppRadius.radiusFull,
+                  boxShadow: AppShadow.glow,
+                ),
+                child: Icon(
+                  _isSending ? Icons.hourglass_empty : Icons.send_rounded,
+                  color: Colors.white,
+                  size: 20,
+                ),
               ),
             ),
           ],
