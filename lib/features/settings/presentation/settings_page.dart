@@ -35,7 +35,7 @@ class SettingsPage extends ConsumerWidget {
             trailing: const Icon(
               Icons.chevron_right,
               size: 20,
-              color: AppColors.textTertiary,
+              color: DarkColors.textTertiary,
             ),
             onTap: () {
               Navigator.push(
@@ -117,7 +117,7 @@ class SettingsPage extends ConsumerWidget {
             trailing: const Icon(
               Icons.chevron_right,
               size: 20,
-              color: AppColors.textTertiary,
+              color: DarkColors.textTertiary,
             ),
             onTap: () => _showThemeDialog(context, ref),
           ),
@@ -196,7 +196,7 @@ class SettingsPage extends ConsumerWidget {
               'MBot Mobile v0.1.0',
               style: const TextStyle(
                 fontSize: 12,
-                color: AppColors.textTertiary,
+                color: DarkColors.textTertiary,
               ),
             ),
           ),
@@ -294,9 +294,9 @@ class SettingsPage extends ConsumerWidget {
       margin: const EdgeInsets.symmetric(horizontal: AppSpace.s4),
       padding: const EdgeInsets.all(AppSpace.s4),
       decoration: BoxDecoration(
-        color: AppColors.surface,
+        color: DarkColors.surface,
         borderRadius: AppRadius.radiusLG,
-        border: Border.all(color: AppColors.border),
+        border: Border.all(color: DarkColors.border),
       ),
       child: Row(
         children: [
@@ -321,7 +321,7 @@ class SettingsPage extends ConsumerWidget {
                   style: TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.w600,
-                    color: AppColors.textPrimary,
+                    color: DarkColors.textPrimary,
                   ),
                 ),
                 const SizedBox(height: 2),
@@ -329,7 +329,7 @@ class SettingsPage extends ConsumerWidget {
                   'Pro 会员 · 2026.12 到期',
                   style: TextStyle(
                     fontSize: 13,
-                    color: AppColors.textSecondary,
+                    color: DarkColors.textSecondary,
                   ),
                 ),
               ],
@@ -338,7 +338,7 @@ class SettingsPage extends ConsumerWidget {
           const Icon(
             Icons.chevron_right,
             size: 20,
-            color: AppColors.textTertiary,
+            color: DarkColors.textTertiary,
           ),
         ],
       ),
@@ -356,7 +356,7 @@ class SettingsPage extends ConsumerWidget {
         style: const TextStyle(
           fontSize: 13,
           fontWeight: FontWeight.w500,
-          color: AppColors.textTertiary,
+          color: DarkColors.textTertiary,
         ),
       ),
     );
@@ -373,12 +373,12 @@ class SettingsPage extends ConsumerWidget {
   }) {
     return ListTile(
       contentPadding: const EdgeInsets.symmetric(horizontal: AppSpace.s4),
-      leading: Icon(icon, color: AppColors.textSecondary),
+      leading: Icon(icon, color: DarkColors.textSecondary),
       title: Text(
         title,
         style: TextStyle(
           fontSize: 15,
-          color: titleColor ?? AppColors.textPrimary,
+          color: titleColor ?? DarkColors.textPrimary,
         ),
       ),
       subtitle: subtitle != null
@@ -386,7 +386,7 @@ class SettingsPage extends ConsumerWidget {
               subtitle,
               style: const TextStyle(
                 fontSize: 13,
-                color: AppColors.textTertiary,
+                color: DarkColors.textTertiary,
               ),
             )
           : null,
@@ -395,7 +395,7 @@ class SettingsPage extends ConsumerWidget {
           const Icon(
             Icons.chevron_right,
             size: 20,
-            color: AppColors.textTertiary,
+            color: DarkColors.textTertiary,
           ),
       onTap: onTap,
     );
@@ -411,14 +411,14 @@ class SettingsPage extends ConsumerWidget {
   }) {
     return ListTile(
       contentPadding: const EdgeInsets.symmetric(horizontal: AppSpace.s4),
-      leading: Icon(icon, color: AppColors.textSecondary),
+      leading: Icon(icon, color: DarkColors.textSecondary),
       title: Text(title, style: const TextStyle(fontSize: 15)),
       subtitle: subtitle != null
           ? Text(
               subtitle,
               style: const TextStyle(
                 fontSize: 13,
-                color: AppColors.textTertiary,
+                color: DarkColors.textTertiary,
               ),
             )
           : null,

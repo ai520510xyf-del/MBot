@@ -96,7 +96,7 @@ class _MemoryPageState extends ConsumerState<MemoryPage> {
                     const SizedBox(height: AppSpace.s4),
                     const Text(
                       '加载失败',
-                      style: TextStyle(color: AppColors.textSecondary),
+                      style: TextStyle(color: DarkColors.textSecondary),
                     ),
                   ],
                 ),
@@ -131,11 +131,11 @@ class _MemoryPageState extends ConsumerState<MemoryPage> {
               },
               selectedColor: AppColors.primary.withValues(alpha: 0.2),
               labelStyle: TextStyle(
-                color: isSelected ? AppColors.primary : AppColors.textSecondary,
+                color: isSelected ? AppColors.primary : DarkColors.textSecondary,
                 fontSize: 13,
               ),
               side: BorderSide(
-                color: isSelected ? AppColors.primary : AppColors.border,
+                color: isSelected ? AppColors.primary : DarkColors.border,
               ),
             ),
           );
@@ -151,10 +151,10 @@ class _MemoryPageState extends ConsumerState<MemoryPage> {
         controller: _searchController,
         decoration: InputDecoration(
           hintText: '搜索记忆...',
-          prefixIcon: const Icon(Icons.search, color: AppColors.textTertiary),
+          prefixIcon: const Icon(Icons.search, color: DarkColors.textTertiary),
           suffixIcon: _searchController.text.isNotEmpty
               ? IconButton(
-                  icon: const Icon(Icons.clear, color: AppColors.textTertiary),
+                  icon: const Icon(Icons.clear, color: DarkColors.textTertiary),
                   onPressed: () {
                     _searchController.clear();
                     ref.read(memorySearchQueryProvider.notifier).clear();
@@ -162,7 +162,7 @@ class _MemoryPageState extends ConsumerState<MemoryPage> {
                 )
               : null,
           filled: true,
-          fillColor: AppColors.surface,
+          fillColor: DarkColors.surface,
           border: OutlineInputBorder(
             borderRadius: AppRadius.radiusMD,
             borderSide: BorderSide.none,
@@ -184,9 +184,9 @@ class _MemoryPageState extends ConsumerState<MemoryPage> {
       margin: const EdgeInsets.only(bottom: AppSpace.s3),
       padding: const EdgeInsets.all(AppSpace.s3),
       decoration: BoxDecoration(
-        color: AppColors.surface,
+        color: DarkColors.surface,
         borderRadius: AppRadius.radiusLG,
-        border: Border.all(color: AppColors.border),
+        border: Border.all(color: DarkColors.border),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -199,7 +199,7 @@ class _MemoryPageState extends ConsumerState<MemoryPage> {
                 _formatDate(memory.updatedAt),
                 style: const TextStyle(
                   fontSize: 11,
-                  color: AppColors.textTertiary,
+                  color: DarkColors.textTertiary,
                 ),
               ),
               const SizedBox(width: AppSpace.s2),
@@ -214,7 +214,7 @@ class _MemoryPageState extends ConsumerState<MemoryPage> {
                 icon: const Icon(
                   Icons.more_vert,
                   size: 18,
-                  color: AppColors.textTertiary,
+                  color: DarkColors.textTertiary,
                 ),
                 itemBuilder: (context) => [
                   const PopupMenuItem(
@@ -250,7 +250,7 @@ class _MemoryPageState extends ConsumerState<MemoryPage> {
             memory.content,
             style: const TextStyle(
               fontSize: 14,
-              color: AppColors.textPrimary,
+              color: DarkColors.textPrimary,
               height: 1.5,
             ),
           ),
@@ -260,14 +260,14 @@ class _MemoryPageState extends ConsumerState<MemoryPage> {
               Icon(
                 _getSourceIcon(memory.source),
                 size: 14,
-                color: AppColors.textTertiary,
+                color: DarkColors.textTertiary,
               ),
               const SizedBox(width: 4),
               Text(
                 memory.source.label,
                 style: const TextStyle(
                   fontSize: 11,
-                  color: AppColors.textTertiary,
+                  color: DarkColors.textTertiary,
                 ),
               ),
             ],
@@ -331,8 +331,8 @@ class _MemoryPageState extends ConsumerState<MemoryPage> {
         return Container(
           padding: const EdgeInsets.all(AppSpace.s4),
           decoration: BoxDecoration(
-            color: AppColors.surface,
-            border: Border(top: BorderSide(color: AppColors.border)),
+            color: DarkColors.surface,
+            border: Border(top: BorderSide(color: DarkColors.border)),
           ),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -366,19 +366,19 @@ class _MemoryPageState extends ConsumerState<MemoryPage> {
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
-        Icon(icon, size: 16, color: AppColors.textTertiary),
+        Icon(icon, size: 16, color: DarkColors.textTertiary),
         const SizedBox(height: 4),
         Text(
           value,
           style: const TextStyle(
             fontSize: 16,
             fontWeight: FontWeight.w600,
-            color: AppColors.textPrimary,
+            color: DarkColors.textPrimary,
           ),
         ),
         Text(
           label,
-          style: const TextStyle(fontSize: 11, color: AppColors.textTertiary),
+          style: const TextStyle(fontSize: 11, color: DarkColors.textTertiary),
         ),
       ],
     );
@@ -392,7 +392,7 @@ class _MemoryPageState extends ConsumerState<MemoryPage> {
           const Icon(
             Icons.psychology_outlined,
             size: 64,
-            color: AppColors.textTertiary,
+            color: DarkColors.textTertiary,
           ),
           const SizedBox(height: AppSpace.s4),
           const Text(
@@ -400,13 +400,13 @@ class _MemoryPageState extends ConsumerState<MemoryPage> {
             style: TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.w500,
-              color: AppColors.textSecondary,
+              color: DarkColors.textSecondary,
             ),
           ),
           const SizedBox(height: AppSpace.s2),
           const Text(
             'AI 会通过对话学习你的偏好',
-            style: TextStyle(fontSize: 13, color: AppColors.textTertiary),
+            style: TextStyle(fontSize: 13, color: DarkColors.textTertiary),
           ),
         ],
       ),

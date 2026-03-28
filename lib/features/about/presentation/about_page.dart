@@ -86,13 +86,13 @@ class _AboutPageState extends ConsumerState<AboutPage> {
                 style: TextStyle(
                   fontSize: 24,
                   fontWeight: FontWeight.w700,
-                  color: AppColors.textPrimary,
+                  color: DarkColors.textPrimary,
                 ),
               ),
               const SizedBox(height: AppSpace.s1),
               const Text(
                 '口袋里的 AI Agent',
-                style: TextStyle(fontSize: 14, color: AppColors.textSecondary),
+                style: TextStyle(fontSize: 14, color: DarkColors.textSecondary),
               ),
               const SizedBox(height: AppSpace.s4),
               Container(
@@ -101,15 +101,15 @@ class _AboutPageState extends ConsumerState<AboutPage> {
                   vertical: AppSpace.s1,
                 ),
                 decoration: BoxDecoration(
-                  color: AppColors.surfaceHighlight,
+                  color: DarkColors.surfaceHighlight,
                   borderRadius: AppRadius.radiusMD,
-                  border: Border.all(color: AppColors.border),
+                  border: Border.all(color: DarkColors.border),
                 ),
                 child: Text(
                   'v$_version (+$_buildNumber)',
                   style: const TextStyle(
                     fontSize: 13,
-                    color: AppColors.textTertiary,
+                    color: DarkColors.textTertiary,
                     fontFamily: 'monospace',
                   ),
                 ),
@@ -123,9 +123,9 @@ class _AboutPageState extends ConsumerState<AboutPage> {
           Container(
             padding: const EdgeInsets.all(AppSpace.s4),
             decoration: BoxDecoration(
-              color: AppColors.surfaceElevated,
+              color: DarkColors.surfaceElevated,
               borderRadius: AppRadius.radiusLG,
-              border: Border.all(color: AppColors.border),
+              border: Border.all(color: DarkColors.border),
             ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -143,7 +143,7 @@ class _AboutPageState extends ConsumerState<AboutPage> {
                       style: const TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.w600,
-                        color: AppColors.textPrimary,
+                        color: DarkColors.textPrimary,
                       ),
                     ),
                   ],
@@ -227,9 +227,9 @@ class _AboutPageState extends ConsumerState<AboutPage> {
           Container(
             padding: const EdgeInsets.all(AppSpace.s4),
             decoration: BoxDecoration(
-              color: AppColors.surfaceElevated,
+              color: DarkColors.surfaceElevated,
               borderRadius: AppRadius.radiusLG,
-              border: Border.all(color: AppColors.border),
+              border: Border.all(color: DarkColors.border),
             ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -239,7 +239,7 @@ class _AboutPageState extends ConsumerState<AboutPage> {
                   style: TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.w600,
-                    color: AppColors.textPrimary,
+                    color: DarkColors.textPrimary,
                   ),
                 ),
                 const SizedBox(height: AppSpace.s2),
@@ -247,7 +247,7 @@ class _AboutPageState extends ConsumerState<AboutPage> {
                   '由 AI 驱动的下一代智能助手',
                   style: TextStyle(
                     fontSize: 14,
-                    color: AppColors.textSecondary,
+                    color: DarkColors.textSecondary,
                   ),
                 ),
                 const SizedBox(height: AppSpace.s3),
@@ -256,7 +256,7 @@ class _AboutPageState extends ConsumerState<AboutPage> {
                   style: TextStyle(
                     fontSize: 13,
                     fontWeight: FontWeight.w500,
-                    color: AppColors.textPrimary,
+                    color: DarkColors.textPrimary,
                   ),
                 ),
                 const SizedBox(height: AppSpace.s1),
@@ -264,7 +264,7 @@ class _AboutPageState extends ConsumerState<AboutPage> {
                   '• OpenClaw Gateway\n• Flutter 3.x\n• Riverpod 2.x\n• Drift (SQLite)',
                   style: const TextStyle(
                     fontSize: 12,
-                    color: AppColors.textTertiary,
+                    color: DarkColors.textTertiary,
                     height: 1.5,
                   ),
                 ),
@@ -298,7 +298,7 @@ class _AboutPageState extends ConsumerState<AboutPage> {
                   '© 2026 MBot Team',
                   style: const TextStyle(
                     fontSize: 13,
-                    color: AppColors.textSecondary,
+                    color: DarkColors.textSecondary,
                   ),
                 ),
                 const SizedBox(height: AppSpace.s1),
@@ -306,7 +306,7 @@ class _AboutPageState extends ConsumerState<AboutPage> {
                   'Made with ❤️ for AI',
                   style: const TextStyle(
                     fontSize: 12,
-                    color: AppColors.textTertiary,
+                    color: DarkColors.textTertiary,
                   ),
                 ),
               ],
@@ -333,14 +333,14 @@ class _AboutPageState extends ConsumerState<AboutPage> {
                   style: const TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.w500,
-                    color: AppColors.textPrimary,
+                    color: DarkColors.textPrimary,
                   ),
                 ),
                 Text(
                   description,
                   style: const TextStyle(
                     fontSize: 12,
-                    color: AppColors.textTertiary,
+                    color: DarkColors.textTertiary,
                   ),
                 ),
               ],
@@ -359,7 +359,7 @@ class _AboutPageState extends ConsumerState<AboutPage> {
         style: const TextStyle(
           fontSize: 13,
           fontWeight: FontWeight.w500,
-          color: AppColors.textTertiary,
+          color: DarkColors.textTertiary,
         ),
       ),
     );
@@ -373,21 +373,21 @@ class _AboutPageState extends ConsumerState<AboutPage> {
   }) {
     return ListTile(
       contentPadding: EdgeInsets.zero,
-      leading: Icon(icon, color: AppColors.textSecondary),
+      leading: Icon(icon, color: DarkColors.textSecondary),
       title: Text(
         title,
-        style: const TextStyle(fontSize: 15, color: AppColors.textPrimary),
+        style: const TextStyle(fontSize: 15, color: DarkColors.textPrimary),
       ),
       subtitle: Text(
         subtitle,
-        style: const TextStyle(fontSize: 12, color: AppColors.textTertiary),
+        style: const TextStyle(fontSize: 12, color: DarkColors.textTertiary),
         maxLines: 1,
         overflow: TextOverflow.ellipsis,
       ),
       trailing: const Icon(
         Icons.open_in_new,
         size: 18,
-        color: AppColors.textTertiary,
+        color: DarkColors.textTertiary,
       ),
       onTap: onTap,
     );

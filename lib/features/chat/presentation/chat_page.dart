@@ -2,6 +2,9 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/providers/providers.dart';
+import '../../../../core/services/chat_service.dart';
+import '../../../../core/repositories/conversation_repository.dart';
+import '../../../../core/repositories/message_repository.dart';
 import '../../../../core/models/message.dart';
 import '../../../../theme/theme.dart';
 
@@ -183,7 +186,7 @@ class _ChatPageState extends ConsumerState<ChatPage> {
           vertical: AppSpace.s3,
         ),
         decoration: BoxDecoration(
-          gradient: AppColors.aiBubbleGradient,
+          gradient: DarkColors.aiBubbleGradient,
           borderRadius: const BorderRadius.only(
             topLeft: Radius.circular(18),
             topRight: Radius.circular(18),
@@ -208,7 +211,7 @@ class _ChatPageState extends ConsumerState<ChatPage> {
                     child: const Icon(
                       Icons.auto_awesome,
                       size: 12,
-                      color: AppColors.surface,
+                      color: DarkColors.surface,
                     ),
                   ),
                   const SizedBox(width: 6),
@@ -217,7 +220,7 @@ class _ChatPageState extends ConsumerState<ChatPage> {
                     style: TextStyle(
                       fontSize: 12,
                       fontWeight: FontWeight.w500,
-                      color: AppColors.textSecondary,
+                      color: DarkColors.textSecondary,
                     ),
                   ),
                   if (isTyping) ...[
@@ -228,7 +231,7 @@ class _ChatPageState extends ConsumerState<ChatPage> {
                       child: CircularProgressIndicator(
                         strokeWidth: 2,
                         valueColor: const AlwaysStoppedAnimation<Color>(
-                          AppColors.textSecondary,
+                          DarkColors.textSecondary,
                         ),
                       ),
                     ),
@@ -240,7 +243,7 @@ class _ChatPageState extends ConsumerState<ChatPage> {
               content,
               style: const TextStyle(
                 fontSize: 15,
-                color: AppColors.textPrimary,
+                color: DarkColors.textPrimary,
                 height: 1.4,
               ),
             ),
@@ -274,7 +277,7 @@ class _ChatPageState extends ConsumerState<ChatPage> {
           content,
           style: const TextStyle(
             fontSize: 15,
-            color: AppColors.surface,
+            color: DarkColors.surface,
             height: 1.4,
           ),
         ),
@@ -294,9 +297,9 @@ class _ChatPageState extends ConsumerState<ChatPage> {
           vertical: AppSpace.s2,
         ),
         decoration: BoxDecoration(
-          color: AppColors.surfaceHighlight,
+          color: DarkColors.surfaceHighlight,
           borderRadius: AppRadius.radiusMD,
-          border: Border.all(color: AppColors.border),
+          border: Border.all(color: DarkColors.border),
         ),
         child: Column(
           children: [
@@ -306,7 +309,7 @@ class _ChatPageState extends ConsumerState<ChatPage> {
                 const Icon(
                   Icons.build,
                   size: 14,
-                  color: AppColors.textTertiary,
+                  color: DarkColors.textTertiary,
                 ),
                 const SizedBox(width: 6),
                 Flexible(
@@ -314,7 +317,7 @@ class _ChatPageState extends ConsumerState<ChatPage> {
                     message.toolName ?? '工具调用',
                     style: const TextStyle(
                       fontSize: 12,
-                      color: AppColors.textSecondary,
+                      color: DarkColors.textSecondary,
                     ),
                   ),
                 ),
@@ -326,7 +329,7 @@ class _ChatPageState extends ConsumerState<ChatPage> {
                     child: CircularProgressIndicator(
                       strokeWidth: 1.5,
                       valueColor: const AlwaysStoppedAnimation<Color>(
-                        AppColors.textTertiary,
+                        DarkColors.textTertiary,
                       ),
                     ),
                   ),
@@ -339,14 +342,14 @@ class _ChatPageState extends ConsumerState<ChatPage> {
                 width: double.infinity,
                 padding: const EdgeInsets.all(AppSpace.s2),
                 decoration: BoxDecoration(
-                  color: AppColors.surface,
+                  color: DarkColors.surface,
                   borderRadius: AppRadius.radiusSM,
                 ),
                 child: Text(
                   message.toolResult!,
                   style: const TextStyle(
                     fontSize: 11,
-                    color: AppColors.textSecondary,
+                    color: DarkColors.textSecondary,
                     fontFamily: 'monospace',
                   ),
                 ),
@@ -367,8 +370,8 @@ class _ChatPageState extends ConsumerState<ChatPage> {
         bottom: MediaQuery.of(context).padding.bottom + AppSpace.s2,
       ),
       decoration: const BoxDecoration(
-        color: AppColors.surface,
-        border: Border(top: BorderSide(color: AppColors.border, width: 1)),
+        color: DarkColors.surface,
+        border: Border(top: BorderSide(color: DarkColors.border, width: 1)),
       ),
       child: SafeArea(
         top: false,
@@ -377,7 +380,7 @@ class _ChatPageState extends ConsumerState<ChatPage> {
             IconButton(
               icon: const Icon(
                 Icons.attach_file,
-                color: AppColors.textTertiary,
+                color: DarkColors.textTertiary,
               ),
               onPressed: () {},
             ),
@@ -386,14 +389,14 @@ class _ChatPageState extends ConsumerState<ChatPage> {
                 controller: _textController,
                 style: const TextStyle(
                   fontSize: 15,
-                  color: AppColors.textPrimary,
+                  color: DarkColors.textPrimary,
                 ),
                 enabled: !_isSending,
                 decoration: InputDecoration(
                   hintText: '输入消息...',
-                  hintStyle: const TextStyle(color: AppColors.textTertiary),
+                  hintStyle: const TextStyle(color: DarkColors.textTertiary),
                   filled: true,
-                  fillColor: AppColors.surfaceHighlight,
+                  fillColor: DarkColors.surfaceHighlight,
                   contentPadding: const EdgeInsets.symmetric(
                     horizontal: AppSpace.s4,
                     vertical: AppSpace.s3,
@@ -414,14 +417,14 @@ class _ChatPageState extends ConsumerState<ChatPage> {
                 height: 40,
                 decoration: BoxDecoration(
                   gradient: _isSending
-                      ? AppColors.disabledGradient
+                      ? DarkColors.disabledGradient
                       : AppColors.primaryGradient,
                   borderRadius: AppRadius.radiusFull,
                   boxShadow: AppShadow.glow,
                 ),
                 child: Icon(
                   _isSending ? Icons.hourglass_empty : Icons.send_rounded,
-                  color: AppColors.surface,
+                  color: DarkColors.surface,
                   size: 20,
                 ),
               ),

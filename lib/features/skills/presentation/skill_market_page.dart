@@ -92,7 +92,7 @@ class _SkillMarketPageState extends ConsumerState<SkillMarketPage>
       tabAlignment: TabAlignment.start,
       padding: const EdgeInsets.symmetric(horizontal: AppSpace.s4),
       labelColor: AppColors.primary,
-      unselectedLabelColor: AppColors.textTertiary,
+      unselectedLabelColor: DarkColors.textTertiary,
       indicatorColor: AppColors.primary,
       indicatorSize: TabBarIndicatorSize.label,
       labelStyle: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
@@ -126,7 +126,7 @@ class _SkillMarketPageState extends ConsumerState<SkillMarketPage>
               '暂无${categoryDisplayName(category)}技能',
               style: const TextStyle(
                 fontSize: 14,
-                color: AppColors.textSecondary,
+                color: DarkColors.textSecondary,
               ),
             ),
           );
@@ -161,7 +161,7 @@ class _SkillMarketPageState extends ConsumerState<SkillMarketPage>
             const SizedBox(height: AppSpace.s3),
             Text(
               '加载失败: $error',
-              style: const TextStyle(color: AppColors.textSecondary),
+              style: const TextStyle(color: DarkColors.textSecondary),
               textAlign: TextAlign.center,
             ),
           ],
@@ -184,8 +184,8 @@ class _SkillMarketPageState extends ConsumerState<SkillMarketPage>
             vertical: AppSpace.s2,
           ),
           decoration: BoxDecoration(
-            color: AppColors.surface,
-            border: Border(top: BorderSide(color: AppColors.border, width: 1)),
+            color: DarkColors.surface,
+            border: Border(top: BorderSide(color: DarkColors.border, width: 1)),
           ),
           child: Row(
             children: [
@@ -194,7 +194,7 @@ class _SkillMarketPageState extends ConsumerState<SkillMarketPage>
                 style: const TextStyle(
                   fontSize: 13,
                   fontWeight: FontWeight.w500,
-                  color: AppColors.textSecondary,
+                  color: DarkColors.textSecondary,
                 ),
               ),
               const Spacer(),
@@ -247,9 +247,9 @@ class _SkillCard extends ConsumerWidget {
       onTap: onTap,
       child: Container(
         decoration: BoxDecoration(
-          gradient: AppColors.cardGradient,
+          gradient: DarkColors.cardGradient,
           borderRadius: AppRadius.radiusLG,
-          border: Border.all(color: AppColors.border, width: 1),
+          border: Border.all(color: DarkColors.border, width: 1),
         ),
         child: Padding(
           padding: const EdgeInsets.all(AppSpace.s4),
@@ -263,7 +263,7 @@ class _SkillCard extends ConsumerWidget {
                     width: 48,
                     height: 48,
                     decoration: BoxDecoration(
-                      color: AppColors.surfaceHighlight,
+                      color: DarkColors.surfaceHighlight,
                       borderRadius: AppRadius.radiusMD,
                     ),
                     child: Center(
@@ -289,7 +289,7 @@ class _SkillCard extends ConsumerWidget {
                 style: const TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.w600,
-                  color: AppColors.textPrimary,
+                  color: DarkColors.textPrimary,
                 ),
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
@@ -300,7 +300,7 @@ class _SkillCard extends ConsumerWidget {
                 skill.description,
                 style: const TextStyle(
                   fontSize: 13,
-                  color: AppColors.textSecondary,
+                  color: DarkColors.textSecondary,
                 ),
                 maxLines: 2,
                 overflow: TextOverflow.ellipsis,
@@ -316,7 +316,7 @@ class _SkillCard extends ConsumerWidget {
                     style: const TextStyle(
                       fontSize: 12,
                       fontWeight: FontWeight.w500,
-                      color: AppColors.textPrimary,
+                      color: DarkColors.textPrimary,
                     ),
                   ),
                   const SizedBox(width: AppSpace.s2),
@@ -324,7 +324,7 @@ class _SkillCard extends ConsumerWidget {
                     skill.formattedInstallCount,
                     style: const TextStyle(
                       fontSize: 12,
-                      color: AppColors.textSecondary,
+                      color: DarkColors.textSecondary,
                     ),
                   ),
                 ],
@@ -360,7 +360,7 @@ class _SkillDetailSheetState extends ConsumerState<_SkillDetailSheet> {
     return Container(
       height: MediaQuery.of(context).size.height * 0.6,
       decoration: BoxDecoration(
-        color: AppColors.background,
+        color: DarkColors.background,
         borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
       ),
       child: Column(
@@ -371,7 +371,7 @@ class _SkillDetailSheetState extends ConsumerState<_SkillDetailSheet> {
             width: 40,
             height: 4,
             decoration: BoxDecoration(
-              color: AppColors.border,
+              color: DarkColors.border,
               borderRadius: BorderRadius.circular(2),
             ),
           ),
@@ -387,7 +387,7 @@ class _SkillDetailSheetState extends ConsumerState<_SkillDetailSheet> {
                       width: 64,
                       height: 64,
                       decoration: BoxDecoration(
-                        color: AppColors.surfaceHighlight,
+                        color: DarkColors.surfaceHighlight,
                         borderRadius: AppRadius.radiusLG,
                       ),
                       child: Center(
@@ -407,7 +407,7 @@ class _SkillDetailSheetState extends ConsumerState<_SkillDetailSheet> {
                             style: const TextStyle(
                               fontSize: 20,
                               fontWeight: FontWeight.w700,
-                              color: AppColors.textPrimary,
+                              color: DarkColors.textPrimary,
                             ),
                           ),
                           const SizedBox(height: 4),
@@ -415,7 +415,7 @@ class _SkillDetailSheetState extends ConsumerState<_SkillDetailSheet> {
                             'v${widget.skill.version} · ${widget.skill.author}',
                             style: const TextStyle(
                               fontSize: 13,
-                              color: AppColors.textSecondary,
+                              color: DarkColors.textSecondary,
                             ),
                           ),
                         ],
@@ -429,7 +429,7 @@ class _SkillDetailSheetState extends ConsumerState<_SkillDetailSheet> {
                   widget.skill.description,
                   style: const TextStyle(
                     fontSize: 15,
-                    color: AppColors.textPrimary,
+                    color: DarkColors.textPrimary,
                     height: 1.5,
                   ),
                 ),
@@ -461,7 +461,7 @@ class _SkillDetailSheetState extends ConsumerState<_SkillDetailSheet> {
                     style: const TextStyle(
                       fontSize: 13,
                       fontWeight: FontWeight.w600,
-                      color: AppColors.textSecondary,
+                      color: DarkColors.textSecondary,
                     ),
                   ),
                   const SizedBox(height: AppSpace.s2),
@@ -475,15 +475,15 @@ class _SkillDetailSheetState extends ConsumerState<_SkillDetailSheet> {
                           vertical: AppSpace.s1,
                         ),
                         decoration: BoxDecoration(
-                          color: AppColors.surfaceHighlight,
+                          color: DarkColors.surfaceHighlight,
                           borderRadius: AppRadius.radiusSM,
-                          border: Border.all(color: AppColors.border, width: 1),
+                          border: Border.all(color: DarkColors.border, width: 1),
                         ),
                         child: Text(
                           tag,
                           style: const TextStyle(
                             fontSize: 12,
-                            color: AppColors.textSecondary,
+                            color: DarkColors.textSecondary,
                           ),
                         ),
                       );
@@ -525,11 +525,11 @@ class _SkillDetailSheetState extends ConsumerState<_SkillDetailSheet> {
                       },
                 style: FilledButton.styleFrom(
                   backgroundColor: isInstalled
-                      ? AppColors.surface
+                      ? DarkColors.surface
                       : AppColors.primary,
                   foregroundColor: isInstalled
-                      ? AppColors.textPrimary
-                      : AppColors.surface,
+                      ? DarkColors.textPrimary
+                      : DarkColors.surface,
                 ),
                 child: _isInstalling
                     ? const SizedBox(
@@ -564,11 +564,11 @@ class _StatItem extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(
       children: [
-        Icon(icon, size: 16, color: AppColors.textSecondary),
+        Icon(icon, size: 16, color: DarkColors.textSecondary),
         const SizedBox(width: 4),
         Text(
           label,
-          style: const TextStyle(fontSize: 13, color: AppColors.textSecondary),
+          style: const TextStyle(fontSize: 13, color: DarkColors.textSecondary),
         ),
       ],
     );
@@ -586,7 +586,7 @@ class _InstalledSkillsSheet extends StatelessWidget {
     return Container(
       height: MediaQuery.of(context).size.height * 0.5,
       decoration: BoxDecoration(
-        color: AppColors.background,
+        color: DarkColors.background,
         borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
       ),
       child: Column(
@@ -596,7 +596,7 @@ class _InstalledSkillsSheet extends StatelessWidget {
             width: 40,
             height: 4,
             decoration: BoxDecoration(
-              color: AppColors.border,
+              color: DarkColors.border,
               borderRadius: BorderRadius.circular(2),
             ),
           ),
@@ -609,7 +609,7 @@ class _InstalledSkillsSheet extends StatelessWidget {
                   style: const TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.w600,
-                    color: AppColors.textPrimary,
+                    color: DarkColors.textPrimary,
                   ),
                 ),
                 const Spacer(),
@@ -630,9 +630,9 @@ class _InstalledSkillsSheet extends StatelessWidget {
                 return Container(
                   padding: const EdgeInsets.all(AppSpace.s4),
                   decoration: BoxDecoration(
-                    color: AppColors.surface,
+                    color: DarkColors.surface,
                     borderRadius: AppRadius.radiusMD,
-                    border: Border.all(color: AppColors.border, width: 1),
+                    border: Border.all(color: DarkColors.border, width: 1),
                   ),
                   child: Row(
                     children: [
@@ -647,14 +647,14 @@ class _InstalledSkillsSheet extends StatelessWidget {
                               style: const TextStyle(
                                 fontSize: 15,
                                 fontWeight: FontWeight.w500,
-                                color: AppColors.textPrimary,
+                                color: DarkColors.textPrimary,
                               ),
                             ),
                             Text(
                               'v${skill.version}',
                               style: const TextStyle(
                                 fontSize: 12,
-                                color: AppColors.textSecondary,
+                                color: DarkColors.textSecondary,
                               ),
                             ),
                           ],
@@ -725,7 +725,7 @@ class _SkillSearchDelegate extends SearchDelegate<String> {
           return Center(
             child: Text(
               '未找到 "$query" 相关技能',
-              style: const TextStyle(color: AppColors.textSecondary),
+              style: const TextStyle(color: DarkColors.textSecondary),
             ),
           );
         }

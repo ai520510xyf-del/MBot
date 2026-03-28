@@ -108,9 +108,9 @@ class _ModelConfigPageState extends ConsumerState<ModelConfigPage> {
           Container(
             padding: const EdgeInsets.all(AppSpace.s4),
             decoration: BoxDecoration(
-              color: AppColors.surfaceElevated,
+              color: DarkColors.surfaceElevated,
               borderRadius: AppRadius.radiusLG,
-              border: Border.all(color: AppColors.border),
+              border: Border.all(color: DarkColors.border),
             ),
             child: Row(
               children: [
@@ -132,7 +132,7 @@ class _ModelConfigPageState extends ConsumerState<ModelConfigPage> {
                     '配置您的 AI 模型 API Key 以使用对话功能',
                     style: TextStyle(
                       fontSize: 13,
-                      color: AppColors.textSecondary,
+                      color: DarkColors.textSecondary,
                     ),
                   ),
                 ),
@@ -219,7 +219,7 @@ class _ModelConfigPageState extends ConsumerState<ModelConfigPage> {
         style: const TextStyle(
           fontSize: 15,
           fontWeight: FontWeight.w600,
-          color: AppColors.textPrimary,
+          color: DarkColors.textPrimary,
         ),
       ),
     );
@@ -229,9 +229,9 @@ class _ModelConfigPageState extends ConsumerState<ModelConfigPage> {
     return Container(
       padding: const EdgeInsets.all(AppSpace.s3),
       decoration: BoxDecoration(
-        color: AppColors.surface,
+        color: DarkColors.surface,
         borderRadius: AppRadius.radiusMD,
-        border: Border.all(color: AppColors.border),
+        border: Border.all(color: DarkColors.border),
       ),
       child: Column(
         children: [
@@ -260,7 +260,7 @@ class _ModelConfigPageState extends ConsumerState<ModelConfigPage> {
               : Colors.transparent,
           borderRadius: AppRadius.radiusSM,
           border: Border.all(
-            color: isSelected ? AppColors.primary : AppColors.border,
+            color: isSelected ? AppColors.primary : DarkColors.border,
             width: isSelected ? 2 : 1,
           ),
         ),
@@ -279,7 +279,7 @@ class _ModelConfigPageState extends ConsumerState<ModelConfigPage> {
                       fontWeight: FontWeight.w600,
                       color: isSelected
                           ? AppColors.primary
-                          : AppColors.textPrimary,
+                          : DarkColors.textPrimary,
                     ),
                   ),
                   const SizedBox(height: 2),
@@ -287,7 +287,7 @@ class _ModelConfigPageState extends ConsumerState<ModelConfigPage> {
                     info.description,
                     style: const TextStyle(
                       fontSize: 12,
-                      color: AppColors.textTertiary,
+                      color: DarkColors.textTertiary,
                     ),
                   ),
                 ],
@@ -307,16 +307,16 @@ class _ModelConfigPageState extends ConsumerState<ModelConfigPage> {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: AppSpace.s3),
       decoration: BoxDecoration(
-        color: AppColors.surface,
+        color: DarkColors.surface,
         borderRadius: AppRadius.radiusMD,
-        border: Border.all(color: AppColors.border),
+        border: Border.all(color: DarkColors.border),
       ),
       child: DropdownButtonHideUnderline(
         child: DropdownButton<String>(
           value: currentModel,
           isExpanded: true,
-          dropdownColor: AppColors.surfaceElevated,
-          style: const TextStyle(fontSize: 15, color: AppColors.textPrimary),
+          dropdownColor: DarkColors.surfaceElevated,
+          style: const TextStyle(fontSize: 15, color: DarkColors.textPrimary),
           items: models.map((model) {
             return DropdownMenuItem<String>(
               value: model['value'],
@@ -336,7 +336,7 @@ class _ModelConfigPageState extends ConsumerState<ModelConfigPage> {
                             model['description']!,
                             style: const TextStyle(
                               fontSize: 12,
-                              color: AppColors.textTertiary,
+                              color: DarkColors.textTertiary,
                             ),
                           ),
                       ],
@@ -359,9 +359,9 @@ class _ModelConfigPageState extends ConsumerState<ModelConfigPage> {
   Widget _buildApiKeyInput() {
     return Container(
       decoration: BoxDecoration(
-        color: AppColors.surface,
+        color: DarkColors.surface,
         borderRadius: AppRadius.radiusMD,
-        border: Border.all(color: AppColors.border),
+        border: Border.all(color: DarkColors.border),
       ),
       child: TextField(
         controller: _apiKeyController,
@@ -369,7 +369,7 @@ class _ModelConfigPageState extends ConsumerState<ModelConfigPage> {
         maxLines: _isObscured ? 1 : 3,
         decoration: InputDecoration(
           hintText: '请输入 API Key',
-          hintStyle: const TextStyle(color: AppColors.textTertiary),
+          hintStyle: const TextStyle(color: DarkColors.textTertiary),
           border: InputBorder.none,
           contentPadding: const EdgeInsets.all(AppSpace.s3),
           suffixIcon: IconButton(
@@ -377,7 +377,7 @@ class _ModelConfigPageState extends ConsumerState<ModelConfigPage> {
               _isObscured
                   ? Icons.visibility_outlined
                   : Icons.visibility_off_outlined,
-              color: AppColors.textSecondary,
+              color: DarkColors.textSecondary,
             ),
             onPressed: () {
               setState(() {

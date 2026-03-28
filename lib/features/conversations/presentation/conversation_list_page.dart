@@ -79,7 +79,7 @@ class _ConversationListPageState extends ConsumerState<ConversationListPage> {
           separatorBuilder: (context, index) => Divider(
             height: 1,
             indent: AppSpace.s4 + 48 + AppSpace.s3,
-            color: AppColors.border,
+            color: DarkColors.border,
           ),
           itemBuilder: (context, index) {
             final conversation = _mockConversations[index];
@@ -107,7 +107,7 @@ class _ConversationListPageState extends ConsumerState<ConversationListPage> {
           width: 48,
           height: 48,
           decoration: BoxDecoration(
-            color: AppColors.surfaceHighlight,
+            color: DarkColors.surfaceHighlight,
             borderRadius: AppRadius.radiusMD,
           ),
           child: Center(
@@ -122,7 +122,7 @@ class _ConversationListPageState extends ConsumerState<ConversationListPage> {
           style: const TextStyle(
             fontSize: 16,
             fontWeight: FontWeight.w500,
-            color: AppColors.textPrimary,
+            color: DarkColors.textPrimary,
           ),
         ),
         subtitle: Column(
@@ -133,7 +133,7 @@ class _ConversationListPageState extends ConsumerState<ConversationListPage> {
               conversation['lastMessage'],
               style: const TextStyle(
                 fontSize: 14,
-                color: AppColors.textSecondary,
+                color: DarkColors.textSecondary,
               ),
               maxLines: 2,
               overflow: TextOverflow.ellipsis,
@@ -148,7 +148,7 @@ class _ConversationListPageState extends ConsumerState<ConversationListPage> {
               conversation['time'],
               style: const TextStyle(
                 fontSize: 12,
-                color: AppColors.textTertiary,
+                color: DarkColors.textTertiary,
               ),
             ),
             const SizedBox(height: 4),
@@ -188,9 +188,9 @@ class _ConversationListPageState extends ConsumerState<ConversationListPage> {
       child: const Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(Icons.delete_outline, color: AppColors.surface, size: 28),
+          Icon(Icons.delete_outline, color: DarkColors.surface, size: 28),
           SizedBox(height: 4),
-          Text('删除', style: TextStyle(color: AppColors.surface, fontSize: 12)),
+          Text('删除', style: TextStyle(color: DarkColors.surface, fontSize: 12)),
         ],
       ),
     );
