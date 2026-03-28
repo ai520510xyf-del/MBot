@@ -89,7 +89,14 @@ class ChatService {
     await _conversationRepo.updateLastMessage(conversationId, content);
 
     // 发送到 Gateway
-    _gateway.sendChatMessage(content, conversationId: conversationId);
+    try {
+      _gateway.sendChatMessage(content, conversationId: conversationId);
+    } catch (e) {
+      // 标记用户消息为发送失败
+      await _messageRepo.updateStatus(userMessage.id, MessageStatus.failed);
+      _responseController.addError('Failed to send message: $e');
+      rethrow;
+    }
 
     // 创建待处理的 AI 消息占位
     _pendingAiMessageId = await _createPendingAiMessage(conversationId);
@@ -109,25 +116,33 @@ class ChatService {
   }
 
   /// 开始监听 Gateway 消息
-  void startListening() {
-    if (_gatewaySubscription != null) return;
+  /// Returns true if listening started successfully, false if already listening or failed
+  bool startListening() {
+    if (_gatewaySubscription != null) return false;
 
-    // 监听 Gateway 消息
-    _gatewaySubscription = _gateway.messageStream.listen(
-      _handleGatewayMessage,
-      onError: (error) {
-        _responseController.addError(error);
-      },
-    );
+    try {
+      // 监听 Gateway 消息
+      _gatewaySubscription = _gateway.messageStream.listen(
+        _handleGatewayMessage,
+        onError: (error) {
+          _responseController.addError(error);
+        },
+      );
 
-    // 监听连接状态变化
-    _statusSubscription = _gateway.statusStream.listen((state) {
-      if (state == GatewayConnectionState.disconnected ||
-          state == GatewayConnectionState.failed) {
-        // 连接断开，标记待发送消息为失败
-        _handleConnectionLost();
-      }
-    });
+      // 监听连接状态变化
+      _statusSubscription = _gateway.statusStream.listen((state) {
+        if (state == GatewayConnectionState.disconnected ||
+            state == GatewayConnectionState.failed) {
+          // 连接断开，标记待发送消息为失败
+          _handleConnectionLost();
+        }
+      });
+
+      return true;
+    } catch (e) {
+      // Failed to start listening
+      return false;
+    }
   }
 
   /// 停止监听

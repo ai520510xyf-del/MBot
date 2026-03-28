@@ -136,10 +136,13 @@ class DashboardPage extends ConsumerWidget {
                   );
                 }
 
-                return Column(
-                  children: agents
-                      .map((agent) => _AgentCard(agent: agent))
-                      .toList(),
+                return ListView.builder(
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  itemCount: agents.length,
+                  itemBuilder: (context, index) {
+                    return _AgentCard(agent: agents[index]);
+                  },
                 );
               },
               loading: () => const Center(
@@ -160,10 +163,13 @@ class DashboardPage extends ConsumerWidget {
             const SizedBox(height: AppSpace.s3),
             channelsAsync.when(
               data: (channels) {
-                return Column(
-                  children: channels
-                      .map((channel) => _ChannelCard(channel: channel))
-                      .toList(),
+                return ListView.builder(
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  itemCount: channels.length,
+                  itemBuilder: (context, index) {
+                    return _ChannelCard(channel: channels[index]);
+                  },
                 );
               },
               loading: () => const _ShimmerColumn(3),
@@ -186,8 +192,13 @@ class DashboardPage extends ConsumerWidget {
                   );
                 }
 
-                return Column(
-                  children: tasks.map((task) => _TaskItem(task: task)).toList(),
+                return ListView.builder(
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  itemCount: tasks.length,
+                  itemBuilder: (context, index) {
+                    return _TaskItem(task: tasks[index]);
+                  },
                 );
               },
               loading: () => const _ShimmerColumn(3),

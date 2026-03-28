@@ -31,7 +31,11 @@ class _ChatPageState extends ConsumerState<ChatPage> {
     // 启动聊天服务监听
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final chatService = ref.read(chatServiceProvider);
-      chatService.startListening();
+      final started = chatService.startListening();
+      if (!started) {
+        // Failed to start listening - log error or show notification
+        debugPrint('Failed to start chat service listening');
+      }
       _subscribeToResponses(chatService);
     });
   }
