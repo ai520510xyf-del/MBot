@@ -236,7 +236,7 @@ class _ModelConfigPageState extends ConsumerState<ModelConfigPage> {
       child: Column(
         children: [
           for (var provider in ModelProvider.values)
-            _buildProviderItem(provider, provider == currentProvider),
+            _buildProviderItem(provider, provider.key == currentProvider),
         ],
       ),
     );

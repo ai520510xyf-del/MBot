@@ -13,7 +13,6 @@ class SettingsPage extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final themeMode = ref.watch(themeModeProvider);
-    final isDark = themeMode == AppThemeMode.dark;
 
     return Scaffold(
       appBar: AppBar(title: const Text('设置')),
