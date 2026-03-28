@@ -1,26 +1,145 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:go_router/go_router.dart';
 import '../../../../core/providers/theme_provider.dart';
+import '../../../../core/providers/gateway_provider.dart';
+import '../../../../core/services/gateway_service.dart';
 import '../../../../theme/theme.dart';
 import 'memory_page.dart';
 import '../../about/presentation/about_page.dart';
 import 'model_config/model_config_page.dart';
 
+/// Gateway 连接配置 Provider
+final gatewayUrlProvider = StateProvider<String>((ref) => '');
+
+/// Gateway 连接状态 Provider
+final gatewayConnectedProvider = StateProvider<bool>((ref) => false);
+
 /// 设置页
-class SettingsPage extends ConsumerWidget {
+class SettingsPage extends ConsumerStatefulWidget {
   const SettingsPage({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<SettingsPage> createState() => _SettingsPageState();
+}
+
+class _SettingsPageState extends ConsumerState<SettingsPage> {
+  final _gatewayUrlController = TextEditingController();
+  bool _isConnecting = false;
+  String? _gatewayStatus;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadGatewayConfig();
+  }
+
+  @override
+  void dispose() {
+    _gatewayUrlController.dispose();
+    super.dispose();
+  }
+
+  Future<void> _loadGatewayConfig() async {
+    final prefs = await SharedPreferences.getInstance();
+    final url = prefs.getString('gateway_url') ?? '';
+    if (mounted) {
+      setState(() {
+        _gatewayUrlController.text = url;
+        ref.read(gatewayUrlProvider.notifier).state = url;
+      });
+      // 如果有保存的 URL，自动连接
+      if (url.isNotEmpty) {
+        _connectGateway(url);
+      }
+    }
+  }
+
+  Future<void> _connectGateway(String url) async {
+    setState(() {
+      _isConnecting = true;
+      _gatewayStatus = '正在连接...';
+    });
+
+    try {
+      final gateway = ref.read(gatewayServiceProvider);
+
+      // 先断开旧连接
+      await gateway.disconnect();
+
+      // 监听状态变化
+      gateway.statusStream.listen((state) {
+        if (mounted) {
+          switch (state) {
+            case GatewayConnectionState.connected:
+              setState(() {
+                _isConnecting = false;
+                _gatewayStatus = '已连接 ✓';
+                ref.read(gatewayConnectedProvider.notifier).state = true;
+              });
+              break;
+            case GatewayConnectionState.failed:
+              setState(() {
+                _isConnecting = false;
+                _gatewayStatus = '连接失败 ✗';
+                ref.read(gatewayConnectedProvider.notifier).state = false;
+              });
+              break;
+            case GatewayConnectionState.disconnected:
+              setState(() {
+                _isConnecting = false;
+                _gatewayStatus = '已断开';
+                ref.read(gatewayConnectedProvider.notifier).state = false;
+              });
+              break;
+            default:
+              break;
+          }
+        }
+      });
+
+      await gateway.connect(url);
+
+      // 保存 URL
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setString('gateway_url', url);
+      ref.read(gatewayUrlProvider.notifier).state = url;
+    } catch (e) {
+      if (mounted) {
+        setState(() {
+          _isConnecting = false;
+          _gatewayStatus = '连接失败: $e';
+        });
+      }
+    }
+  }
+
+  Future<void> _disconnectGateway() async {
+    final gateway = ref.read(gatewayServiceProvider);
+    await gateway.disconnect();
+
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.remove('gateway_url');
+
+    setState(() {
+      _gatewayStatus = '已断开';
+      ref.read(gatewayConnectedProvider.notifier).state = false;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final themeMode = ref.watch(themeModeProvider);
+    final isConnected = ref.watch(gatewayConnectedProvider);
 
     return Scaffold(
       appBar: AppBar(title: const Text('设置')),
       body: ListView(
         padding: const EdgeInsets.symmetric(vertical: AppSpace.s4),
         children: [
-          // 用户信息卡片
-          _buildProfileCard(context),
+          // Gateway 连接卡片
+          _buildGatewayCard(isConnected),
 
           const SizedBox(height: AppSpace.s6),
 
@@ -52,17 +171,10 @@ class SettingsPage extends ConsumerWidget {
             context,
             icon: Icons.wechat_outlined,
             title: '微信',
-            subtitle: '已绑定',
-            trailing: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-              decoration: BoxDecoration(
-                color: AppColors.success.withValues(alpha: 0.15),
-                borderRadius: AppRadius.radiusXS,
-              ),
-              child: const Text(
-                '已连接',
-                style: TextStyle(fontSize: 11, color: AppColors.success),
-              ),
+            subtitle: '未绑定',
+            trailing: const Text(
+              '去绑定',
+              style: TextStyle(fontSize: 13, color: AppColors.primary),
             ),
             onTap: () {
               Navigator.push(
@@ -174,30 +286,179 @@ class SettingsPage extends ConsumerWidget {
             title: '帮助与反馈',
             onTap: () {},
           ),
-          _buildSettingItem(
-            context,
-            icon: Icons.logout,
-            title: '退出登录',
-            titleColor: AppColors.error,
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (_) => const AboutPage()),
-              );
-            },
-          ),
 
           const SizedBox(height: AppSpace.s8),
 
           // 版本号
           Center(
             child: Text(
-              'MBot Mobile v0.1.0',
+              'MBot Mobile v0.2.0',
               style: const TextStyle(
                 fontSize: 12,
                 color: DarkColors.textTertiary,
               ),
             ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildGatewayCard(bool isConnected) {
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: AppSpace.s4),
+      padding: const EdgeInsets.all(AppSpace.s4),
+      decoration: BoxDecoration(
+        color: DarkColors.surface,
+        borderRadius: AppRadius.radiusLG,
+        border: Border.all(
+          color: isConnected ? AppColors.success : DarkColors.border,
+          width: isConnected ? 2 : 1,
+        ),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // 标题行
+          Row(
+            children: [
+              Container(
+                width: 40,
+                height: 40,
+                decoration: BoxDecoration(
+                  color: isConnected
+                      ? AppColors.success.withValues(alpha: 0.15)
+                      : AppColors.primary.withValues(alpha: 0.15),
+                  borderRadius: AppRadius.radiusFull,
+                ),
+                child: Icon(
+                  isConnected ? Icons.cloud_done : Icons.cloud_outlined,
+                  color: isConnected ? AppColors.success : AppColors.primary,
+                  size: 22,
+                ),
+              ),
+              const SizedBox(width: AppSpace.s3),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text(
+                      'Gateway 连接',
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                        color: DarkColors.textPrimary,
+                      ),
+                    ),
+                    if (_gatewayStatus != null)
+                      Text(
+                        _gatewayStatus!,
+                        style: TextStyle(
+                          fontSize: 13,
+                          color: isConnected ? AppColors.success : DarkColors.textSecondary,
+                        ),
+                      ),
+                  ],
+                ),
+              ),
+              // 连接状态指示灯
+              Container(
+                width: 10,
+                height: 10,
+                decoration: BoxDecoration(
+                  color: isConnected ? AppColors.success : DarkColors.textTertiary,
+                  shape: BoxShape.circle,
+                  boxShadow: isConnected
+                      ? [BoxShadow(color: AppColors.success.withValues(alpha: 0.5), blurRadius: 6)]
+                      : null,
+                ),
+              ),
+            ],
+          ),
+
+          const SizedBox(height: AppSpace.s4),
+
+          // Gateway URL 输入
+          TextField(
+            controller: _gatewayUrlController,
+            keyboardType: TextInputType.url,
+            decoration: InputDecoration(
+              hintText: 'wss://your-gateway-url/ws',
+              hintStyle: const TextStyle(color: DarkColors.textTertiary, fontSize: 14),
+              border: OutlineInputBorder(
+                borderRadius: AppRadius.radiusMD,
+                borderSide: BorderSide(color: DarkColors.border),
+              ),
+              enabledBorder: OutlineInputBorder(
+                borderRadius: AppRadius.radiusMD,
+                borderSide: BorderSide(color: DarkColors.border),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderRadius: AppRadius.radiusMD,
+                borderSide: const BorderSide(color: AppColors.primary, width: 2),
+              ),
+              contentPadding: const EdgeInsets.symmetric(
+                horizontal: AppSpace.s3,
+                vertical: AppSpace.s3,
+              ),
+              suffixIcon: _gatewayUrlController.text.isNotEmpty
+                  ? IconButton(
+                      icon: const Icon(Icons.clear, size: 18, color: DarkColors.textTertiary),
+                      onPressed: () {
+                        setState(() {
+                          _gatewayUrlController.clear();
+                        });
+                      },
+                    )
+                  : null,
+            ),
+            onChanged: (_) => setState(() {}),
+          ),
+
+          const SizedBox(height: AppSpace.s3),
+
+          // 操作按钮
+          Row(
+            children: [
+              Expanded(
+                child: FilledButton.icon(
+                  onPressed: _isConnecting || _gatewayUrlController.text.isEmpty
+                      ? null
+                      : () => _connectGateway(_gatewayUrlController.text.trim()),
+                  icon: _isConnecting
+                      ? const SizedBox(
+                          width: 18,
+                          height: 18,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                          ),
+                        )
+                      : const Icon(Icons.link, size: 18),
+                  label: Text(isConnected ? '重新连接' : '连接'),
+                  style: FilledButton.styleFrom(
+                    padding: const EdgeInsets.symmetric(vertical: 12),
+                    shape: RoundedRectangleBorder(borderRadius: AppRadius.radiusMD),
+                  ),
+                ),
+              ),
+              if (isConnected) ...[
+                const SizedBox(width: AppSpace.s3),
+                Expanded(
+                  child: OutlinedButton.icon(
+                    onPressed: _disconnectGateway,
+                    icon: const Icon(Icons.link_off, size: 18),
+                    label: const Text('断开'),
+                    style: OutlinedButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(vertical: 12),
+                      foregroundColor: AppColors.error,
+                      side: const BorderSide(color: AppColors.error),
+                      shape: RoundedRectangleBorder(borderRadius: AppRadius.radiusMD),
+                    ),
+                  ),
+                ),
+              ],
+            ],
           ),
         ],
       ),
@@ -285,62 +546,6 @@ class SettingsPage extends ConsumerWidget {
           Navigator.pop(context);
         }
       },
-    );
-  }
-
-  Widget _buildProfileCard(BuildContext context) {
-    return Container(
-      margin: const EdgeInsets.symmetric(horizontal: AppSpace.s4),
-      padding: const EdgeInsets.all(AppSpace.s4),
-      decoration: BoxDecoration(
-        color: DarkColors.surface,
-        borderRadius: AppRadius.radiusLG,
-        border: Border.all(color: DarkColors.border),
-      ),
-      child: Row(
-        children: [
-          Container(
-            width: 56,
-            height: 56,
-            decoration: BoxDecoration(
-              gradient: AppColors.primaryGradient,
-              borderRadius: AppRadius.radiusFull,
-            ),
-            child: const Center(
-              child: Text('🦞', style: TextStyle(fontSize: 28)),
-            ),
-          ),
-          const SizedBox(width: AppSpace.s4),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Text(
-                  'MBot 用户',
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.w600,
-                    color: DarkColors.textPrimary,
-                  ),
-                ),
-                const SizedBox(height: 2),
-                Text(
-                  'Pro 会员 · 2026.12 到期',
-                  style: TextStyle(
-                    fontSize: 13,
-                    color: DarkColors.textSecondary,
-                  ),
-                ),
-              ],
-            ),
-          ),
-          const Icon(
-            Icons.chevron_right,
-            size: 20,
-            color: DarkColors.textTertiary,
-          ),
-        ],
-      ),
     );
   }
 

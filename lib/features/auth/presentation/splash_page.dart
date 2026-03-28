@@ -36,10 +36,10 @@ class _SplashPageState extends State<SplashPage>
 
     _controller.forward();
 
-    // 自动跳转到登录页
+    // 自动跳转到主页
     Future.delayed(const Duration(seconds: 2), () {
       if (mounted) {
-        context.go('/login');
+        context.go('/');
       }
     });
   }

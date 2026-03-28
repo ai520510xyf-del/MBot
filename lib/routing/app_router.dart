@@ -4,7 +4,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../core/providers/root_nav_provider.dart';
 import '../features/auth/presentation/splash_page.dart';
-import '../features/auth/presentation/login_page.dart';
 import '../features/conversations/presentation/conversation_list_page.dart';
 import '../features/chat/presentation/chat_page.dart';
 import '../features/skills/presentation/skill_market_page.dart';
@@ -15,7 +14,6 @@ import '../theme/theme.dart';
 /// Route paths
 class AppRoutes {
   static const String splash = '/splash';
-  static const String login = '/login';
   static const String home = '/';
   static const String skills = '/skills';
   static const String dashboard = '/dashboard';
@@ -34,12 +32,6 @@ final goRouterProvider = Provider<GoRouter>((ref) {
         path: AppRoutes.splash,
         pageBuilder: (context, state) =>
             const MaterialPage(child: SplashPage()),
-      ),
-
-      // 登录页
-      GoRoute(
-        path: AppRoutes.login,
-        pageBuilder: (context, state) => const MaterialPage(child: LoginPage()),
       ),
 
       // 带底部导航的 Shell Route
