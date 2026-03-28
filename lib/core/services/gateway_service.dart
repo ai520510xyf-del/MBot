@@ -46,7 +46,9 @@ class AgpMessage {
       msgId: json['msg_id'] as String,
       guid: json['guid'] as String,
       method: _methodFromString(json['method'] as String),
-      payload: json['payload'] as Map<String, dynamic>,
+      payload: json['payload'] is Map<String, dynamic>
+          ? json['payload'] as Map<String, dynamic>
+          : Map<String, dynamic>.from(json['payload'] as Map),
     );
   }
 

@@ -60,8 +60,8 @@ class MockSkillService {
         : mockSkills;
 
     // Filter by search
-    if (searchQuery != null && searchQuery.isNotEmpty) {
-      final query = searchQuery.toLowerCase();
+    if (searchQuery != null && searchQuery.trim().isNotEmpty) {
+      final query = searchQuery.trim().toLowerCase();
       filtered = filtered
           .where(
             (s) =>

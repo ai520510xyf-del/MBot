@@ -1,5 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mbot_mobile/core/services/gateway_service.dart';
+import 'package:mbot_mobile/core/providers/gateway_provider.dart';
 
 void main() {
   group('AgpMessageType', () {

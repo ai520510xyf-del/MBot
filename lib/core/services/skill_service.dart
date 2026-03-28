@@ -25,8 +25,8 @@ class SkillService {
         : mockSkills;
 
     // 过滤搜索
-    if (searchQuery != null && searchQuery.isNotEmpty) {
-      final query = searchQuery.toLowerCase();
+    if (searchQuery != null && searchQuery.trim().isNotEmpty) {
+      final query = searchQuery.trim().toLowerCase();
       filtered = filtered
           .where(
             (s) =>
