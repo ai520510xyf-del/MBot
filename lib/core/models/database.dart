@@ -64,15 +64,87 @@ class Messages extends Table {
       ];
 }
 
+
+/// Skills 表定义
+@DataClassName('Skill')
+class Skills extends Table {
+  /// 主键 ID (UUID)
+  TextColumn get id => text()();
+
+  /// 技能名称
+  TextColumn get name => text()();
+
+  /// 技能描述
+  TextColumn get description => text()();
+
+  /// 技能图标 (emoji)
+  TextColumn get emoji => text()();
+
+  /// 版本号
+  TextColumn get version => text()();
+
+  /// 作者
+  TextColumn get author => text()();
+
+  /// 安装数量
+  IntColumn get installCount => integer().withDefault(const Constant(0))();
+
+  /// 评分 (0-5)
+  RealColumn get rating => real().withDefault(const Constant(0.0))();
+
+  /// 安装时间
+  DateTimeColumn get installedAt => dateTime().nullable()();
+
+  /// 状态
+  TextColumn get status => text()(); // 'available', 'installed', 'updateAvailable', 'disabled'
+
+  /// 分类
+  TextColumn get category => text()(); // 'all', 'ai', 'text', 'image', 'code', 'productivity'
+
+  /// 标签 (逗号分隔)
+  TextColumn get tags => text().withDefault(const Constant(''))();
+
+  @override
+  Set<Column> get primaryKey => {id};
+}
+
+/// Agents 表定义
+@DataClassName('Agent')
+class Agents extends Table {
+  /// 主键 ID (UUID)
+  TextColumn get id => text()();
+
+  /// Agent 名称
+  TextColumn get name => text()();
+
+  /// Agent 图标 (emoji)
+  TextColumn get emoji => text()();
+
+  /// 状态
+  TextColumn get status => text()(); // 'online', 'offline', 'busy'
+
+  /// 模型名称
+  TextColumn get model => text()();
+
+  /// 任务数量
+  IntColumn get taskCount => integer().withDefault(const Constant(0))();
+
+  /// 最后活跃时间
+  DateTimeColumn get lastActive => dateTime().nullable()();
+
+  @override
+  Set<Column> get primaryKey => {id};
+}
+
 /// MBot 数据库类
-@DriftDatabase(tables: [Conversations, Messages])
+@DriftDatabase(tables: [Conversations, Messages, Skills, Agents])
 class MBotDatabase extends _$MBotDatabase {
   /// 构造函数
   MBotDatabase(super.e);
 
   /// 数据库版本
   @override
-  int get schemaVersion => 1;
+  int get schemaVersion => 2;
 
   /// 数据库迁移逻辑
   @override
