@@ -208,7 +208,7 @@ class _ChatPageState extends ConsumerState<ChatPage> {
                     child: const Icon(
                       Icons.auto_awesome,
                       size: 12,
-                      color: Colors.white,
+                      color: AppColors.surface,
                     ),
                   ),
                   const SizedBox(width: 6),
@@ -274,7 +274,7 @@ class _ChatPageState extends ConsumerState<ChatPage> {
           content,
           style: const TextStyle(
             fontSize: 15,
-            color: Colors.white,
+            color: AppColors.surface,
             height: 1.4,
           ),
         ),
@@ -421,7 +421,7 @@ class _ChatPageState extends ConsumerState<ChatPage> {
                 ),
                 child: Icon(
                   _isSending ? Icons.hourglass_empty : Icons.send_rounded,
-                  color: Colors.white,
+                  color: AppColors.surface,
                   size: 20,
                 ),
               ),

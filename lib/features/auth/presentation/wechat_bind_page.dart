@@ -108,7 +108,7 @@ class _WechatBindPageState extends State<WechatBindPage>
                 width: 280,
                 height: 280,
                 decoration: BoxDecoration(
-                  color: Colors.white,
+                  color: AppColors.surface,
                   borderRadius: AppRadius.radiusLG,
                   boxShadow: [
                     BoxShadow(

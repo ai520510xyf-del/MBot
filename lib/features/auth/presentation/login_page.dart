@@ -389,7 +389,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                                   child: CircularProgressIndicator(
                                     strokeWidth: 2,
                                     valueColor: AlwaysStoppedAnimation<Color>(
-                                      Colors.white,
+                                      AppColors.surface,
                                     ),
                                   ),
                                 )

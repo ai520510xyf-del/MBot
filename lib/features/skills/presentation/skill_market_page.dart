@@ -529,7 +529,7 @@ class _SkillDetailSheetState extends ConsumerState<_SkillDetailSheet> {
                       : AppColors.primary,
                   foregroundColor: isInstalled
                       ? AppColors.textPrimary
-                      : Colors.white,
+                      : AppColors.surface,
                 ),
                 child: _isInstalling
                     ? const SizedBox(
