@@ -19,6 +19,8 @@ enum ConversationStatus {
 /// 会话数据模型
 @freezed
 class ConversationData with _$ConversationData {
+  const ConversationData._();
+  
   const factory ConversationData({
     required String id,
     required String title,

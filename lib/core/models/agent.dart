@@ -276,7 +276,7 @@ class TaskInfo {
       case 'failed':
         return AppColors.error;
       default:
-        return AppColors.textSecondary;
+        return DarkColors.textSecondary;
     }
   }
 }
