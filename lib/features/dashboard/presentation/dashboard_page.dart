@@ -191,22 +191,19 @@ class _AgentStatusCard extends StatelessWidget {
   final int count;
   final Color color;
 
-  const _AgentStatusCard.online({required int count})
+  const _AgentStatusCard.online({required this.count})
       : title = '在线',
         status = '运行中',
-        count = count,
         color = AppColors.success;
 
-  const _AgentStatusCard.busy({required int count})
+  const _AgentStatusCard.busy({required this.count})
       : title = '忙碌',
         status = '处理中',
-        count = count,
         color = AppColors.warning;
 
-  const _AgentStatusCard.offline({required int count})
+  const _AgentStatusCard.offline({required this.count})
       : title = '离线',
         status = '未连接',
-        count = count,
         color = AppColors.error;
 
   @override
