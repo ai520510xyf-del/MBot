@@ -10,6 +10,17 @@ import '../features/skills/presentation/skill_market_page.dart';
 import '../features/settings/presentation/settings_page.dart';
 import '../features/dashboard/presentation/dashboard_page.dart';
 
+/// Route paths
+class AppRoutes {
+  static const String splash = '/splash';
+  static const String login = '/login';
+  static const String home = '/';
+  static const String skills = '/skills';
+  static const String dashboard = '/dashboard';
+  static const String settings = '/settings';
+  static const String chat = '/chat/:id';
+}
+
 /// GoRouter 配置
 final goRouterProvider = Provider<GoRouter>((ref) {
   return GoRouter(
@@ -18,14 +29,14 @@ final goRouterProvider = Provider<GoRouter>((ref) {
     routes: [
       // 启动页
       GoRoute(
-        path: '/splash',
+        path: AppRoutes.splash,
         pageBuilder: (context, state) =>
             const MaterialPage(child: SplashPage()),
       ),
 
       // 登录页
       GoRoute(
-        path: '/login',
+        path: AppRoutes.login,
         pageBuilder: (context, state) => const MaterialPage(child: LoginPage()),
       ),
 
@@ -36,22 +47,22 @@ final goRouterProvider = Provider<GoRouter>((ref) {
         },
         routes: [
           GoRoute(
-            path: '/',
+            path: AppRoutes.home,
             pageBuilder: (context, state) =>
                 const NoTransitionPage(child: ConversationListPage()),
           ),
           GoRoute(
-            path: '/skills',
+            path: AppRoutes.skills,
             pageBuilder: (context, state) =>
                 const NoTransitionPage(child: SkillMarketPage()),
           ),
           GoRoute(
-            path: '/settings',
+            path: AppRoutes.settings,
             pageBuilder: (context, state) =>
                 const NoTransitionPage(child: SettingsPage()),
           ),
           GoRoute(
-            path: '/dashboard',
+            path: AppRoutes.dashboard,
             pageBuilder: (context, state) =>
                 const NoTransitionPage(child: DashboardPage()),
           ),
@@ -59,7 +70,7 @@ final goRouterProvider = Provider<GoRouter>((ref) {
       ),
       // 聊天页 — 不带底部导航
       GoRoute(
-        path: '/chat/:id',
+        path: AppRoutes.chat,
         pageBuilder: (context, state) {
           final chatId = state.pathParameters['id'] ?? '';
           return MaterialPage(child: ChatPage(chatId: chatId));
@@ -111,9 +122,9 @@ class ScaffoldWithNavBar extends ConsumerWidget {
   int _calculateSelectedIndex(BuildContext context) {
     final location = GoRouterState.of(context).uri.path;
     if (location.startsWith('/chat')) return -1;
-    if (location.startsWith('/skills')) return 1;
-    if (location.startsWith('/dashboard')) return 2;
-    if (location.startsWith('/settings')) return 3;
+    if (location.startsWith(AppRoutes.skills)) return 1;
+    if (location.startsWith(AppRoutes.dashboard)) return 2;
+    if (location.startsWith(AppRoutes.settings)) return 3;
     return 0;
   }
 
@@ -121,13 +132,13 @@ class ScaffoldWithNavBar extends ConsumerWidget {
     ref.read(rootNavIndexProvider.notifier).setIndex(index);
     switch (index) {
       case 0:
-        ref.read(goRouterProvider).go('/');
+        ref.read(goRouterProvider).go(AppRoutes.home);
       case 1:
-        ref.read(goRouterProvider).go('/skills');
+        ref.read(goRouterProvider).go(AppRoutes.skills);
       case 2:
-        ref.read(goRouterProvider).go('/dashboard');
+        ref.read(goRouterProvider).go(AppRoutes.dashboard);
       case 3:
-        ref.read(goRouterProvider).go('/settings');
+        ref.read(goRouterProvider).go(AppRoutes.settings);
     }
   }
 }

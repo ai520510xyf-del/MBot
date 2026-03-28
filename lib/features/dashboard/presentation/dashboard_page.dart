@@ -300,6 +300,7 @@ class _AgentStatusCard extends StatelessWidget {
           ),
         ],
       ),
+      ),
     );
   }
 }
@@ -318,31 +319,35 @@ class _StatCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(vertical: AppSpace.s4),
-      decoration: BoxDecoration(
-        color: AppColors.surface,
-        borderRadius: AppRadius.radiusMD,
-        border: Border.all(color: AppColors.border),
-      ),
-      child: Column(
-        children: [
-          Text(icon, style: const TextStyle(fontSize: 20)),
-          const SizedBox(height: 4),
-          Text(
-            value,
-            style: const TextStyle(
-              fontSize: 20,
-              fontWeight: FontWeight.w700,
-              color: AppColors.textPrimary,
+    return Semantics(
+      label: '$label: $value',
+      value: value,
+      child: Container(
+        padding: const EdgeInsets.symmetric(vertical: AppSpace.s4),
+        decoration: BoxDecoration(
+          color: AppColors.surface,
+          borderRadius: AppRadius.radiusMD,
+          border: Border.all(color: AppColors.border),
+        ),
+        child: Column(
+          children: [
+            Text(icon, style: const TextStyle(fontSize: 20)),
+            const SizedBox(height: 4),
+            Text(
+              value,
+              style: const TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.w700,
+                color: AppColors.textPrimary,
+              ),
             ),
-          ),
-          const SizedBox(height: 2),
-          Text(
-            label,
-            style: const TextStyle(fontSize: 11, color: AppColors.textTertiary),
-          ),
-        ],
+            const SizedBox(height: 2),
+            Text(
+              label,
+              style: const TextStyle(fontSize: 11, color: AppColors.textTertiary),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -356,15 +361,18 @@ class _AgentCard extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return Container(
-      margin: const EdgeInsets.only(bottom: AppSpace.s3),
-      padding: const EdgeInsets.all(AppSpace.s4),
-      decoration: BoxDecoration(
-        color: AppColors.surface,
-        borderRadius: AppRadius.radiusLG,
-        border: Border.all(color: AppColors.border, width: 1),
-      ),
-      child: Row(
+    return Semantics(
+      label: 'Agent: ${agent.name}',
+      value: '状态: ${agent.statusDisplayName}, 模型: ${agent.model}, 任务数: ${agent.taskCount}',
+      child: Container(
+        margin: const EdgeInsets.only(bottom: AppSpace.s3),
+        padding: const EdgeInsets.all(AppSpace.s4),
+        decoration: BoxDecoration(
+          color: AppColors.surface,
+          borderRadius: AppRadius.radiusLG,
+          border: Border.all(color: AppColors.border, width: 1),
+        ),
+        child: Row(
         children: [
           // 图标
           Container(
@@ -447,6 +455,7 @@ class _AgentCard extends ConsumerWidget {
           ),
         ],
       ),
+      ),
     );
   }
 
@@ -502,6 +511,7 @@ class _ChannelCard extends StatelessWidget {
             ),
           ),
         ],
+      ),
       ),
     );
   }
@@ -590,6 +600,7 @@ class _TaskItem extends StatelessWidget {
             style: const TextStyle(fontSize: 12, color: AppColors.textTertiary),
           ),
         ],
+      ),
       ),
     );
   }

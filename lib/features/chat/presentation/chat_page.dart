@@ -383,6 +383,7 @@ class _ChatPageState extends ConsumerState<ChatPage> {
                 color: DarkColors.textTertiary,
               ),
               onPressed: () {},
+              tooltip: '添加附件',
             ),
             Expanded(
               child: TextField(
@@ -410,22 +411,28 @@ class _ChatPageState extends ConsumerState<ChatPage> {
               ),
             ),
             const SizedBox(width: AppSpace.s1),
-            GestureDetector(
-              onTap: _isSending ? null : _sendMessage,
-              child: Container(
-                width: 40,
-                height: 40,
-                decoration: BoxDecoration(
-                  gradient: _isSending
-                      ? DarkColors.disabledGradient
-                      : AppColors.primaryGradient,
-                  borderRadius: AppRadius.radiusFull,
-                  boxShadow: AppShadow.glow,
-                ),
-                child: Icon(
-                  _isSending ? Icons.hourglass_empty : Icons.send_rounded,
-                  color: DarkColors.surface,
-                  size: 20,
+            Semantics(
+              button: true,
+              enabled: !_isSending,
+              label: _isSending ? '发送中' : '发送消息',
+              hint: '点击发送消息',
+              child: GestureDetector(
+                onTap: _isSending ? null : _sendMessage,
+                child: Container(
+                  width: 40,
+                  height: 40,
+                  decoration: BoxDecoration(
+                    gradient: _isSending
+                        ? DarkColors.disabledGradient
+                        : AppColors.primaryGradient,
+                    borderRadius: AppRadius.radiusFull,
+                    boxShadow: AppShadow.glow,
+                  ),
+                  child: Icon(
+                    _isSending ? Icons.hourglass_empty : Icons.send_rounded,
+                    color: DarkColors.surface,
+                    size: 20,
+                  ),
                 ),
               ),
             ),

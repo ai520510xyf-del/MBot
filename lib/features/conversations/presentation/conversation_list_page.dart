@@ -27,6 +27,7 @@ class _ConversationListPageState extends ConsumerState<ConversationListPage> {
             onPressed: () {
               _showNewConversationDialog(context);
             },
+            tooltip: '新建对话',
           ),
         ],
       ),
@@ -81,62 +82,68 @@ class _ConversationListPageState extends ConsumerState<ConversationListPage> {
       onDismissed: (direction) {
         _handleDeleteConversation(conversation, index);
       },
-      child: ListTile(
-        contentPadding: const EdgeInsets.symmetric(horizontal: AppSpace.s4),
-        leading: Container(
-          width: 48,
-          height: 48,
-          decoration: BoxDecoration(
-            color: DarkColors.surfaceHighlight,
-            borderRadius: AppRadius.radiusMD,
-          ),
-          child: Center(
-            child: Text(
-              '🤖',
-              style: const TextStyle(fontSize: 24),
+      child: Semantics(
+        button: true,
+        enabled: true,
+        label: '对话：${conversation.title}',
+        hint: '点击打开对话，长按显示更多选项',
+        child: ListTile(
+          contentPadding: const EdgeInsets.symmetric(horizontal: AppSpace.s4),
+          leading: Container(
+            width: 48,
+            height: 48,
+            decoration: BoxDecoration(
+              color: DarkColors.surfaceHighlight,
+              borderRadius: AppRadius.radiusMD,
             ),
-          ),
-        ),
-        title: Text(
-          conversation.title,
-          style: const TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.w500,
-            color: DarkColors.textPrimary,
-          ),
-        ),
-        subtitle: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const SizedBox(height: 4),
-            Text(
-              '点击继续对话',
-              style: const TextStyle(
-                fontSize: 14,
-                color: DarkColors.textSecondary,
-              ),
-              maxLines: 2,
-              overflow: TextOverflow.ellipsis,
-            ),
-          ],
-        ),
-        trailing: Column(
-          crossAxisAlignment: CrossAxisAlignment.end,
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text(
-              _formatTime(conversation.updatedAt),
-              style: const TextStyle(
-                fontSize: 12,
-                color: DarkColors.textTertiary,
+            child: Center(
+              child: Text(
+                '🤖',
+                style: const TextStyle(fontSize: 24),
               ),
             ),
-          ],
+          ),
+          title: Text(
+            conversation.title,
+            style: const TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.w500,
+              color: DarkColors.textPrimary,
+            ),
+          ),
+          subtitle: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const SizedBox(height: 4),
+              Text(
+                '点击继续对话',
+                style: const TextStyle(
+                  fontSize: 14,
+                  color: DarkColors.textSecondary,
+                ),
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ],
+          ),
+          trailing: Column(
+            crossAxisAlignment: CrossAxisAlignment.end,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text(
+                _formatTime(conversation.updatedAt),
+                style: const TextStyle(
+                  fontSize: 12,
+                  color: DarkColors.textTertiary,
+                ),
+              ),
+            ],
+          ),
+          onTap: () => context.go('/chat/${conversation.id}'),
+          onLongPress: () {
+            _showConversationOptions(context, conversation, index);
+          },
         ),
-        onTap: () => context.go('/chat/${conversation.id}'),
-        onLongPress: () {
-          _showConversationOptions(context, conversation, index);
-        },
       ),
     );
   }
