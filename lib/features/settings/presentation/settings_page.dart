@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../../../core/providers/theme_provider.dart';
+import '../../../../theme/theme.dart';
 import 'memory_page.dart';
 import 'model_config/model_config_page.dart';
-import '../../../../theme/theme.dart';
 
 /// 设置页
 class SettingsPage extends ConsumerWidget {
@@ -10,6 +11,9 @@ class SettingsPage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final themeMode = ref.watch(themeModeProvider);
+    final isDark = themeMode == AppThemeMode.dark;
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('设置'),
@@ -92,12 +96,14 @@ class SettingsPage extends ConsumerWidget {
 
           // 通用设置组
           _buildSectionHeader('通用设置'),
-          _buildSwitchItem(
+          _buildSettingItem(
             context,
             icon: Icons.dark_mode_outlined,
-            title: '深色模式',
-            value: true,
-            onChanged: (_) {},
+            title: '主题模式',
+            subtitle: _getThemeModeText(themeMode),
+            trailing: const Icon(Icons.chevron_right,
+                size: 20, color: AppColors.textTertiary),
+            onTap: () => _showThemeDialog(context, ref),
           ),
           _buildSwitchItem(
             context,
@@ -160,6 +166,90 @@ class SettingsPage extends ConsumerWidget {
           ),
         ],
       ),
+    );
+  }
+
+  String _getThemeModeText(AppThemeMode mode) {
+    switch (mode) {
+      case AppThemeMode.system:
+        return '跟随系统';
+      case AppThemeMode.dark:
+        return '深色模式';
+      case AppThemeMode.light:
+        return '浅色模式';
+    }
+  }
+
+  void _showThemeDialog(BuildContext context, WidgetRef ref) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('主题模式'),
+        content: Consumer(
+          builder: (context, ref, _) {
+            final currentMode = ref.watch(themeModeProvider);
+            return Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                _buildThemeOption(
+                  context,
+                  icon: Icons.brightness_auto,
+                  title: '跟随系统',
+                  mode: AppThemeMode.system,
+                  currentMode: currentMode,
+                  ref: ref,
+                ),
+                _buildThemeOption(
+                  context,
+                  icon: Icons.dark_mode,
+                  title: '深色模式',
+                  mode: AppThemeMode.dark,
+                  currentMode: currentMode,
+                  ref: ref,
+                ),
+                _buildThemeOption(
+                  context,
+                  icon: Icons.light_mode,
+                  title: '浅色模式',
+                  mode: AppThemeMode.light,
+                  currentMode: currentMode,
+                  ref: ref,
+                ),
+              ],
+            );
+          },
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('取消'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildThemeOption(
+    BuildContext context, {
+    required IconData icon,
+    required String title,
+    required AppThemeMode mode,
+    required AppThemeMode currentMode,
+    required WidgetRef ref,
+  }) {
+    final isSelected = mode == currentMode;
+    return ListTile(
+      leading: Icon(icon),
+      title: Text(title),
+      trailing: isSelected
+          ? Icon(Icons.check_circle, color: AppColors.primary)
+          : null,
+      onTap: () async {
+        await ref.read(themeModeProvider.notifier).setMode(mode);
+        if (context.mounted) {
+          Navigator.pop(context);
+        }
+      },
     );
   }
 

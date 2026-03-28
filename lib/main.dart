@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'core/providers/theme_provider.dart';
 import 'routing/app_router.dart';
 import 'theme/app_theme.dart';
 
@@ -21,13 +22,16 @@ class MBotMobileApp extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final router = ref.watch(goRouterProvider);
+    final themeMode = ref.watch(themeModeProvider);
 
     return MaterialApp.router(
       // 应用标题
       title: 'MBot Mobile',
 
       // 主题配置
-      theme: AppTheme.darkTheme,
+      theme: AppTheme.lightTheme,
+      darkTheme: AppTheme.darkTheme,
+      themeMode: _getFlutterThemeMode(themeMode),
 
       // 路由配置
       routerConfig: router,
@@ -35,5 +39,16 @@ class MBotMobileApp extends ConsumerWidget {
       // 调试横幅
       debugShowCheckedModeBanner: false,
     );
+  }
+
+  ThemeMode _getFlutterThemeMode(AppThemeMode mode) {
+    switch (mode) {
+      case AppThemeMode.system:
+        return ThemeMode.system;
+      case AppThemeMode.dark:
+        return ThemeMode.dark;
+      case AppThemeMode.light:
+        return ThemeMode.light;
+    }
   }
 }
