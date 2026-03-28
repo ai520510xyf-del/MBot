@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'memory_page.dart';
 import '../../../../theme/theme.dart';
 
 /// 设置页
@@ -114,6 +115,24 @@ class SettingsPage extends StatelessWidget {
             subtitle: '开启后使用端侧模型',
             value: false,
             onChanged: (_) {},
+          ),
+
+
+          const SizedBox(height: AppSpace.s6),
+
+          // 数据管理组
+          _buildSectionHeader('数据管理'),
+          _buildSettingItem(
+            context,
+            icon: Icons.psychology_outlined,
+            title: '记忆管理',
+            subtitle: '管理 AI 学习的偏好和事实',
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => const MemoryPage()),
+              );
+            },
           ),
 
           const SizedBox(height: AppSpace.s6),
