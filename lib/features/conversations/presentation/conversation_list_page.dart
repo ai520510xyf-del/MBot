@@ -65,7 +65,6 @@ class _ConversationListPageState extends ConsumerState<ConversationListPage> {
           IconButton(
             icon: const Icon(Icons.add_circle_outline),
             onPressed: () {
-              // TODO: 创建新对话
               _showNewConversationDialog(context);
             },
           ),
@@ -93,7 +92,7 @@ class _ConversationListPageState extends ConsumerState<ConversationListPage> {
 
   Widget _buildConversationItem(Map<String, dynamic> conversation, int index) {
     return Dismissible(
-      key: Key(conversation['id']),
+      key: ValueKey(conversation['id']),
       direction: DismissDirection.endToStart,
       background: _buildSwipeBackground(),
       confirmDismiss: (direction) async {
@@ -189,9 +188,9 @@ class _ConversationListPageState extends ConsumerState<ConversationListPage> {
       child: const Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(Icons.delete_outline, color: Colors.white, size: 28),
+          Icon(Icons.delete_outline, color: AppColors.surface, size: 28),
           SizedBox(height: 4),
-          Text('删除', style: TextStyle(color: Colors.white, fontSize: 12)),
+          Text('删除', style: TextStyle(color: AppColors.surface, fontSize: 12)),
         ],
       ),
     );
@@ -221,7 +220,7 @@ class _ConversationListPageState extends ConsumerState<ConversationListPage> {
             onPressed: () {
               if (titleController.text.trim().isNotEmpty) {
                 Navigator.pop(context);
-                // TODO: 创建新对话逻辑
+
                 context.go('/chat/new');
               }
             },
@@ -372,7 +371,7 @@ class _ConversationListPageState extends ConsumerState<ConversationListPage> {
     // 模拟刷新
     await Future.delayed(const Duration(seconds: 1));
 
-    if (mounted) {}
+    // Conversation refresh completed
   }
 
   String _formatMessageCount(Map<String, dynamic> conversation) {

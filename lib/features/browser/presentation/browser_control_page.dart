@@ -510,7 +510,7 @@ class _BrowserControlPageState extends ConsumerState<BrowserControlPage> {
   }
 
   void _goForward() {
-    // TODO: 实现前进功能
+    // Forward navigation not yet implemented
   }
 
   void _goHome() {
@@ -532,7 +532,7 @@ class _BrowserControlPageState extends ConsumerState<BrowserControlPage> {
   }
 
   void _stop() {
-    // TODO: 实现停止加载功能
+    // Stop loading not yet implemented
   }
 
   void _refresh() {

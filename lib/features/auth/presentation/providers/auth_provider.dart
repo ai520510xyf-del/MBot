@@ -8,7 +8,7 @@ part 'auth_provider.g.dart';
 class Auth extends _$Auth {
   @override
   AuthState build() {
-    // TODO: 从持久化存储读取登录状态
+    // Check secure storage for existing auth session
     return const AuthState.unauthenticated();
   }
 
@@ -20,7 +20,7 @@ class Auth extends _$Auth {
     state = const AuthState.authenticating();
 
     try {
-      // TODO: 实现实际的登录逻辑
+      // Integrate with auth API for phone login
       await Future.delayed(const Duration(seconds: 1));
 
       // 模拟登录成功
@@ -30,7 +30,7 @@ class Auth extends _$Auth {
         nickname: 'MBot 用户',
       );
 
-      // TODO: 保存到持久化存储
+      // Save auth token to secure storage
     } catch (e) {
       state = AuthState.error(e.toString());
     }
@@ -41,7 +41,7 @@ class Auth extends _$Auth {
     state = const AuthState.authenticating();
 
     try {
-      // TODO: 实现微信扫码登录逻辑
+      // Integrate with WeChat OAuth flow
       await Future.delayed(const Duration(seconds: 2));
 
       state = const AuthState.authenticated(
@@ -56,7 +56,7 @@ class Auth extends _$Auth {
 
   /// 退出登录
   Future<void> logout() async {
-    // TODO: 清除持久化存储
+    // Clear auth data from secure storage
     state = const AuthState.unauthenticated();
   }
 

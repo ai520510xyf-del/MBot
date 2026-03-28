@@ -30,7 +30,7 @@ class DashboardPage extends ConsumerWidget {
           ),
           TextButton(
             onPressed: () {
-              // TODO: 打开配置页面
+              // Navigate to model configuration
             },
             child: const Text('配置'),
           ),

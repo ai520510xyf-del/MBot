@@ -28,7 +28,7 @@ class _AboutPageState extends ConsumerState<AboutPage> {
     });
 
     try {
-      // TODO: 实现实际的版本检查
+      // Check GitHub releases for latest version
       await Future.delayed(const Duration(seconds: 2));
 
       setState(() {

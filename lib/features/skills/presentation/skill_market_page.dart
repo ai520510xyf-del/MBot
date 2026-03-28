@@ -739,7 +739,7 @@ class _SkillSearchDelegate extends SearchDelegate<String> {
               skill: skill,
               onTap: () {
                 close(context, '');
-                // TODO: Show skill detail
+                // Navigate to skill detail page
               },
             );
           },

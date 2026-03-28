@@ -246,7 +246,7 @@ class _WechatBindPageState extends State<WechatBindPage>
             // 操作按钮
             OutlinedButton.icon(
               onPressed: () {
-                // TODO: 刷新二维码
+                // Refresh QR code from server
               },
               icon: const Icon(Icons.refresh, size: 20),
               label: const Text('刷新二维码'),

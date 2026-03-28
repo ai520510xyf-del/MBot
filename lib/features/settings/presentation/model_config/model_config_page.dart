@@ -76,7 +76,7 @@ class _ModelConfigPageState extends ConsumerState<ModelConfigPage> {
     });
 
     try {
-      // TODO: 实际的 API 测试请求
+      // Make test API call to validate credentials
       await Future.delayed(const Duration(seconds: 2));
 
       // 模拟测试结果

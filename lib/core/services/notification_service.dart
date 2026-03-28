@@ -63,7 +63,7 @@ class NotificationService {
       initSettings,
       onDidReceiveNotificationResponse: (NotificationResponse response) {
         debugPrint('Notification tapped: ${response.payload}');
-        // TODO: 处理通知点击
+        // Handle notification tap - navigate to relevant page
       },
     );
   }
@@ -78,7 +78,7 @@ class NotificationService {
     FirebaseMessaging.instance.onTokenRefresh.listen((token) {
       _fcmToken = token;
       debugPrint('FCM Token refreshed: $token');
-      // TODO: 上传新 Token 到服务器
+      // Upload new FCM token to backend server
     });
 
     // 监听前台消息

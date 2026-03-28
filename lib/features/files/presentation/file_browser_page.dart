@@ -416,7 +416,7 @@ class _FileBrowserPageState extends ConsumerState<FileBrowserPage> {
     }
     return PopupMenuButton<String>(
       onSelected: (value) {
-        // TODO: 实现文件操作
+        // File operations (download/delete) not yet implemented
         if (value == 'download') {
           ScaffoldMessenger.of(
             context,
@@ -537,7 +537,7 @@ class _FileBrowserPageState extends ConsumerState<FileBrowserPage> {
           : '$_currentPath/${file.name}';
       _navigateToPath(newPath);
     } else {
-      // TODO: 打开文件
+      // File opening not yet implemented
       ScaffoldMessenger.of(
         context,
       ).showSnackBar(SnackBar(content: Text('打开 ${file.name}')));

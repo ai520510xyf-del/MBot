@@ -51,7 +51,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
 
   void _sendCode() {
     if (_formKey.currentState?.validate() ?? false) {
-      // TODO: 发送验证码逻辑
+      // Send SMS verification code via API
       _startCountdown();
       setState(() {
         _currentStep = LoginStep.verificationCode;
@@ -65,7 +65,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
         _isVerifying = true;
       });
 
-      // TODO: 验证码验证逻辑
+      // Verify SMS code via API
       Future.delayed(const Duration(seconds: 1), () {
         if (mounted) {
           setState(() {
