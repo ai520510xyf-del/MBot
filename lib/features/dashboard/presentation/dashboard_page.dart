@@ -1,109 +1,173 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../theme/theme.dart';
+import '../../../../core/models/agent.dart';
+import '../../../../core/providers/agent_providers.dart';
 
 /// Agent 仪表盘页
-class DashboardPage extends StatelessWidget {
+class DashboardPage extends ConsumerWidget {
   const DashboardPage({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final agentsAsync = ref.watch(agentListProvider);
+    final statsAsync = ref.watch(agentStatsProvider);
+    final channelsAsync = ref.watch(activeChannelsProvider);
+    final tasksAsync = ref.watch(recentTasksProvider);
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Agent 仪表盘'),
         actions: [
+          IconButton(
+            icon: const Icon(Icons.refresh),
+            onPressed: () {
+              ref.invalidate(agentListProvider);
+              ref.invalidate(agentStatsProvider);
+              ref.invalidate(activeChannelsProvider);
+              ref.invalidate(recentTasksProvider);
+            },
+          ),
           TextButton(
-            onPressed: () {},
+            onPressed: () {
+              // TODO: 打开配置页面
+            },
             child: const Text('配置'),
           ),
         ],
       ),
-      body: ListView(
-        padding: const EdgeInsets.all(AppSpace.s4),
-        children: [
-          // 状态卡片行
-          Row(
-            children: [
-              Expanded(child: _StatusCard.running()),
-              const SizedBox(width: AppSpace.s3),
-              Expanded(child: _StatusCard.resources()),
-            ],
-          ),
+      body: RefreshIndicator(
+        onRefresh: () async {
+          ref.invalidate(agentListProvider);
+          ref.invalidate(agentStatsProvider);
+          ref.invalidate(activeChannelsProvider);
+          ref.invalidate(recentTasksProvider);
+        },
+        child: ListView(
+          padding: const EdgeInsets.all(AppSpace.s4),
+          children: [
+            // Agent 状态卡片行
+            agentsAsync.when(
+              data: (agents) {
+                final onlineCount = agents.where((a) => a.isOnline).length;
+                final busyCount = agents.where((a) => a.isBusy).length;
+                final offlineCount = agents.where((a) => !a.isOnline && !a.isBusy).length;
 
-          const SizedBox(height: AppSpace.s6),
+                return Row(
+                  children: [
+                    Expanded(child: _AgentStatusCard.online(count: onlineCount)),
+                    const SizedBox(width: AppSpace.s3),
+                    Expanded(child: _AgentStatusCard.busy(count: busyCount)),
+                    const SizedBox(width: AppSpace.s3),
+                    Expanded(child: _AgentStatusCard.offline(count: offlineCount)),
+                  ],
+                );
+              },
+              loading: () => const _ShimmerRow(3),
+              error: (_, _) => const _ShimmerRow(3),
+            ),
 
-          // 今日统计
-          _buildSectionTitle('今日统计'),
-          const SizedBox(height: AppSpace.s3),
-          const Row(
-            children: [
-              Expanded(child: _StatCard(icon: '💬', value: '128', label: '对话数')),
-              SizedBox(width: AppSpace.s3),
-              Expanded(child: _StatCard(icon: '⚙️', value: '56', label: '技能调用')),
-              SizedBox(width: AppSpace.s3),
-              Expanded(child: _StatCard(icon: '🎯', value: '23', label: '任务数')),
-              SizedBox(width: AppSpace.s3),
-              Expanded(child: _StatCard(icon: '⏱️', value: '1.2s', label: '响应时间')),
-            ],
-          ),
+            const SizedBox(height: AppSpace.s6),
 
-          const SizedBox(height: AppSpace.s6),
+            // 今日统计
+            _buildSectionTitle('今日统计'),
+            const SizedBox(height: AppSpace.s3),
+            statsAsync.when(
+              data: (stats) {
+                return Row(
+                  children: [
+                    Expanded(child: _StatCard(icon: '💬', value: stats.conversationCount.toString(), label: '对话数')),
+                    const SizedBox(width: AppSpace.s3),
+                    Expanded(child: _StatCard(icon: '⚙️', value: stats.skillCallCount.toString(), label: '技能调用')),
+                    const SizedBox(width: AppSpace.s3),
+                    Expanded(child: _StatCard(icon: '🎯', value: stats.taskCount.toString(), label: '任务数')),
+                    const SizedBox(width: AppSpace.s3),
+                    Expanded(child: _StatCard(icon: '⏱️', value: stats.formattedResponseTime, label: '响应时间')),
+                  ],
+                );
+              },
+              loading: () => const _ShimmerRow(4),
+              error: (_, _) => const _ShimmerRow(4),
+            ),
 
-          // 活跃通道
-          _buildSectionTitle('活跃通道'),
-          const SizedBox(height: AppSpace.s3),
-          _ChannelCard(
-            icon: '💬',
-            name: '微信',
-            status: '在线',
-            count: 23,
-            isOnline: true,
-          ),
-          const SizedBox(height: AppSpace.s2),
-          _ChannelCard(
-            icon: '🐧',
-            name: 'QQ',
-            status: '在线',
-            count: 12,
-            isOnline: true,
-          ),
-          const SizedBox(height: AppSpace.s2),
-          _ChannelCard(
-            icon: '✈️',
-            name: 'Telegram',
-            status: '在线',
-            count: 8,
-            isOnline: true,
-          ),
+            const SizedBox(height: AppSpace.s6),
 
-          const SizedBox(height: AppSpace.s6),
+            // Agent 列表
+            _buildSectionTitle('Agent 列表'),
+            const SizedBox(height: AppSpace.s3),
+            agentsAsync.when(
+              data: (agents) {
+                if (agents.isEmpty) {
+                  return const Center(
+                    child: Text(
+                      '暂无 Agent',
+                      style: TextStyle(color: AppColors.textSecondary),
+                    ),
+                  );
+                }
 
-          // 最近任务
-          _buildSectionTitle('最近任务'),
-          const SizedBox(height: AppSpace.s3),
-          _TaskItem(
-            icon: Icons.check_circle,
-            iconColor: AppColors.success,
-            title: 'AI 写作助手',
-            desc: '已完成：生成邮件草稿',
-            time: '10:30',
-          ),
-          _TaskItem(
-            icon: Icons.pending,
-            iconColor: AppColors.primary,
-            title: '网页摘要',
-            desc: '处理中：正在分析网页内容...',
-            time: '10:25',
-          ),
-          _TaskItem(
-            icon: Icons.error,
-            iconColor: AppColors.error,
-            title: '数据查询',
-            desc: '失败：网络连接超时',
-            time: '10:20',
-          ),
+                return Column(
+                  children: agents.map((agent) => _AgentCard(agent: agent)).toList(),
+                );
+              },
+              loading: () => const Center(
+                child: CircularProgressIndicator(color: AppColors.primary),
+              ),
+              error: (error, _) => Center(
+                child: Text(
+                  '加载失败: $error',
+                  style: const TextStyle(color: AppColors.error),
+                ),
+              ),
+            ),
 
-          const SizedBox(height: AppSpace.s8),
-        ],
+            const SizedBox(height: AppSpace.s6),
+
+            // 活跃通道
+            _buildSectionTitle('活跃通道'),
+            const SizedBox(height: AppSpace.s3),
+            channelsAsync.when(
+              data: (channels) {
+                return Column(
+                  children: channels.map((channel) => _ChannelCard(channel: channel)).toList(),
+                );
+              },
+              loading: () => const _ShimmerColumn(3),
+              error: (_, _) => const _ShimmerColumn(3),
+            ),
+
+            const SizedBox(height: AppSpace.s6),
+
+            // 最近任务
+            _buildSectionTitle('最近任务'),
+            const SizedBox(height: AppSpace.s3),
+            tasksAsync.when(
+              data: (tasks) {
+                if (tasks.isEmpty) {
+                  return const Center(
+                    child: Text(
+                      '暂无任务',
+                      style: TextStyle(color: AppColors.textSecondary),
+                    ),
+                  );
+                }
+
+                return Column(
+                  children: tasks.map((task) => _TaskItem(task: task)).toList(),
+                );
+              },
+              loading: () => const _ShimmerColumn(3),
+              error: (error, _) => Center(
+                child: Text(
+                  '加载失败: $error',
+                  style: const TextStyle(color: AppColors.error),
+                ),
+              ),
+            ),
+
+            const SizedBox(height: AppSpace.s8),
+          ],
+        ),
       ),
     );
   }
@@ -120,28 +184,30 @@ class DashboardPage extends StatelessWidget {
   }
 }
 
-class _StatusCard extends StatelessWidget {
+/// Agent 状态卡片
+class _AgentStatusCard extends StatelessWidget {
   final String title;
-  final List<Widget> children;
+  final String status;
+  final int count;
+  final Color color;
 
-  const _StatusCard.running()
-      : title = '运行状态',
-        children = const [
-          _StatusDot(isOnline: true, label: '运行中'),
-          SizedBox(height: 4),
-          Text('内存: 156MB',
-              style: TextStyle(fontSize: 13, color: AppColors.textSecondary)),
-        ];
+  const _AgentStatusCard.online({required int count})
+      : title = '在线',
+        status = '运行中',
+        count = count,
+        color = AppColors.success;
 
-  const _StatusCard.resources()
-      : title = '资源使用',
-        children = const [
-          Text('CPU: 12%',
-              style: TextStyle(fontSize: 13, color: AppColors.textSecondary)),
-          SizedBox(height: 4),
-          Text('内存: 8%',
-              style: TextStyle(fontSize: 13, color: AppColors.textSecondary)),
-        ];
+  const _AgentStatusCard.busy({required int count})
+      : title = '忙碌',
+        status = '处理中',
+        count = count,
+        color = AppColors.warning;
+
+  const _AgentStatusCard.offline({required int count})
+      : title = '离线',
+        status = '未连接',
+        count = count,
+        color = AppColors.error;
 
   @override
   Widget build(BuildContext context) {
@@ -164,46 +230,42 @@ class _StatusCard extends StatelessWidget {
             ),
           ),
           const SizedBox(height: AppSpace.s2),
-          ...children,
+          Row(
+            children: [
+              Container(
+                width: 8,
+                height: 8,
+                decoration: BoxDecoration(
+                  color: color,
+                  shape: BoxShape.circle,
+                ),
+              ),
+              const SizedBox(width: 6),
+              Text(
+                status,
+                style: TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w500,
+                  color: color,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: AppSpace.s2),
+          Text(
+            '$count 个 Agent',
+            style: const TextStyle(
+              fontSize: 13,
+              color: AppColors.textSecondary,
+            ),
+          ),
         ],
       ),
     );
   }
 }
 
-class _StatusDot extends StatelessWidget {
-  final bool isOnline;
-  final String label;
-
-  const _StatusDot({required this.isOnline, required this.label});
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Container(
-          width: 8,
-          height: 8,
-          decoration: BoxDecoration(
-            color: isOnline ? AppColors.success : AppColors.error,
-            shape: BoxShape.circle,
-          ),
-        ),
-        const SizedBox(width: 6),
-        Text(
-          label,
-          style: TextStyle(
-            fontSize: 14,
-            fontWeight: FontWeight.w500,
-            color: isOnline ? AppColors.success : AppColors.error,
-          ),
-        ),
-      ],
-    );
-  }
-}
-
+/// 统计卡片
 class _StatCard extends StatelessWidget {
   final String icon;
   final String value;
@@ -250,73 +312,123 @@ class _StatCard extends StatelessWidget {
   }
 }
 
-class _ChannelCard extends StatelessWidget {
-  final String icon;
-  final String name;
-  final String status;
-  final int count;
-  final bool isOnline;
+/// Agent 卡片
+class _AgentCard extends ConsumerWidget {
+  final AgentData agent;
 
-  const _ChannelCard({
-    required this.icon,
-    required this.name,
-    required this.status,
-    required this.count,
-    required this.isOnline,
-  });
+  const _AgentCard({required this.agent});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return Container(
+      margin: const EdgeInsets.only(bottom: AppSpace.s3),
       padding: const EdgeInsets.all(AppSpace.s4),
       decoration: BoxDecoration(
         color: AppColors.surface,
-        borderRadius: AppRadius.radiusMD,
-        border: Border.all(color: AppColors.border),
+        borderRadius: AppRadius.radiusLG,
+        border: Border.all(color: AppColors.border, width: 1),
       ),
       child: Row(
         children: [
-          Text(icon, style: const TextStyle(fontSize: 20)),
-          const SizedBox(width: AppSpace.s3),
-          Expanded(
-            child: Text(
-              name,
-              style: const TextStyle(
-                fontSize: 15,
-                fontWeight: FontWeight.w500,
-                color: AppColors.textPrimary,
-              ),
+          // 图标
+          Container(
+            width: 48,
+            height: 48,
+            decoration: BoxDecoration(
+              color: AppColors.surfaceHighlight,
+              borderRadius: AppRadius.radiusMD,
+            ),
+            child: Center(
+              child: Text(agent.emoji, style: const TextStyle(fontSize: 24)),
             ),
           ),
-          _StatusDot(isOnline: isOnline, label: status),
           const SizedBox(width: AppSpace.s3),
-          Text(
-            '$count 条',
-            style: const TextStyle(
-              fontSize: 13,
-              color: AppColors.textSecondary,
+          // 信息
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    Text(
+                      agent.name,
+                      style: const TextStyle(
+                        fontSize: 15,
+                        fontWeight: FontWeight.w600,
+                        color: AppColors.textPrimary,
+                      ),
+                    ),
+                    const SizedBox(width: AppSpace.s2),
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: AppSpace.s2,
+                        vertical: 2,
+                      ),
+                      decoration: BoxDecoration(
+                        color: _getStatusColor(agent.status).withValues(alpha: 0.1),
+                        borderRadius: AppRadius.radiusSM,
+                      ),
+                      child: Text(
+                        agent.statusDisplayName,
+                        style: TextStyle(
+                          fontSize: 11,
+                          color: _getStatusColor(agent.status),
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  '${agent.model} · ${agent.taskCount} 个任务',
+                  style: const TextStyle(
+                    fontSize: 13,
+                    color: AppColors.textSecondary,
+                  ),
+                ),
+                if (agent.formattedLastActive != null)
+                  Text(
+                    '活跃于 ${agent.formattedLastActive}',
+                    style: const TextStyle(
+                      fontSize: 12,
+                      color: AppColors.textTertiary,
+                    ),
+                  ),
+              ],
+            ),
+          ),
+          // 状态点
+          Container(
+            width: 8,
+            height: 8,
+            decoration: BoxDecoration(
+              color: _getStatusColor(agent.status),
+              shape: BoxShape.circle,
             ),
           ),
         ],
       ),
     );
   }
+
+  Color _getStatusColor(AgentStatus status) {
+    switch (status) {
+      case AgentStatus.online:
+        return AppColors.success;
+      case AgentStatus.busy:
+        return AppColors.warning;
+      case AgentStatus.offline:
+        return AppColors.error;
+    }
+  }
 }
 
-class _TaskItem extends StatelessWidget {
-  final IconData icon;
-  final Color iconColor;
-  final String title;
-  final String desc;
-  final String time;
+/// 通道卡片
+class _ChannelCard extends StatelessWidget {
+  final ChannelInfo channel;
 
-  const _TaskItem({
-    required this.icon,
-    required this.iconColor,
-    required this.title,
-    required this.desc,
-    required this.time,
-  });
+  const _ChannelCard({required this.channel});
 
   @override
   Widget build(BuildContext context) {
@@ -330,14 +442,93 @@ class _TaskItem extends StatelessWidget {
       ),
       child: Row(
         children: [
-          Icon(icon, color: iconColor, size: 20),
+          Text(channel.emoji, style: const TextStyle(fontSize: 20)),
+          const SizedBox(width: AppSpace.s3),
+          Expanded(
+            child: Text(
+              channel.name,
+              style: const TextStyle(
+                fontSize: 15,
+                fontWeight: FontWeight.w500,
+                color: AppColors.textPrimary,
+              ),
+            ),
+          ),
+          _StatusDot(isOnline: channel.isOnline, label: channel.status),
+          const SizedBox(width: AppSpace.s3),
+          Text(
+            '${channel.messageCount} 条',
+            style: const TextStyle(
+              fontSize: 13,
+              color: AppColors.textSecondary,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+/// 状态点
+class _StatusDot extends StatelessWidget {
+  final bool isOnline;
+  final String label;
+
+  const _StatusDot({required this.isOnline, required this.label});
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Container(
+          width: 8,
+          height: 8,
+          decoration: BoxDecoration(
+            color: isOnline ? AppColors.success : AppColors.error,
+            shape: BoxShape.circle,
+          ),
+        ),
+        const SizedBox(width: 6),
+        Text(
+          label,
+          style: TextStyle(
+            fontSize: 14,
+            fontWeight: FontWeight.w500,
+            color: isOnline ? AppColors.success : AppColors.error,
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+/// 任务项
+class _TaskItem extends StatelessWidget {
+  final TaskInfo task;
+
+  const _TaskItem({required this.task});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      margin: const EdgeInsets.only(bottom: AppSpace.s2),
+      padding: const EdgeInsets.all(AppSpace.s4),
+      decoration: BoxDecoration(
+        color: AppColors.surface,
+        borderRadius: AppRadius.radiusMD,
+        border: Border.all(color: AppColors.border),
+      ),
+      child: Row(
+        children: [
+          Icon(task.statusIcon, color: task.statusColor, size: 20),
           const SizedBox(width: AppSpace.s3),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  title,
+                  task.title,
                   style: const TextStyle(
                     fontSize: 15,
                     fontWeight: FontWeight.w500,
@@ -345,7 +536,7 @@ class _TaskItem extends StatelessWidget {
                   ),
                 ),
                 Text(
-                  desc,
+                  task.description,
                   style: const TextStyle(
                     fontSize: 13,
                     color: AppColors.textSecondary,
@@ -357,13 +548,67 @@ class _TaskItem extends StatelessWidget {
             ),
           ),
           Text(
-            time,
+            task.time,
             style: const TextStyle(
               fontSize: 12,
               color: AppColors.textTertiary,
             ),
           ),
         ],
+      ),
+    );
+  }
+}
+
+/// Shimmer 行占位符
+class _ShimmerRow extends StatelessWidget {
+  final int count;
+
+  const _ShimmerRow(this.count);
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: List.generate(
+        count,
+        (index) => Expanded(
+          child: Container(
+            height: 80,
+            margin: EdgeInsets.only(
+              right: index < count - 1 ? AppSpace.s3 : 0,
+            ),
+            decoration: BoxDecoration(
+              color: AppColors.surface,
+              borderRadius: AppRadius.radiusLG,
+              border: Border.all(color: AppColors.border),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+/// Shimmer 列占位符
+class _ShimmerColumn extends StatelessWidget {
+  final int count;
+
+  const _ShimmerColumn(this.count);
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: List.generate(
+        count,
+        (index) => Container(
+          height: 60,
+          margin: const EdgeInsets.only(bottom: AppSpace.s2),
+          decoration: BoxDecoration(
+            color: AppColors.surface,
+            borderRadius: AppRadius.radiusMD,
+            border: Border.all(color: AppColors.border),
+          ),
+        ),
       ),
     );
   }
