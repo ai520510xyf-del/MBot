@@ -1,9 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../../../core/providers/providers.dart';
 import '../../../../core/services/chat_service.dart';
-import '../../../../core/repositories/conversation_repository.dart';
 import '../../../../core/repositories/message_repository.dart';
 import '../../../../core/models/message.dart';
 import '../../../../theme/theme.dart';
@@ -90,8 +88,10 @@ class _ChatPageState extends ConsumerState<ChatPage> {
   Widget build(BuildContext context) {
     final messageRepo = ref.watch(messageRepositoryProvider);
 
-    return Scaffold(
-      appBar: AppBar(
+    return PopScope(
+      canPop: true,
+      child: Scaffold(
+        appBar: AppBar(
         title: const Text('AI 助手'),
         actions: [
           IconButton(
@@ -130,6 +130,7 @@ class _ChatPageState extends ConsumerState<ChatPage> {
           );
         },
       ),
+    ),
     );
   }
 

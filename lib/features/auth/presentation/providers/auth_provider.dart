@@ -48,12 +48,14 @@ class Auth extends _$Auth {
     state = const AuthState.authenticating();
 
     try {
-      // Integrate with auth API for phone login
+      // TODO: 调用真实 API 验证手机号和验证码
+      // POST /api/auth/login-with-phone
+      // Body: { "phone": phone, "code": code }
       await Future.delayed(const Duration(seconds: 1));
 
-      // 模拟登录成功
+      // 模拟登录成功 - 实际应该从 API 返回获取
       final userId = 'user_$phone';
-      final token = 'token_$phone';
+      final token = 'token_${phone}_$code';
 
       state = AuthState.authenticated(
         userId: userId,
@@ -68,6 +70,7 @@ class Auth extends _$Auth {
       await _storage.write(key: 'nickname', value: 'MBot 用户');
     } catch (e) {
       state = AuthState.error(e.toString());
+      rethrow; // 重新抛出异常，让调用方处理
     }
   }
 

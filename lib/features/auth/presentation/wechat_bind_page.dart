@@ -1,18 +1,50 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
+import 'package:qr_flutter/qr_flutter.dart';
 import '../../../../theme/theme.dart';
+import 'providers/auth_provider.dart';
+
+/// 扫码状态
+enum ScanStatus {
+  /// 等待扫码
+  waiting,
+  /// 已扫码，等待确认
+  scanned,
+  /// 已确认，登录成功
+  confirmed,
+  /// 二维码已过期
+  expired,
+  /// 发生错误
+  error,
+}
 
 /// 微信扫码绑定页面
-class WechatBindPage extends StatefulWidget {
+class WechatBindPage extends ConsumerStatefulWidget {
   const WechatBindPage({super.key});
 
   @override
-  State<WechatBindPage> createState() => _WechatBindPageState();
+  ConsumerState<WechatBindPage> createState() => _WechatBindPageState();
 }
 
-class _WechatBindPageState extends State<WechatBindPage>
+class _WechatBindPageState extends ConsumerState<WechatBindPage>
     with SingleTickerProviderStateMixin {
   late AnimationController _animationController;
-  bool _isScanning = true;
+
+  // 二维码相关状态
+  String? _qrCodeUrl;
+  String? _qrCodeId;
+  ScanStatus _scanStatus = ScanStatus.waiting;
+  String? _errorMessage;
+
+  // 轮询定时器
+  Timer? _pollTimer;
+  // 二维码过期倒计时
+  int _expireCountdown = 0;
+  Timer? _expireTimer;
+
+  bool _isLoading = true;
 
   @override
   void initState() {
@@ -21,34 +53,174 @@ class _WechatBindPageState extends State<WechatBindPage>
       vsync: this,
       duration: const Duration(seconds: 2),
     )..repeat();
+    _fetchQrCode();
   }
 
   @override
   void dispose() {
     _animationController.dispose();
+    _pollTimer?.cancel();
+    _expireTimer?.cancel();
     super.dispose();
   }
 
-  void _toggleScanning() {
+  /// 获取微信二维码
+  Future<void> _fetchQrCode() async {
     setState(() {
-      _isScanning = !_isScanning;
+      _isLoading = true;
+      _scanStatus = ScanStatus.waiting;
+      _errorMessage = null;
     });
-    if (_isScanning) {
-      _animationController.repeat();
-    } else {
-      _animationController.stop();
+
+    try {
+      // TODO: 调用真实 API 获取微信二维码
+      // GET /api/auth/wechat/qrcode
+      // Response: { "qrCodeUrl": "...", "qrCodeId": "...", "expireSeconds": 300 }
+      await Future.delayed(const Duration(milliseconds: 800));
+
+      // 模拟 API 返回数据
+      // 实际应该从服务器获取真实的微信二维码 URL
+      const mockQrCodeUrl =
+          'https://open.weixin.qq.com/connect/qrcode/test-qr-code-id';
+      const mockQrCodeId = 'test-qr-code-id';
+
+      if (mounted) {
+        setState(() {
+          _qrCodeUrl = mockQrCodeUrl;
+          _qrCodeId = mockQrCodeId;
+          _isLoading = false;
+          _expireCountdown = 300; // 5分钟有效期
+        });
+
+        _startExpireCountdown();
+        _startPollingScanStatus();
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+          _scanStatus = ScanStatus.error;
+          _errorMessage = '获取二维码失败: $e';
+        });
+      }
     }
+  }
+
+  /// 开始过期倒计时
+  void _startExpireCountdown() {
+    _expireTimer?.cancel();
+    _expireTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      if (!mounted) {
+        timer.cancel();
+        return;
+      }
+
+      setState(() {
+        _expireCountdown--;
+      });
+
+      if (_expireCountdown <= 0) {
+        timer.cancel();
+        setState(() {
+          _scanStatus = ScanStatus.expired;
+        });
+        _pollTimer?.cancel();
+      }
+    });
+  }
+
+  /// 开始轮询扫码状态
+  void _startPollingScanStatus() {
+    _pollTimer?.cancel();
+    _pollTimer = Timer.periodic(const Duration(seconds: 2), (timer) async {
+      if (!mounted) {
+        timer.cancel();
+        return;
+      }
+
+      // 如果已经不在等待状态，停止轮询
+      if (_scanStatus != ScanStatus.waiting && _scanStatus != ScanStatus.scanned) {
+        timer.cancel();
+        return;
+      }
+
+      try {
+        // TODO: 调用真实 API 检查扫码状态
+        // GET /api/auth/wechat/status?qrCodeId=xxx
+        // Response: { "status": "waiting|scanned|confirmed", "userId": "...", "token": "..." }
+
+        // 模拟状态检查 - 实际应该调用 API
+        // 这里暂时不做任何操作，等待真实 API 集成
+      } catch (e) {
+        debugPrint('轮询扫码状态失败: $e');
+      }
+    });
+  }
+
+  /// 处理扫码确认（模拟用，实际由 API 回调触发）
+  Future<void> _handleScanConfirmed() async {
+    _pollTimer?.cancel();
+    _expireTimer?.cancel();
+
+    setState(() {
+      _scanStatus = ScanStatus.confirmed;
+    });
+
+    try {
+      // 调用 auth_provider 完成登录
+      await ref.read(authProvider.notifier).loginWithWechat(qrCode: _qrCodeId ?? '');
+
+      if (mounted) {
+        // 登录成功，跳转到主页
+        context.go('/');
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() {
+          _scanStatus = ScanStatus.error;
+          _errorMessage = '登录失败: $e';
+        });
+      }
+    }
+  }
+
+  /// 刷新二维码
+  Future<void> _refreshQrCode() async {
+    _pollTimer?.cancel();
+    _expireTimer?.cancel();
+    await _fetchQrCode();
+  }
+
+  String _formatCountdown(int seconds) {
+    final minutes = seconds ~/ 60;
+    final secs = seconds % 60;
+    return '${minutes.toString().padLeft(2, '0')}:${secs.toString().padLeft(2, '0')}';
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text('微信扫码绑定')),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(AppSpace.s6),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
+    return PopScope(
+      canPop: true,
+      onPopInvokedWithResult: (didPop, result) {
+        // 返回时取消定时器
+        if (didPop) {
+          _pollTimer?.cancel();
+          _expireTimer?.cancel();
+        }
+      },
+      child: Scaffold(
+        appBar: AppBar(
+          title: const Text('微信扫码绑定'),
+          leading: IconButton(
+            icon: const Icon(Icons.arrow_back),
+            onPressed: () => Navigator.of(context).pop(),
+          ),
+        ),
+        body: SingleChildScrollView(
+          padding: const EdgeInsets.all(AppSpace.s6),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
             // 说明卡片
             Container(
               padding: const EdgeInsets.all(AppSpace.s4),
@@ -120,40 +292,147 @@ class _WechatBindPageState extends State<WechatBindPage>
                 ),
                 child: Stack(
                   children: [
-                    // QR 码占位图
-                    Center(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Icon(
-                            Icons.qr_code_2_outlined,
-                            size: 200,
-                            color: AppColors.surface.withValues(alpha: 0.3),
-                          ),
-                          const SizedBox(height: AppSpace.s2),
-                          const Text(
-                            'QR Code Placeholder',
-                            style: TextStyle(
-                              color: AppColors.surface,
-                              fontSize: 12,
+                    // QR 码内容
+                    if (_isLoading)
+                      const Center(
+                        child: CircularProgressIndicator(),
+                      )
+                    else if (_errorMessage != null || _scanStatus == ScanStatus.error)
+                      Center(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            const Icon(
+                              Icons.error_outline,
+                              size: 64,
+                              color: AppColors.error,
                             ),
-                          ),
-                        ],
+                            const SizedBox(height: AppSpace.s3),
+                            Padding(
+                              padding: const EdgeInsets.symmetric(horizontal: AppSpace.s4),
+                              child: Text(
+                                _errorMessage ?? '获取二维码失败',
+                                style: const TextStyle(
+                                  color: AppColors.textSecondary,
+                                  fontSize: 14,
+                                ),
+                                textAlign: TextAlign.center,
+                              ),
+                            ),
+                          ],
+                        ),
+                      )
+                    else if (_scanStatus == ScanStatus.expired)
+                      Center(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            const Icon(
+                              Icons.timer_off_outlined,
+                              size: 64,
+                              color: AppColors.warning,
+                            ),
+                            const SizedBox(height: AppSpace.s3),
+                            const Text(
+                              '二维码已过期',
+                              style: TextStyle(
+                                color: AppColors.textSecondary,
+                                fontSize: 16,
+                              ),
+                            ),
+                            const SizedBox(height: AppSpace.s3),
+                            FilledButton.icon(
+                              onPressed: _refreshQrCode,
+                              icon: const Icon(Icons.refresh),
+                              label: const Text('刷新二维码'),
+                            ),
+                          ],
+                        ),
+                      )
+                    else if (_scanStatus == ScanStatus.confirmed)
+                      Center(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            const Icon(
+                              Icons.check_circle_outline,
+                              size: 64,
+                              color: AppColors.success,
+                            ),
+                            const SizedBox(height: AppSpace.s3),
+                            const Text(
+                              '登录成功！',
+                              style: TextStyle(
+                                color: AppColors.success,
+                                fontSize: 16,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                            const SizedBox(height: AppSpace.s2),
+                            const SizedBox(
+                              width: 20,
+                              height: 20,
+                              child: CircularProgressIndicator(
+                                strokeWidth: 2,
+                                valueColor: AlwaysStoppedAnimation(AppColors.success),
+                              ),
+                            ),
+                          ],
+                        ),
+                      )
+                    else
+                      // 显示二维码图片
+                      Center(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            // 使用 qr_flutter 生成真实二维码
+                            Container(
+                              width: 200,
+                              height: 200,
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: AppRadius.radiusMD,
+                              ),
+                              child: Center(
+                                child: _qrCodeUrl != null
+                                    ? QrImageView(
+                                        data: _qrCodeUrl!,
+                                        version: QrVersions.auto,
+                                        size: 180,
+                                        backgroundColor: Colors.white,
+                                        errorCorrectionLevel: QrErrorCorrectLevel.H,
+                                        eyeStyle: const QrEyeStyle(
+                                          eyeShape: QrEyeShape.square,
+                                          color: Colors.black,
+                                        ),
+                                        dataModuleStyle: const QrDataModuleStyle(
+                                          dataModuleShape: QrDataModuleShape.square,
+                                          color: Colors.black,
+                                        ),
+                                      )
+                                    : const CircularProgressIndicator(),
+                              ),
+                            ),
+                            const SizedBox(height: AppSpace.s2),
+                            Text(
+                              '有效期 ${_formatCountdown(_expireCountdown)}',
+                              style: const TextStyle(
+                                color: AppColors.textSecondary,
+                                fontSize: 12,
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
-                    ),
 
-                    // 扫描线动画
-                    if (_isScanning)
+                    // 扫描线动画（仅在等待状态显示）
+                    if (_scanStatus == ScanStatus.waiting && !_isLoading)
                       AnimatedBuilder(
                         animation: _animationController,
                         builder: (context, child) {
                           return Positioned(
-                            top:
-                                20 +
-                                (240 * _animationController.value).clamp(
-                                  0.0,
-                                  240.0,
-                                ),
+                            top: 20 + (240 * _animationController.value).clamp(0.0, 240.0),
                             left: 20,
                             right: 20,
                             child: Container(
@@ -162,15 +441,13 @@ class _WechatBindPageState extends State<WechatBindPage>
                                 gradient: LinearGradient(
                                   colors: [
                                     Colors.transparent,
-                                    AppColors.primary,
+                                    AppColors.success,
                                     Colors.transparent,
                                   ],
                                 ),
                                 boxShadow: [
                                   BoxShadow(
-                                    color: AppColors.primary.withValues(
-                                      alpha: 0.8,
-                                    ),
+                                    color: AppColors.success.withValues(alpha: 0.8),
                                     blurRadius: 10,
                                   ),
                                 ],
@@ -181,12 +458,13 @@ class _WechatBindPageState extends State<WechatBindPage>
                       ),
 
                     // 四角边框
-                    Positioned.fill(
-                      child: Padding(
-                        padding: const EdgeInsets.all(20),
-                        child: CustomPaint(painter: _QRBorderPainter()),
+                    if (!_isLoading && _scanStatus == ScanStatus.waiting)
+                      Positioned.fill(
+                        child: Padding(
+                          padding: const EdgeInsets.all(20),
+                          child: CustomPaint(painter: _QRBorderPainter()),
+                        ),
                       ),
-                    ),
                   ],
                 ),
               ),
@@ -207,54 +485,51 @@ class _WechatBindPageState extends State<WechatBindPage>
                   Container(
                     width: 8,
                     height: 8,
-                    decoration: const BoxDecoration(
-                      color: AppColors.success,
+                    decoration: BoxDecoration(
+                      color: _getStatusColor(),
                       shape: BoxShape.circle,
                     ),
                   ),
                   const SizedBox(width: AppSpace.s3),
-                  const Expanded(
+                  Expanded(
                     child: Text(
-                      '等待扫码...',
-                      style: TextStyle(
+                      _getStatusText(),
+                      style: const TextStyle(
                         fontSize: 14,
                         color: AppColors.textSecondary,
                       ),
                     ),
                   ),
-                  TextButton.icon(
-                    onPressed: _toggleScanning,
-                    icon: Icon(
-                      _isScanning ? Icons.pause : Icons.play_arrow,
-                      size: 18,
-                    ),
-                    label: Text(_isScanning ? '暂停' : '继续'),
-                    style: TextButton.styleFrom(
-                      foregroundColor: AppColors.primary,
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: AppSpace.s3,
-                        vertical: AppSpace.s1,
+                  if (_scanStatus == ScanStatus.waiting)
+                    TextButton.icon(
+                      onPressed: _refreshQrCode,
+                      icon: const Icon(Icons.refresh, size: 18),
+                      label: const Text('刷新'),
+                      style: TextButton.styleFrom(
+                        foregroundColor: AppColors.primary,
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: AppSpace.s3,
+                          vertical: AppSpace.s1,
+                        ),
                       ),
                     ),
-                  ),
                 ],
               ),
             ),
 
             const SizedBox(height: AppSpace.s4),
 
-            // 操作按钮
-            OutlinedButton.icon(
-              onPressed: () {
-                // Refresh QR code from server
-              },
-              icon: const Icon(Icons.refresh, size: 20),
-              label: const Text('刷新二维码'),
-              style: OutlinedButton.styleFrom(
-                padding: const EdgeInsets.symmetric(vertical: 12),
-                shape: RoundedRectangleBorder(borderRadius: AppRadius.radiusMD),
+            // 测试用按钮（模拟扫码确认）
+            if (_scanStatus == ScanStatus.waiting)
+              OutlinedButton.icon(
+                onPressed: _handleScanConfirmed,
+                icon: const Icon(Icons.check, size: 20),
+                label: const Text('模拟扫码确认（测试用）'),
+                style: OutlinedButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(vertical: 12),
+                  shape: RoundedRectangleBorder(borderRadius: AppRadius.radiusMD),
+                ),
               ),
-            ),
 
             const SizedBox(height: AppSpace.s4),
 
@@ -290,7 +565,38 @@ class _WechatBindPageState extends State<WechatBindPage>
           ],
         ),
       ),
+    ),
     );
+  }
+
+  Color _getStatusColor() {
+    switch (_scanStatus) {
+      case ScanStatus.waiting:
+        return AppColors.success;
+      case ScanStatus.scanned:
+        return AppColors.info;
+      case ScanStatus.confirmed:
+        return AppColors.success;
+      case ScanStatus.expired:
+        return AppColors.warning;
+      case ScanStatus.error:
+        return AppColors.error;
+    }
+  }
+
+  String _getStatusText() {
+    switch (_scanStatus) {
+      case ScanStatus.waiting:
+        return '等待扫码...';
+      case ScanStatus.scanned:
+        return '已扫码，请在微信中确认...';
+      case ScanStatus.confirmed:
+        return '登录成功！';
+      case ScanStatus.expired:
+        return '二维码已过期，请刷新';
+      case ScanStatus.error:
+        return _errorMessage ?? '发生错误';
+    }
   }
 }
 
@@ -299,7 +605,7 @@ class _QRBorderPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     final paint = Paint()
-      ..color = AppColors.primary
+      ..color = AppColors.success
       ..strokeWidth = 3
       ..style = PaintingStyle.stroke
       ..strokeCap = StrokeCap.round;
