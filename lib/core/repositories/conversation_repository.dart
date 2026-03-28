@@ -29,6 +29,8 @@ class ConversationRepository {
     return ConversationData(
       id: id,
       title: title,
+      agentId: 'default',
+      status: ConversationStatus.active,
       createdAt: now,
       updatedAt: now,
     );
@@ -40,7 +42,15 @@ class ConversationRepository {
       ..orderBy([(t) => OrderingTerm.desc(t.updatedAt)]);
 
     final results = await query.get();
-    return results.map((e) => ConversationData.fromDB(e)).toList();
+    return results.map((e) => ConversationData(
+      id: e.id,
+      title: e.title,
+      agentId: 'default',
+      status: ConversationStatus.active,
+      createdAt: e.createdAt,
+      updatedAt: e.updatedAt,
+      lastMessageAt: e.updatedAt,
+    )).toList();
   }
 
   /// 获取会话流（自动更新）
@@ -49,7 +59,15 @@ class ConversationRepository {
       ..orderBy([(t) => OrderingTerm.desc(t.updatedAt)]);
 
     return query.watch().map(
-      (rows) => rows.map((e) => ConversationData.fromDB(e)).toList(),
+      (rows) => rows.map((e) => ConversationData(
+        id: e.id,
+        title: e.title,
+        agentId: 'default',
+        status: ConversationStatus.active,
+        createdAt: e.createdAt,
+        updatedAt: e.updatedAt,
+        lastMessageAt: e.updatedAt,
+      )).toList(),
     );
   }
 
@@ -58,7 +76,16 @@ class ConversationRepository {
     final query = _db.select(_db.conversations)..where((t) => t.id.equals(id));
 
     final result = await query.getSingleOrNull();
-    return result != null ? ConversationData.fromDB(result) : null;
+    if (result == null) return null;
+    return ConversationData(
+      id: result.id,
+      title: result.title,
+      agentId: 'default',
+      status: ConversationStatus.active,
+      createdAt: result.createdAt,
+      updatedAt: result.updatedAt,
+      lastMessageAt: result.updatedAt,
+    );
   }
 
   /// 更新会话
@@ -66,7 +93,7 @@ class ConversationRepository {
     final companion = ConversationsCompanion(
       id: Value(conversation.id),
       title: Value(conversation.title),
-      lastMessage: Value(conversation.lastMessage),
+      lastMessage: const Value.absent(),
       updatedAt: Value(DateTime.now()),
     );
 
