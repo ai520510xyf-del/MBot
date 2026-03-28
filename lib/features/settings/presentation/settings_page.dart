@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/providers/theme_provider.dart';
 import '../../../../theme/theme.dart';
 import 'memory_page.dart';
+import '../../about/presentation/about_page.dart';
 import 'model_config/model_config_page.dart';
 
 /// 设置页
@@ -67,7 +68,12 @@ class SettingsPage extends ConsumerWidget {
                 ),
               ),
             ),
-            onTap: () {},
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => const AboutPage()),
+              );
+            },
           ),
           _buildSettingItem(
             context,
@@ -78,7 +84,12 @@ class SettingsPage extends ConsumerWidget {
               '去绑定',
               style: TextStyle(fontSize: 13, color: AppColors.primary),
             ),
-            onTap: () {},
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => const AboutPage()),
+              );
+            },
           ),
           _buildSettingItem(
             context,
@@ -89,7 +100,12 @@ class SettingsPage extends ConsumerWidget {
               '去绑定',
               style: TextStyle(fontSize: 13, color: AppColors.primary),
             ),
-            onTap: () {},
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => const AboutPage()),
+              );
+            },
           ),
 
           const SizedBox(height: AppSpace.s6),
@@ -142,14 +158,29 @@ class SettingsPage extends ConsumerWidget {
 
           // 关于
           _buildSectionHeader('关于'),
-          _buildSettingItem(context, icon: Icons.info_outline, title: '关于 MBot', onTap: () {}),
+          _buildSettingItem(
+                context,
+                icon: Icons.info_outline,
+                title: '关于 MBot',
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (_) => const AboutPage()),
+                  );
+                },
+              ),
           _buildSettingItem(context, icon: Icons.help_outline, title: '帮助与反馈', onTap: () {}),
           _buildSettingItem(
             context,
             icon: Icons.logout,
             title: '退出登录',
             titleColor: AppColors.error,
-            onTap: () {},
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => const AboutPage()),
+              );
+            },
           ),
 
           const SizedBox(height: AppSpace.s8),

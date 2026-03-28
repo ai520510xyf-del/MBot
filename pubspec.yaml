@@ -22,6 +22,7 @@ dependencies:
   riverpod_annotation: ^4.0.2
 
   # 网络
+  url_launcher: ^6.3.1
   dio: ^5.7.0
   web_socket_channel: ^3.0.1
 
