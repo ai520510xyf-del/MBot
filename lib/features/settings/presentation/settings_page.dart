@@ -1,13 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'memory_page.dart';
+import 'model_config/model_config_page.dart';
 import '../../../../theme/theme.dart';
 
 /// 设置页
-class SettingsPage extends StatelessWidget {
+class SettingsPage extends ConsumerWidget {
   const SettingsPage({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return Scaffold(
       appBar: AppBar(
         title: const Text('设置'),
@@ -21,30 +23,26 @@ class SettingsPage extends StatelessWidget {
           const SizedBox(height: AppSpace.s6),
 
           // 模型设置组
-          _buildSectionHeader('AI 模型'),
+          _buildSectionHeader('模型设置'),
           _buildSettingItem(
             context,
             icon: Icons.psychology,
-            title: '模型选择',
-            subtitle: 'GLM-4-Plus',
+            title: '模型配置',
+            subtitle: 'Provider / API Key / 模型选择',
             trailing: const Icon(Icons.chevron_right,
                 size: 20, color: AppColors.textTertiary),
-            onTap: () {},
-          ),
-          _buildSettingItem(
-            context,
-            icon: Icons.speed,
-            title: '响应速度',
-            subtitle: '标准',
-            trailing: const Icon(Icons.chevron_right,
-                size: 20, color: AppColors.textTertiary),
-            onTap: () {},
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => const ModelConfigPage()),
+              );
+            },
           ),
 
           const SizedBox(height: AppSpace.s6),
 
           // 通道设置组
-          _buildSectionHeader('消息通道'),
+          _buildSectionHeader('通道绑定'),
           _buildSettingItem(
             context,
             icon: Icons.wechat_outlined,
@@ -93,7 +91,7 @@ class SettingsPage extends StatelessWidget {
           const SizedBox(height: AppSpace.s6),
 
           // 通用设置组
-          _buildSectionHeader('通用'),
+          _buildSectionHeader('通用设置'),
           _buildSwitchItem(
             context,
             icon: Icons.dark_mode_outlined,
@@ -117,7 +115,6 @@ class SettingsPage extends StatelessWidget {
             onChanged: (_) {},
           ),
 
-
           const SizedBox(height: AppSpace.s6),
 
           // 数据管理组
@@ -137,7 +134,8 @@ class SettingsPage extends StatelessWidget {
 
           const SizedBox(height: AppSpace.s6),
 
-          // 其他
+          // 关于
+          _buildSectionHeader('关于'),
           _buildSettingItem(context, icon: Icons.info_outline, title: '关于 MBot', onTap: () {}),
           _buildSettingItem(context, icon: Icons.help_outline, title: '帮助与反馈', onTap: () {}),
           _buildSettingItem(
