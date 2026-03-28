@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:async';
 import 'package:drift/drift.dart';
 import 'package:drift/native.dart';
 import 'package:path_provider/path_provider.dart';
@@ -166,6 +167,9 @@ class Memories extends Table {
 /// MBot 数据库类
 @DriftDatabase(tables: [Conversations, Messages, Skills, Agents, Memories])
 class MBotDatabase extends _$MBotDatabase {
+  /// Database access lock for synchronized operations
+  final Lock _lock = Lock();
+
   /// 构造函数
   MBotDatabase(super.e);
 
@@ -201,10 +205,25 @@ class MBotDatabase extends _$MBotDatabase {
   static MBotDatabase _open() {
     // 使用 Flutter 的 native 数据库引擎
     final executor = LazyDatabase(() async {
-      final dataDir = await getApplicationDocumentsDirectory();
-      final dbFile = File(p.join(dataDir.path, 'mbot.db'));
-      return NativeDatabase.createInBackground(dbFile);
+      try {
+        final dataDir = await getApplicationDocumentsDirectory();
+        final dbFile = File(p.join(dataDir.path, 'mbot.db'));
+        
+        // Ensure directory exists
+        if (!await dataDir.exists()) {
+          await dataDir.create(recursive: true);
+        }
+        
+        return NativeDatabase.createInBackground(dbFile);
+      } catch (e) {
+        throw Exception('Failed to open database: $e');
+      }
     });
     return MBotDatabase(executor);
+  }
+
+  /// Execute a database operation with synchronized access
+  Future<T> synchronized<T>(Future<T> Function() operation) async {
+    return await _lock.synchronized(operation);
   }
 }

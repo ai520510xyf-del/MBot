@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 import 'package:web_socket_channel/web_socket_channel.dart';
+import 'dart:math';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import '../providers/gateway_provider.dart';
 
@@ -277,12 +278,9 @@ class GatewayService {
   }
 
   String _randomString(int length) {
+    final random = Random();
     const chars = 'abcdefghijklmnopqrstuvwxyz0123456789';
-    final random = DateTime.now().millisecondsSinceEpoch;
-    final codeUnits = List.generate(length, (index) {
-      return chars.codeUnitAt((random + index) % chars.length);
-    });
-    return String.fromCharCodes(codeUnits);
+    return List.generate(length, (index) => chars[random.nextInt(chars.length)]).join();
   }
 
   void dispose() {

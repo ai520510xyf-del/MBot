@@ -61,6 +61,7 @@ dependencies:
 
   # UI 组件
   pinput: ^5.0.0
+  flutter_secure_storage: ^10.0.0
 
 dev_dependencies:
   flutter_test:
