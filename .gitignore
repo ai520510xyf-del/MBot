@@ -97,3 +97,5 @@ app.*.map.json
 # 临时文件
 *.tmp
 *.temp
+app-release.apk
+mbot-release.apk
