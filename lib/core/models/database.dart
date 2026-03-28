@@ -136,15 +136,40 @@ class Agents extends Table {
   Set<Column> get primaryKey => {id};
 }
 
+/// Memories 表定义
+@DataClassName('Memory')
+class Memories extends Table {
+  /// 主键 ID (UUID)
+  TextColumn get id => text()();
+
+  /// 记忆内容
+  TextColumn get content => text()();
+
+  /// 分类
+  TextColumn get category => text()(); // 'preference', 'fact', 'decision', 'entity'
+
+  /// 来源
+  TextColumn get source => text()(); // 'user', 'ai', 'system'
+
+  /// 创建时间
+  DateTimeColumn get createdAt => dateTime()();
+
+  /// 更新时间
+  DateTimeColumn get updatedAt => dateTime()();
+
+  @override
+  Set<Column> get primaryKey => {id};
+}
+
 /// MBot 数据库类
-@DriftDatabase(tables: [Conversations, Messages, Skills, Agents])
+@DriftDatabase(tables: [Conversations, Messages, Skills, Agents, Memories])
 class MBotDatabase extends _$MBotDatabase {
   /// 构造函数
   MBotDatabase(super.e);
 
   /// 数据库版本
   @override
-  int get schemaVersion => 2;
+  int get schemaVersion => 3;
 
   /// 数据库迁移逻辑
   @override
@@ -154,7 +179,10 @@ class MBotDatabase extends _$MBotDatabase {
         await m.createAll();
       },
       onUpgrade: (Migrator m, int from, int to) async {
-        // 未来版本迁移逻辑
+        // 版本 3: 添加 Memories 表
+        if (from < 3) {
+          await m.createTable(memories);
+        }
       },
     );
   }
