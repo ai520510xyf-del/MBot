@@ -30,12 +30,8 @@ class MessageRepository {
       content: content,
       sender: sender.name,
       timestamp: now,
-      toolName: toolName == null
-          ? const Value.absent()
-          : Value(toolName),
-      toolResult: toolResult == null
-          ? const Value.absent()
-          : Value(toolResult),
+      toolName: toolName == null ? const Value.absent() : Value(toolName),
+      toolResult: toolResult == null ? const Value.absent() : Value(toolResult),
       status: status.name,
     );
 
@@ -126,9 +122,9 @@ class MessageRepository {
 
   /// 删除会话的所有消息
   Future<void> deleteByConversation(String conversationId) async {
-    await (_db.delete(_db.messages)
-          ..where((t) => t.conversationId.equals(conversationId)))
-        .go();
+    await (_db.delete(
+      _db.messages,
+    )..where((t) => t.conversationId.equals(conversationId))).go();
   }
 }
 

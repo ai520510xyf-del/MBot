@@ -83,16 +83,21 @@ class _MemoryPageState extends ConsumerState<MemoryPage> {
                   },
                 );
               },
-              loading: () => const Center(
-                child: CircularProgressIndicator(),
-              ),
+              loading: () => const Center(child: CircularProgressIndicator()),
               error: (_, _) => Center(
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    const Icon(Icons.error_outline, size: 48, color: AppColors.error),
+                    const Icon(
+                      Icons.error_outline,
+                      size: 48,
+                      color: AppColors.error,
+                    ),
                     const SizedBox(height: AppSpace.s4),
-                    const Text('加载失败', style: TextStyle(color: AppColors.textSecondary)),
+                    const Text(
+                      '加载失败',
+                      style: TextStyle(color: AppColors.textSecondary),
+                    ),
                   ],
                 ),
               ),
@@ -120,7 +125,9 @@ class _MemoryPageState extends ConsumerState<MemoryPage> {
               label: Text(category.label),
               selected: isSelected,
               onSelected: (_) {
-                ref.read(selectedMemoryCategoryProvider.notifier).setCategory(category);
+                ref
+                    .read(selectedMemoryCategoryProvider.notifier)
+                    .setCategory(category);
               },
               selectedColor: AppColors.primary.withValues(alpha: 0.2),
               labelStyle: TextStyle(
@@ -204,7 +211,11 @@ class _MemoryPageState extends ConsumerState<MemoryPage> {
                     _showEditDialog(context, memory);
                   }
                 },
-                icon: const Icon(Icons.more_vert, size: 18, color: AppColors.textTertiary),
+                icon: const Icon(
+                  Icons.more_vert,
+                  size: 18,
+                  color: AppColors.textTertiary,
+                ),
                 itemBuilder: (context) => [
                   const PopupMenuItem(
                     value: 'edit',
@@ -220,7 +231,11 @@ class _MemoryPageState extends ConsumerState<MemoryPage> {
                     value: 'delete',
                     child: Row(
                       children: [
-                        Icon(Icons.delete_outline, size: 18, color: AppColors.error),
+                        Icon(
+                          Icons.delete_outline,
+                          size: 18,
+                          color: AppColors.error,
+                        ),
                         SizedBox(width: 12),
                         Text('删除'),
                       ],
@@ -317,17 +332,27 @@ class _MemoryPageState extends ConsumerState<MemoryPage> {
           padding: const EdgeInsets.all(AppSpace.s4),
           decoration: BoxDecoration(
             color: AppColors.surface,
-            border: Border(
-              top: BorderSide(color: AppColors.border),
-            ),
+            border: Border(top: BorderSide(color: AppColors.border)),
           ),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
               _buildStatItem('总计', '$total', Icons.storage),
-              _buildStatItem('偏好', '${stats[MemoryCategory.preference] ?? 0}', Icons.favorite),
-              _buildStatItem('事实', '${stats[MemoryCategory.fact] ?? 0}', Icons.info),
-              _buildStatItem('决策', '${stats[MemoryCategory.decision] ?? 0}', Icons.psychology),
+              _buildStatItem(
+                '偏好',
+                '${stats[MemoryCategory.preference] ?? 0}',
+                Icons.favorite,
+              ),
+              _buildStatItem(
+                '事实',
+                '${stats[MemoryCategory.fact] ?? 0}',
+                Icons.info,
+              ),
+              _buildStatItem(
+                '决策',
+                '${stats[MemoryCategory.decision] ?? 0}',
+                Icons.psychology,
+              ),
             ],
           ),
         );
@@ -353,10 +378,7 @@ class _MemoryPageState extends ConsumerState<MemoryPage> {
         ),
         Text(
           label,
-          style: const TextStyle(
-            fontSize: 11,
-            color: AppColors.textTertiary,
-          ),
+          style: const TextStyle(fontSize: 11, color: AppColors.textTertiary),
         ),
       ],
     );
@@ -367,7 +389,11 @@ class _MemoryPageState extends ConsumerState<MemoryPage> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          const Icon(Icons.psychology_outlined, size: 64, color: AppColors.textTertiary),
+          const Icon(
+            Icons.psychology_outlined,
+            size: 64,
+            color: AppColors.textTertiary,
+          ),
           const SizedBox(height: AppSpace.s4),
           const Text(
             '暂无记忆',
@@ -380,10 +406,7 @@ class _MemoryPageState extends ConsumerState<MemoryPage> {
           const SizedBox(height: AppSpace.s2),
           const Text(
             'AI 会通过对话学习你的偏好',
-            style: TextStyle(
-              fontSize: 13,
-              color: AppColors.textTertiary,
-            ),
+            style: TextStyle(fontSize: 13, color: AppColors.textTertiary),
           ),
         ],
       ),
@@ -439,7 +462,9 @@ class _MemoryPageState extends ConsumerState<MemoryPage> {
             FilledButton(
               onPressed: () {
                 if (_addController.text.trim().isNotEmpty) {
-                  ref.read(memoryStateProvider.notifier).storeMemory(
+                  ref
+                      .read(memoryStateProvider.notifier)
+                      .storeMemory(
                         content: _addController.text.trim(),
                         category: selectedCategory,
                         source: MemorySource.user,
@@ -470,9 +495,7 @@ class _MemoryPageState extends ConsumerState<MemoryPage> {
             children: [
               TextField(
                 controller: controller,
-                decoration: const InputDecoration(
-                  border: OutlineInputBorder(),
-                ),
+                decoration: const InputDecoration(border: OutlineInputBorder()),
                 maxLines: 3,
               ),
               const SizedBox(height: AppSpace.s4),
@@ -503,7 +526,9 @@ class _MemoryPageState extends ConsumerState<MemoryPage> {
             ),
             FilledButton(
               onPressed: () {
-                ref.read(memoryStateProvider.notifier).updateMemory(
+                ref
+                    .read(memoryStateProvider.notifier)
+                    .updateMemory(
                       id: memory.id,
                       content: controller.text.trim(),
                       category: selectedCategory,
@@ -534,9 +559,7 @@ class _MemoryPageState extends ConsumerState<MemoryPage> {
               ref.read(memoryStateProvider.notifier).deleteMemory(memoryId);
               Navigator.pop(context);
             },
-            style: FilledButton.styleFrom(
-              backgroundColor: AppColors.error,
-            ),
+            style: FilledButton.styleFrom(backgroundColor: AppColors.error),
             child: const Text('删除'),
           ),
         ],
@@ -560,9 +583,7 @@ class _MemoryPageState extends ConsumerState<MemoryPage> {
               ref.read(memoryStateProvider.notifier).clearAll();
               Navigator.pop(context);
             },
-            style: FilledButton.styleFrom(
-              backgroundColor: AppColors.error,
-            ),
+            style: FilledButton.styleFrom(backgroundColor: AppColors.error),
             child: const Text('清空'),
           ),
         ],

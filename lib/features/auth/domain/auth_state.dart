@@ -7,10 +7,10 @@ part 'auth_state.freezed.dart';
 class AuthState with _$AuthState {
   /// 未登录
   const factory AuthState.unauthenticated() = Unauthenticated;
-  
+
   /// 登录中
   const factory AuthState.authenticating() = Authenticating;
-  
+
   /// 已登录
   const factory AuthState.authenticated({
     required String userId,
@@ -18,7 +18,7 @@ class AuthState with _$AuthState {
     String? nickname,
     String? avatar,
   }) = Authenticated;
-  
+
   /// 登录失败
   const factory AuthState.error(String message) = AuthError;
 }

@@ -6,13 +6,13 @@ import 'package:permission_handler/permission_handler.dart';
 /// 推送通知服务
 class NotificationService {
   NotificationService._();
-  
+
   static final NotificationService _instance = NotificationService._();
   static NotificationService get instance => _instance;
 
   final FlutterLocalNotificationsPlugin _localNotifications =
       FlutterLocalNotificationsPlugin();
-  
+
   bool _initialized = false;
   String? _fcmToken;
 
@@ -29,13 +29,13 @@ class NotificationService {
     try {
       // 初始化本地通知
       await _initializeLocalNotifications();
-      
+
       // 初始化 FCM
       await _initializeFCM();
-      
+
       // 请求权限
       await _requestPermissions();
-      
+
       _initialized = true;
       debugPrint('NotificationService: Initialized successfully');
     } catch (e) {
@@ -45,7 +45,9 @@ class NotificationService {
 
   /// 初始化本地通知
   Future<void> _initializeLocalNotifications() async {
-    const androidSettings = AndroidInitializationSettings('@mipmap/ic_launcher');
+    const androidSettings = AndroidInitializationSettings(
+      '@mipmap/ic_launcher',
+    );
     const iosSettings = DarwinInitializationSettings(
       requestSoundPermission: false,
       requestBadgePermission: false,
@@ -81,7 +83,9 @@ class NotificationService {
 
     // 监听前台消息
     FirebaseMessaging.onMessage.listen((RemoteMessage message) {
-      debugPrint('Received message in foreground: ${message.notification?.title}');
+      debugPrint(
+        'Received message in foreground: ${message.notification?.title}',
+      );
       _showLocalNotification(message);
     });
 
@@ -99,7 +103,7 @@ class NotificationService {
       debugPrint('Notification permission: ${status.isGranted}');
       return status.isGranted;
     }
-    
+
     // iOS 权限在初始化时已处理
     return true;
   }

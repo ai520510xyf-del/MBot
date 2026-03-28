@@ -47,7 +47,9 @@ class ThemeMode extends _$ThemeMode {
 
   /// 切换深色模式
   Future<void> toggleDark() async {
-    final newMode = state == AppThemeMode.dark ? AppThemeMode.light : AppThemeMode.dark;
+    final newMode = state == AppThemeMode.dark
+        ? AppThemeMode.light
+        : AppThemeMode.dark;
     await setMode(newMode);
   }
 

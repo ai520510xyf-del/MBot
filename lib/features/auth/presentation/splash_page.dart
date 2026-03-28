@@ -24,13 +24,15 @@ class _SplashPageState extends State<SplashPage>
       vsync: this,
     );
 
-    _scaleAnimation = Tween<double>(begin: 0.5, end: 1.0).animate(
-      CurvedAnimation(parent: _controller, curve: Curves.elasticOut),
-    );
+    _scaleAnimation = Tween<double>(
+      begin: 0.5,
+      end: 1.0,
+    ).animate(CurvedAnimation(parent: _controller, curve: Curves.elasticOut));
 
-    _fadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
-      CurvedAnimation(parent: _controller, curve: Curves.easeIn),
-    );
+    _fadeAnimation = Tween<double>(
+      begin: 0.0,
+      end: 1.0,
+    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeIn));
 
     _controller.forward();
 
@@ -56,10 +58,7 @@ class _SplashPageState extends State<SplashPage>
           gradient: LinearGradient(
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
-            colors: [
-              AppColors.background,
-              AppColors.surface,
-            ],
+            colors: [AppColors.background, AppColors.surface],
           ),
         ),
         child: Center(
@@ -89,14 +88,11 @@ class _SplashPageState extends State<SplashPage>
                           ],
                         ),
                         child: const Center(
-                          child: Text(
-                            '🦞',
-                            style: TextStyle(fontSize: 60),
-                          ),
+                          child: Text('🦞', style: TextStyle(fontSize: 60)),
                         ),
                       ),
                       const SizedBox(height: AppSpace.s6),
-                      
+
                       // 应用名称
                       const Text(
                         'MBot',
@@ -108,7 +104,7 @@ class _SplashPageState extends State<SplashPage>
                         ),
                       ),
                       const SizedBox(height: AppSpace.s2),
-                      
+
                       // 副标题
                       const Text(
                         '口袋里的 AI Agent',
@@ -119,7 +115,7 @@ class _SplashPageState extends State<SplashPage>
                         ),
                       ),
                       const SizedBox(height: AppSpace.s8),
-                      
+
                       // 加载指示器
                       const SizedBox(
                         width: 24,

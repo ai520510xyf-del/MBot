@@ -41,7 +41,7 @@ class BrowserControlPage extends ConsumerStatefulWidget {
 class _BrowserControlPageState extends ConsumerState<BrowserControlPage> {
   final TextEditingController _urlController = TextEditingController();
   final List<NavigationItem> _history = [];
-  
+
   BrowserStatus _status = BrowserStatus.disconnected;
   String _currentUrl = 'https://example.com';
   String _pageTitle = '示例网站';
@@ -63,10 +63,7 @@ class _BrowserControlPageState extends ConsumerState<BrowserControlPage> {
           _buildStatusIndicator(),
           const SizedBox(width: AppSpace.s3),
           // 刷新按钮
-          IconButton(
-            icon: const Icon(Icons.refresh),
-            onPressed: _refresh,
-          ),
+          IconButton(icon: const Icon(Icons.refresh), onPressed: _refresh),
         ],
       ),
       body: Column(
@@ -75,9 +72,7 @@ class _BrowserControlPageState extends ConsumerState<BrowserControlPage> {
           _buildUrlBar(),
 
           // 截图显示区域
-          Expanded(
-            child: _buildScreenshotArea(),
-          ),
+          Expanded(child: _buildScreenshotArea()),
 
           // 控制按钮区域
           _buildControlPanel(),
@@ -127,9 +122,7 @@ class _BrowserControlPageState extends ConsumerState<BrowserControlPage> {
       padding: const EdgeInsets.all(AppSpace.s4),
       decoration: BoxDecoration(
         color: AppColors.surface,
-        border: Border(
-          bottom: BorderSide(color: AppColors.border),
-        ),
+        border: Border(bottom: BorderSide(color: AppColors.border)),
       ),
       child: Row(
         children: [
@@ -137,19 +130,20 @@ class _BrowserControlPageState extends ConsumerState<BrowserControlPage> {
           IconButton(
             icon: const Icon(Icons.arrow_back),
             onPressed: _canGoBack() ? _goBack : null,
-            color: _canGoBack() ? AppColors.textPrimary : AppColors.textTertiary,
+            color: _canGoBack()
+                ? AppColors.textPrimary
+                : AppColors.textTertiary,
           ),
           // 前进按钮
           IconButton(
             icon: const Icon(Icons.arrow_forward),
             onPressed: _canGoForward() ? _goForward : null,
-            color: _canGoForward() ? AppColors.textPrimary : AppColors.textTertiary,
+            color: _canGoForward()
+                ? AppColors.textPrimary
+                : AppColors.textTertiary,
           ),
           // 主页按钮
-          IconButton(
-            icon: const Icon(Icons.home),
-            onPressed: _goHome,
-          ),
+          IconButton(icon: const Icon(Icons.home), onPressed: _goHome),
           // URL 输入框
           Expanded(
             child: TextField(
@@ -186,10 +180,10 @@ class _BrowserControlPageState extends ConsumerState<BrowserControlPage> {
       child: _status == BrowserStatus.disconnected
           ? _buildDisconnectedState()
           : _status == BrowserStatus.connecting
-              ? _buildConnectingState()
-              : _status == BrowserStatus.error
-                  ? _buildErrorState()
-                  : _buildConnectedState(),
+          ? _buildConnectingState()
+          : _status == BrowserStatus.error
+          ? _buildErrorState()
+          : _buildConnectedState(),
     );
   }
 
@@ -215,10 +209,7 @@ class _BrowserControlPageState extends ConsumerState<BrowserControlPage> {
           const SizedBox(height: AppSpace.s2),
           const Text(
             '点击下方按钮连接到远程浏览器',
-            style: TextStyle(
-              fontSize: 13,
-              color: AppColors.textTertiary,
-            ),
+            style: TextStyle(fontSize: 13, color: AppColors.textTertiary),
           ),
         ],
       ),
@@ -234,10 +225,7 @@ class _BrowserControlPageState extends ConsumerState<BrowserControlPage> {
           SizedBox(height: AppSpace.s4),
           Text(
             '正在连接...',
-            style: TextStyle(
-              fontSize: 16,
-              color: AppColors.textSecondary,
-            ),
+            style: TextStyle(fontSize: 16, color: AppColors.textSecondary),
           ),
         ],
       ),
@@ -249,11 +237,7 @@ class _BrowserControlPageState extends ConsumerState<BrowserControlPage> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          const Icon(
-            Icons.error_outline,
-            size: 64,
-            color: AppColors.error,
-          ),
+          const Icon(Icons.error_outline, size: 64, color: AppColors.error),
           const SizedBox(height: AppSpace.s4),
           const Text(
             '连接失败',
@@ -322,10 +306,7 @@ class _BrowserControlPageState extends ConsumerState<BrowserControlPage> {
         Expanded(
           child: _screenshot != null
               ? InteractiveViewer(
-                  child: Image.memory(
-                    _screenshot!,
-                    fit: BoxFit.contain,
-                  ),
+                  child: Image.memory(_screenshot!, fit: BoxFit.contain),
                 )
               : Container(
                   color: AppColors.background,
@@ -356,9 +337,7 @@ class _BrowserControlPageState extends ConsumerState<BrowserControlPage> {
       padding: const EdgeInsets.all(AppSpace.s4),
       decoration: BoxDecoration(
         color: AppColors.surface,
-        border: Border(
-          top: BorderSide(color: AppColors.border),
-        ),
+        border: Border(top: BorderSide(color: AppColors.border)),
       ),
       child: Column(
         children: [
@@ -369,7 +348,9 @@ class _BrowserControlPageState extends ConsumerState<BrowserControlPage> {
                 child: _buildControlButton(
                   icon: Icons.screenshot,
                   label: '截图',
-                  onPressed: _status == BrowserStatus.connected ? _takeScreenshot : null,
+                  onPressed: _status == BrowserStatus.connected
+                      ? _takeScreenshot
+                      : null,
                 ),
               ),
               const SizedBox(width: AppSpace.s3),
@@ -377,7 +358,9 @@ class _BrowserControlPageState extends ConsumerState<BrowserControlPage> {
                 child: _buildControlButton(
                   icon: Icons.refresh,
                   label: '刷新',
-                  onPressed: _status == BrowserStatus.connected ? _reload : null,
+                  onPressed: _status == BrowserStatus.connected
+                      ? _reload
+                      : null,
                 ),
               ),
               const SizedBox(width: AppSpace.s3),
@@ -398,7 +381,9 @@ class _BrowserControlPageState extends ConsumerState<BrowserControlPage> {
                 child: _buildControlButton(
                   icon: Icons.touch_app,
                   label: '点击',
-                  onPressed: _status == BrowserStatus.connected ? _showClickDialog : null,
+                  onPressed: _status == BrowserStatus.connected
+                      ? _showClickDialog
+                      : null,
                 ),
               ),
               const SizedBox(width: AppSpace.s3),
@@ -406,7 +391,9 @@ class _BrowserControlPageState extends ConsumerState<BrowserControlPage> {
                 child: _buildControlButton(
                   icon: Icons.keyboard,
                   label: '输入',
-                  onPressed: _status == BrowserStatus.connected ? _showInputDialog : null,
+                  onPressed: _status == BrowserStatus.connected
+                      ? _showInputDialog
+                      : null,
                 ),
               ),
               const SizedBox(width: AppSpace.s3),
@@ -414,7 +401,9 @@ class _BrowserControlPageState extends ConsumerState<BrowserControlPage> {
                 child: _buildControlButton(
                   icon: Icons.unfold_more,
                   label: '滚动',
-                  onPressed: _status == BrowserStatus.connected ? _showScrollDialog : null,
+                  onPressed: _status == BrowserStatus.connected
+                      ? _showScrollDialog
+                      : null,
                 ),
               ),
             ],
@@ -422,16 +411,16 @@ class _BrowserControlPageState extends ConsumerState<BrowserControlPage> {
           const SizedBox(height: AppSpace.s3),
           // 连接/断开按钮
           FilledButton.tonal(
-            onPressed: _status == BrowserStatus.connected ? _disconnect : _connect,
+            onPressed: _status == BrowserStatus.connected
+                ? _disconnect
+                : _connect,
             style: FilledButton.styleFrom(
               minimumSize: const Size.fromHeight(44),
               backgroundColor: _status == BrowserStatus.connected
                   ? AppColors.error.withValues(alpha: 0.1)
                   : null,
             ),
-            child: Text(
-              _status == BrowserStatus.connected ? '断开连接' : '连接浏览器',
-            ),
+            child: Text(_status == BrowserStatus.connected ? '断开连接' : '连接浏览器'),
           ),
         ],
       ),
@@ -447,7 +436,9 @@ class _BrowserControlPageState extends ConsumerState<BrowserControlPage> {
       onPressed: onPressed,
       style: OutlinedButton.styleFrom(
         minimumSize: const Size.fromHeight(44),
-        foregroundColor: onPressed != null ? AppColors.textPrimary : AppColors.textTertiary,
+        foregroundColor: onPressed != null
+            ? AppColors.textPrimary
+            : AppColors.textTertiary,
       ),
       child: Column(
         mainAxisSize: MainAxisSize.min,
@@ -491,11 +482,9 @@ class _BrowserControlPageState extends ConsumerState<BrowserControlPage> {
 
     setState(() {
       _currentUrl = url;
-      _history.add(NavigationItem(
-        title: _pageTitle,
-        url: url,
-        timestamp: DateTime.now(),
-      ));
+      _history.add(
+        NavigationItem(title: _pageTitle, url: url, timestamp: DateTime.now()),
+      );
       _screenshot = null; // 清除截图，触发重新加载
     });
 
@@ -579,9 +568,9 @@ class _BrowserControlPageState extends ConsumerState<BrowserControlPage> {
           FilledButton(
             onPressed: () {
               Navigator.pop(context);
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('点击指令已发送')),
-              );
+              ScaffoldMessenger.of(
+                context,
+              ).showSnackBar(const SnackBar(content: Text('点击指令已发送')));
             },
             child: const Text('执行'),
           ),
@@ -610,9 +599,9 @@ class _BrowserControlPageState extends ConsumerState<BrowserControlPage> {
           FilledButton(
             onPressed: () {
               Navigator.pop(context);
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('输入指令已发送')),
-              );
+              ScaffoldMessenger.of(
+                context,
+              ).showSnackBar(const SnackBar(content: Text('输入指令已发送')));
             },
             child: const Text('发送'),
           ),
@@ -634,9 +623,9 @@ class _BrowserControlPageState extends ConsumerState<BrowserControlPage> {
               trailing: const Icon(Icons.arrow_upward),
               onTap: () {
                 Navigator.pop(context);
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('向上滚动')),
-                );
+                ScaffoldMessenger.of(
+                  context,
+                ).showSnackBar(const SnackBar(content: Text('向上滚动')));
               },
             ),
             ListTile(
@@ -644,9 +633,9 @@ class _BrowserControlPageState extends ConsumerState<BrowserControlPage> {
               trailing: const Icon(Icons.arrow_downward),
               onTap: () {
                 Navigator.pop(context);
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('向下滚动')),
-                );
+                ScaffoldMessenger.of(
+                  context,
+                ).showSnackBar(const SnackBar(content: Text('向下滚动')));
               },
             ),
             ListTile(
@@ -654,9 +643,9 @@ class _BrowserControlPageState extends ConsumerState<BrowserControlPage> {
               trailing: const Icon(Icons.vertical_align_top),
               onTap: () {
                 Navigator.pop(context);
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('滚动到顶部')),
-                );
+                ScaffoldMessenger.of(
+                  context,
+                ).showSnackBar(const SnackBar(content: Text('滚动到顶部')));
               },
             ),
             ListTile(
@@ -664,9 +653,9 @@ class _BrowserControlPageState extends ConsumerState<BrowserControlPage> {
               trailing: const Icon(Icons.vertical_align_bottom),
               onTap: () {
                 Navigator.pop(context);
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('滚动到底部')),
-                );
+                ScaffoldMessenger.of(
+                  context,
+                ).showSnackBar(const SnackBar(content: Text('滚动到底部')));
               },
             ),
           ],

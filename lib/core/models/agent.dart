@@ -1,14 +1,17 @@
-import '../../theme/theme.dart';
 import 'package:flutter/material.dart';
 import 'package:drift/drift.dart' as drift;
+
+import '../../theme/app_colors.dart';
 import 'database.dart';
 
 /// Agent 状态
 enum AgentStatus {
   /// 在线
   online,
+
   /// 离线
   offline,
+
   /// 忙碌
   busy,
 }
@@ -96,10 +99,10 @@ class AgentData {
   /// 格式化最后活跃时间
   String? get formattedLastActive {
     if (lastActive == null) return null;
-    
+
     final now = DateTime.now();
     final diff = now.difference(lastActive!);
-    
+
     if (diff.inMinutes < 1) {
       return '刚刚';
     } else if (diff.inMinutes < 60) {

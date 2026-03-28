@@ -63,9 +63,9 @@ class ChatService {
     required GatewayService gateway,
     required ConversationRepository conversationRepo,
     required MessageRepository messageRepo,
-  })  : _gateway = gateway,
-        _conversationRepo = conversationRepo,
-        _messageRepo = messageRepo;
+  }) : _gateway = gateway,
+       _conversationRepo = conversationRepo,
+       _messageRepo = messageRepo;
 
   /// 响应流（用于流式 UI 更新）
   Stream<ChatResponse> get responseStream => _responseController.stream;
@@ -89,10 +89,7 @@ class ChatService {
     await _conversationRepo.updateLastMessage(conversationId, content);
 
     // 发送到 Gateway
-    _gateway.sendChatMessage(
-      content,
-      conversationId: conversationId,
-    );
+    _gateway.sendChatMessage(content, conversationId: conversationId);
 
     // 创建待处理的 AI 消息占位
     _pendingAiMessageId = await _createPendingAiMessage(conversationId);
@@ -168,12 +165,14 @@ class ChatService {
     _pendingContent.write(content);
 
     // 发送流式更新
-    _responseController.add(ChatResponse(
-      messageId: _pendingAiMessageId ?? '',
-      content: _pendingContent.toString(),
-      sender: MessageSender.ai,
-      isComplete: isComplete,
-    ));
+    _responseController.add(
+      ChatResponse(
+        messageId: _pendingAiMessageId ?? '',
+        content: _pendingContent.toString(),
+        sender: MessageSender.ai,
+        isComplete: isComplete,
+      ),
+    );
 
     // 更新数据库中的消息内容
     if (_pendingAiMessageId != null) {
@@ -205,13 +204,15 @@ class ChatService {
     }
 
     // 发送工具调用通知
-    _responseController.add(ChatResponse(
-      messageId: _pendingAiMessageId ?? '',
-      content: _pendingContent.toString(),
-      sender: MessageSender.ai,
-      toolName: toolName,
-      isComplete: false,
-    ));
+    _responseController.add(
+      ChatResponse(
+        messageId: _pendingAiMessageId ?? '',
+        content: _pendingContent.toString(),
+        sender: MessageSender.ai,
+        toolName: toolName,
+        isComplete: false,
+      ),
+    );
   }
 
   void _handleToolResult(AgpMessage message) {
@@ -219,18 +220,21 @@ class ChatService {
     final result = message.payload['result'] as String?;
 
     // 更新工具调用结果
-    _responseController.add(ChatResponse(
-      messageId: _pendingAiMessageId ?? '',
-      content: _pendingContent.toString(),
-      sender: MessageSender.ai,
-      toolName: toolName,
-      toolResult: result,
-      isComplete: false,
-    ));
+    _responseController.add(
+      ChatResponse(
+        messageId: _pendingAiMessageId ?? '',
+        content: _pendingContent.toString(),
+        sender: MessageSender.ai,
+        toolName: toolName,
+        toolResult: result,
+        isComplete: false,
+      ),
+    );
   }
 
   void _handleError(AgpMessage message) {
-    final errorMessage = message.payload['message'] as String? ?? 'Unknown error';
+    final errorMessage =
+        message.payload['message'] as String? ?? 'Unknown error';
 
     // 标记待发送消息为失败
     if (_pendingAiMessageId != null) {

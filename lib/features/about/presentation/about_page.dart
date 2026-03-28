@@ -30,7 +30,7 @@ class _AboutPageState extends ConsumerState<AboutPage> {
     try {
       // TODO: 实现实际的版本检查
       await Future.delayed(const Duration(seconds: 2));
-      
+
       setState(() {
         _updateStatus = '已是最新版本';
       });
@@ -55,9 +55,7 @@ class _AboutPageState extends ConsumerState<AboutPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('关于 MBot'),
-      ),
+      appBar: AppBar(title: const Text('关于 MBot')),
       body: ListView(
         padding: const EdgeInsets.all(AppSpace.s6),
         children: [
@@ -94,10 +92,7 @@ class _AboutPageState extends ConsumerState<AboutPage> {
               const SizedBox(height: AppSpace.s1),
               const Text(
                 '口袋里的 AI Agent',
-                style: TextStyle(
-                  fontSize: 14,
-                  color: AppColors.textSecondary,
-                ),
+                style: TextStyle(fontSize: 14, color: AppColors.textSecondary),
               ),
               const SizedBox(height: AppSpace.s4),
               Container(
@@ -185,9 +180,7 @@ class _AboutPageState extends ConsumerState<AboutPage> {
               padding: const EdgeInsets.symmetric(vertical: 14),
               foregroundColor: AppColors.primary,
               side: const BorderSide(color: AppColors.primary),
-              shape: RoundedRectangleBorder(
-                borderRadius: AppRadius.radiusMD,
-              ),
+              shape: RoundedRectangleBorder(borderRadius: AppRadius.radiusMD),
             ),
           ),
 

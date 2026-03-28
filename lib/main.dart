@@ -8,11 +8,7 @@ import 'theme/app_theme.dart';
 ///
 /// 一个基于 Flutter 的移动应用，集成内嵌 Gateway 和云端 AI 模型
 void main() {
-  runApp(
-    const ProviderScope(
-      child: MBotMobileApp(),
-    ),
-  );
+  runApp(const ProviderScope(child: MBotMobileApp()));
 }
 
 /// 应用根组件

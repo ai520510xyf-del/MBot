@@ -17,14 +17,18 @@ class MemoryService {
     final now = DateTime.now();
     final id = _generateId();
 
-    await _db.into(_db.memories).insert(MemoriesCompanion(
-      id: Value(id),
-      content: Value(content),
-      category: Value(category.value),
-      source: Value(source.value),
-      createdAt: Value(now),
-      updatedAt: Value(now),
-    ));
+    await _db
+        .into(_db.memories)
+        .insert(
+          MemoriesCompanion(
+            id: Value(id),
+            content: Value(content),
+            category: Value(category.value),
+            source: Value(source.value),
+            createdAt: Value(now),
+            updatedAt: Value(now),
+          ),
+        );
   }
 
   /// 搜索记忆
@@ -57,26 +61,29 @@ class MemoryService {
 
   /// 获取所有记忆
   Future<List<MemoryData>> getAllMemories() async {
-    final memories = await (_db.select(_db.memories)
-          ..orderBy([(tbl) => OrderingTerm.desc(tbl.updatedAt)]))
-        .get();
+    final memories = await (_db.select(
+      _db.memories,
+    )..orderBy([(tbl) => OrderingTerm.desc(tbl.updatedAt)])).get();
     return memories.map((m) => MemoryData.fromDB(m)).toList();
   }
 
   /// 根据分类获取记忆
-  Future<List<MemoryData>> getMemoriesByCategory(MemoryCategory category) async {
-    final memories = await (_db.select(_db.memories)
-          ..where((tbl) => tbl.category.equals(category.value))
-          ..orderBy([(tbl) => OrderingTerm.desc(tbl.updatedAt)]))
-        .get();
+  Future<List<MemoryData>> getMemoriesByCategory(
+    MemoryCategory category,
+  ) async {
+    final memories =
+        await (_db.select(_db.memories)
+              ..where((tbl) => tbl.category.equals(category.value))
+              ..orderBy([(tbl) => OrderingTerm.desc(tbl.updatedAt)]))
+            .get();
     return memories.map((m) => MemoryData.fromDB(m)).toList();
   }
 
   /// 根据ID获取记忆
   Future<MemoryData?> getMemoryById(String id) async {
-    final memory = await (_db.select(_db.memories)
-          ..where((tbl) => tbl.id.equals(id)))
-        .getSingleOrNull();
+    final memory = await (_db.select(
+      _db.memories,
+    )..where((tbl) => tbl.id.equals(id))).getSingleOrNull();
     return memory != null ? MemoryData.fromDB(memory) : null;
   }
 
@@ -87,9 +94,7 @@ class MemoryService {
     MemoryCategory? category,
   }) async {
     final now = DateTime.now();
-    final companion = MemoriesCompanion(
-      updatedAt: Value(now),
-    );
+    final companion = MemoriesCompanion(updatedAt: Value(now));
 
     if (content != null) {
       companion.copyWith(content: Value(content));
@@ -98,8 +103,9 @@ class MemoryService {
       companion.copyWith(category: Value(category.value));
     }
 
-    await (_db.update(_db.memories)..where((tbl) => tbl.id.equals(id)))
-        .write(companion);
+    await (_db.update(
+      _db.memories,
+    )..where((tbl) => tbl.id.equals(id))).write(companion);
   }
 
   /// 删除记忆

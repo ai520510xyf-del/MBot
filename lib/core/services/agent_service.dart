@@ -20,43 +20,49 @@ class AgentService {
 
   /// 获取在线 Agent 列表
   Future<List<AgentData>> getOnlineAgents() async {
-    final agents = await (_db.select(_db.agents)
-          ..where((tbl) => tbl.status.equals('online')))
-        .get();
+    final agents = await (_db.select(
+      _db.agents,
+    )..where((tbl) => tbl.status.equals('online'))).get();
 
     return agents.map((a) => AgentData.fromDB(a)).toList();
   }
 
   /// 获取 Agent 详情
   Future<AgentData?> getAgentDetail(String agentId) async {
-    final agent = await (_db.select(_db.agents)
-          ..where((tbl) => tbl.id.equals(agentId)))
-        .getSingleOrNull();
+    final agent = await (_db.select(
+      _db.agents,
+    )..where((tbl) => tbl.id.equals(agentId))).getSingleOrNull();
 
     return agent != null ? AgentData.fromDB(agent) : null;
   }
 
   /// 更新 Agent 状态
   Future<void> updateAgentStatus(String agentId, AgentStatus status) async {
-    await (_db.update(_db.agents)..where((tbl) => tbl.id.equals(agentId)))
-        .write(AgentsCompanion(
-      status: Value(status.name),
-      lastActive: Value(DateTime.now()),
-    ));
+    await (_db.update(
+      _db.agents,
+    )..where((tbl) => tbl.id.equals(agentId))).write(
+      AgentsCompanion(
+        status: Value(status.name),
+        lastActive: Value(DateTime.now()),
+      ),
+    );
   }
 
   /// 增加任务计数
   Future<void> incrementTaskCount(String agentId) async {
-    final agent = await (_db.select(_db.agents)
-          ..where((tbl) => tbl.id.equals(agentId)))
-        .getSingleOrNull();
+    final agent = await (_db.select(
+      _db.agents,
+    )..where((tbl) => tbl.id.equals(agentId))).getSingleOrNull();
 
     if (agent != null) {
-      await (_db.update(_db.agents)..where((tbl) => tbl.id.equals(agentId)))
-          .write(AgentsCompanion(
-        taskCount: Value(agent.taskCount + 1),
-        lastActive: Value(DateTime.now()),
-      ));
+      await (_db.update(
+        _db.agents,
+      )..where((tbl) => tbl.id.equals(agentId))).write(
+        AgentsCompanion(
+          taskCount: Value(agent.taskCount + 1),
+          lastActive: Value(DateTime.now()),
+        ),
+      );
     }
   }
 
@@ -139,7 +145,9 @@ class AgentService {
   /// 初始化默认 Agent 数据
   Future<void> initializeDefaultAgents() async {
     // 检查是否已有 Agent 数据
-    final existingCount = await (_db.select(_db.agents).get()).then((a) => a.length);
+    final existingCount = await (_db.select(_db.agents).get()).then(
+      (a) => a.length,
+    );
     if (existingCount > 0) return;
 
     // 插入默认 Agent

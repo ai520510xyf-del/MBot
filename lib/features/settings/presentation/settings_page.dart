@@ -16,9 +16,7 @@ class SettingsPage extends ConsumerWidget {
     final isDark = themeMode == AppThemeMode.dark;
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('设置'),
-      ),
+      appBar: AppBar(title: const Text('设置')),
       body: ListView(
         padding: const EdgeInsets.symmetric(vertical: AppSpace.s4),
         children: [
@@ -34,8 +32,11 @@ class SettingsPage extends ConsumerWidget {
             icon: Icons.psychology,
             title: '模型配置',
             subtitle: 'Provider / API Key / 模型选择',
-            trailing: const Icon(Icons.chevron_right,
-                size: 20, color: AppColors.textTertiary),
+            trailing: const Icon(
+              Icons.chevron_right,
+              size: 20,
+              color: AppColors.textTertiary,
+            ),
             onTap: () {
               Navigator.push(
                 context,
@@ -54,18 +55,14 @@ class SettingsPage extends ConsumerWidget {
             title: '微信',
             subtitle: '已绑定',
             trailing: Container(
-              padding:
-                  const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
               decoration: BoxDecoration(
                 color: AppColors.success.withValues(alpha: 0.15),
                 borderRadius: AppRadius.radiusXS,
               ),
               child: const Text(
                 '已连接',
-                style: TextStyle(
-                  fontSize: 11,
-                  color: AppColors.success,
-                ),
+                style: TextStyle(fontSize: 11, color: AppColors.success),
               ),
             ),
             onTap: () {
@@ -117,8 +114,11 @@ class SettingsPage extends ConsumerWidget {
             icon: Icons.dark_mode_outlined,
             title: '主题模式',
             subtitle: _getThemeModeText(themeMode),
-            trailing: const Icon(Icons.chevron_right,
-                size: 20, color: AppColors.textTertiary),
+            trailing: const Icon(
+              Icons.chevron_right,
+              size: 20,
+              color: AppColors.textTertiary,
+            ),
             onTap: () => _showThemeDialog(context, ref),
           ),
           _buildSwitchItem(
@@ -159,17 +159,22 @@ class SettingsPage extends ConsumerWidget {
           // 关于
           _buildSectionHeader('关于'),
           _buildSettingItem(
+            context,
+            icon: Icons.info_outline,
+            title: '关于 MBot',
+            onTap: () {
+              Navigator.push(
                 context,
-                icon: Icons.info_outline,
-                title: '关于 MBot',
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (_) => const AboutPage()),
-                  );
-                },
-              ),
-          _buildSettingItem(context, icon: Icons.help_outline, title: '帮助与反馈', onTap: () {}),
+                MaterialPageRoute(builder: (_) => const AboutPage()),
+              );
+            },
+          ),
+          _buildSettingItem(
+            context,
+            icon: Icons.help_outline,
+            title: '帮助与反馈',
+            onTap: () {},
+          ),
           _buildSettingItem(
             context,
             icon: Icons.logout,
@@ -330,8 +335,11 @@ class SettingsPage extends ConsumerWidget {
               ],
             ),
           ),
-          const Icon(Icons.chevron_right,
-              size: 20, color: AppColors.textTertiary),
+          const Icon(
+            Icons.chevron_right,
+            size: 20,
+            color: AppColors.textTertiary,
+          ),
         ],
       ),
     );
@@ -376,11 +384,19 @@ class SettingsPage extends ConsumerWidget {
       subtitle: subtitle != null
           ? Text(
               subtitle,
-              style: const TextStyle(fontSize: 13, color: AppColors.textTertiary),
+              style: const TextStyle(
+                fontSize: 13,
+                color: AppColors.textTertiary,
+              ),
             )
           : null,
-      trailing: trailing ??
-          const Icon(Icons.chevron_right, size: 20, color: AppColors.textTertiary),
+      trailing:
+          trailing ??
+          const Icon(
+            Icons.chevron_right,
+            size: 20,
+            color: AppColors.textTertiary,
+          ),
       onTap: onTap,
     );
   }
@@ -400,7 +416,10 @@ class SettingsPage extends ConsumerWidget {
       subtitle: subtitle != null
           ? Text(
               subtitle,
-              style: const TextStyle(fontSize: 13, color: AppColors.textTertiary),
+              style: const TextStyle(
+                fontSize: 13,
+                color: AppColors.textTertiary,
+              ),
             )
           : null,
       trailing: Switch(

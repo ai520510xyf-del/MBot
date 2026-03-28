@@ -28,10 +28,12 @@ class SkillService {
     if (searchQuery != null && searchQuery.isNotEmpty) {
       final query = searchQuery.toLowerCase();
       filtered = filtered
-          .where((s) =>
-              s.name.toLowerCase().contains(query) ||
-              s.description.toLowerCase().contains(query) ||
-              s.tags.any((t) => t.toLowerCase().contains(query)))
+          .where(
+            (s) =>
+                s.name.toLowerCase().contains(query) ||
+                s.description.toLowerCase().contains(query) ||
+                s.tags.any((t) => t.toLowerCase().contains(query)),
+          )
           .toList();
     }
 
@@ -40,9 +42,9 @@ class SkillService {
 
   /// 获取已安装的技能列表
   Future<List<SkillData>> getInstalledSkills() async {
-    final skills = await (_db.select(_db.skills)
-          ..where((tbl) => tbl.status.equals('installed')))
-        .get();
+    final skills = await (_db.select(
+      _db.skills,
+    )..where((tbl) => tbl.status.equals('installed'))).get();
 
     // 排序
     final sorted = skills..sort((a, b) => a.name.compareTo(b.name));
@@ -57,50 +59,62 @@ class SkillService {
     final skill = availableSkills.firstWhere((s) => s.id == skillId);
 
     // 检查是否已存在
-    final existing = await (_db.select(_db.skills)
-          ..where((tbl) => tbl.id.equals(skillId)))
-        .getSingleOrNull();
+    final existing = await (_db.select(
+      _db.skills,
+    )..where((tbl) => tbl.id.equals(skillId))).getSingleOrNull();
 
     if (existing != null) {
       // 更新现有记录
-      await (_db.update(_db.skills)..where((tbl) => tbl.id.equals(skillId)))
-          .write(SkillsCompanion(
-        status: const Value('installed'),
-        installedAt: Value(DateTime.now()),
-        installCount: Value(skill.installCount + 1),
-      ));
+      await (_db.update(
+        _db.skills,
+      )..where((tbl) => tbl.id.equals(skillId))).write(
+        SkillsCompanion(
+          status: const Value('installed'),
+          installedAt: Value(DateTime.now()),
+          installCount: Value(skill.installCount + 1),
+        ),
+      );
     } else {
       // 插入新记录
-      await _db.into(_db.skills).insert(SkillsCompanion(
-        id: Value(skillId),
-        name: Value(skill.name),
-        description: Value(skill.description),
-        emoji: Value(skill.emoji),
-        version: Value(skill.version),
-        author: Value(skill.author),
-        installCount: Value(skill.installCount + 1),
-        rating: Value(skill.rating),
-        installedAt: Value(DateTime.now()),
-        status: const Value('installed'),
-        category: Value(skill.category.name),
-        tags: Value(skill.tags.join(',')),
-      ));
+      await _db
+          .into(_db.skills)
+          .insert(
+            SkillsCompanion(
+              id: Value(skillId),
+              name: Value(skill.name),
+              description: Value(skill.description),
+              emoji: Value(skill.emoji),
+              version: Value(skill.version),
+              author: Value(skill.author),
+              installCount: Value(skill.installCount + 1),
+              rating: Value(skill.rating),
+              installedAt: Value(DateTime.now()),
+              status: const Value('installed'),
+              category: Value(skill.category.name),
+              tags: Value(skill.tags.join(',')),
+            ),
+          );
     }
   }
 
   /// 卸载技能
   Future<void> uninstallSkill(String skillId) async {
-    await (_db.update(_db.skills)..where((tbl) => tbl.id.equals(skillId)))
-        .write(const SkillsCompanion(
-      status: Value('available'),
-      installedAt: Value.absent(),
-    ));
+    await (_db.update(
+      _db.skills,
+    )..where((tbl) => tbl.id.equals(skillId))).write(
+      const SkillsCompanion(
+        status: Value('available'),
+        installedAt: Value.absent(),
+      ),
+    );
   }
 
   /// 初始化默认技能数据
   Future<void> initializeDefaultSkills() async {
     // 检查是否已有技能数据
-    final existingCount = await (_db.select(_db.skills).get()).then((s) => s.length);
+    final existingCount = await (_db.select(_db.skills).get()).then(
+      (s) => s.length,
+    );
     if (existingCount > 0) return;
 
     // 插入默认技能
@@ -113,9 +127,7 @@ class SkillService {
   /// 更新技能 (模拟从 ClawHub 获取更新)
   Future<void> updateSkill(String skillId) async {
     await (_db.update(_db.skills)..where((tbl) => tbl.id.equals(skillId)))
-        .write(const SkillsCompanion(
-      status: Value('installed'),
-    ));
+        .write(const SkillsCompanion(status: Value('installed')));
   }
 
   /// 获取技能详情

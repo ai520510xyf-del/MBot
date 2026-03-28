@@ -60,10 +60,9 @@ class Messages extends Table {
 
   @override
   List<Set<Column>> get uniqueKeys => [
-        {conversationId, id}, // 确保消息在会话内唯一
-      ];
+    {conversationId, id}, // 确保消息在会话内唯一
+  ];
 }
-
 
 /// Skills 表定义
 @DataClassName('Skill')
@@ -96,10 +95,12 @@ class Skills extends Table {
   DateTimeColumn get installedAt => dateTime().nullable()();
 
   /// 状态
-  TextColumn get status => text()(); // 'available', 'installed', 'updateAvailable', 'disabled'
+  TextColumn get status =>
+      text()(); // 'available', 'installed', 'updateAvailable', 'disabled'
 
   /// 分类
-  TextColumn get category => text()(); // 'all', 'ai', 'text', 'image', 'code', 'productivity'
+  TextColumn get category =>
+      text()(); // 'all', 'ai', 'text', 'image', 'code', 'productivity'
 
   /// 标签 (逗号分隔)
   TextColumn get tags => text().withDefault(const Constant(''))();
@@ -146,7 +147,8 @@ class Memories extends Table {
   TextColumn get content => text()();
 
   /// 分类
-  TextColumn get category => text()(); // 'preference', 'fact', 'decision', 'entity'
+  TextColumn get category =>
+      text()(); // 'preference', 'fact', 'decision', 'entity'
 
   /// 来源
   TextColumn get source => text()(); // 'user', 'ai', 'system'

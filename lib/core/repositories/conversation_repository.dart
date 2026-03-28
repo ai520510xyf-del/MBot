@@ -13,9 +13,7 @@ class ConversationRepository {
   ConversationRepository(this._db);
 
   /// 创建新会话
-  Future<ConversationData> create({
-    required String title,
-  }) async {
+  Future<ConversationData> create({required String title}) async {
     final id = const Uuid().v4();
     final now = DateTime.now();
 
@@ -57,8 +55,7 @@ class ConversationRepository {
 
   /// 获取单个会话
   Future<ConversationData?> getById(String id) async {
-    final query = _db.select(_db.conversations)
-      ..where((t) => t.id.equals(id));
+    final query = _db.select(_db.conversations)..where((t) => t.id.equals(id));
 
     final result = await query.getSingleOrNull();
     return result != null ? ConversationData.fromDB(result) : null;
@@ -91,9 +88,9 @@ class ConversationRepository {
   Future<void> delete(String id) async {
     await _db.transaction(() async {
       // 先删除会话的所有消息
-      await (_db.delete(_db.messages)
-            ..where((t) => t.conversationId.equals(id)))
-          .go();
+      await (_db.delete(
+        _db.messages,
+      )..where((t) => t.conversationId.equals(id))).go();
 
       // 再删除会话
       await (_db.delete(_db.conversations)..where((t) => t.id.equals(id))).go();

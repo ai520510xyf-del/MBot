@@ -70,8 +70,6 @@ class UserSettingsState extends _$UserSettingsState {
 
   /// 切换通知
   void toggleNotifications() {
-    state = state.copyWith(
-      notificationsEnabled: !state.notificationsEnabled,
-    );
+    state = state.copyWith(notificationsEnabled: !state.notificationsEnabled);
   }
 }

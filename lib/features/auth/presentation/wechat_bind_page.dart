@@ -43,9 +43,7 @@ class _WechatBindPageState extends State<WechatBindPage>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('微信扫码绑定'),
-      ),
+      appBar: AppBar(title: const Text('微信扫码绑定')),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(AppSpace.s6),
         child: Column(
@@ -143,15 +141,19 @@ class _WechatBindPageState extends State<WechatBindPage>
                         ],
                       ),
                     ),
-                    
+
                     // 扫描线动画
                     if (_isScanning)
                       AnimatedBuilder(
                         animation: _animationController,
                         builder: (context, child) {
                           return Positioned(
-                            top: 20 +
-                                (240 * _animationController.value).clamp(0.0, 240.0),
+                            top:
+                                20 +
+                                (240 * _animationController.value).clamp(
+                                  0.0,
+                                  240.0,
+                                ),
                             left: 20,
                             right: 20,
                             child: Container(
@@ -166,7 +168,9 @@ class _WechatBindPageState extends State<WechatBindPage>
                                 ),
                                 boxShadow: [
                                   BoxShadow(
-                                    color: AppColors.primary.withValues(alpha: 0.8),
+                                    color: AppColors.primary.withValues(
+                                      alpha: 0.8,
+                                    ),
                                     blurRadius: 10,
                                   ),
                                 ],
@@ -175,14 +179,12 @@ class _WechatBindPageState extends State<WechatBindPage>
                           );
                         },
                       ),
-                    
+
                     // 四角边框
                     Positioned.fill(
                       child: Padding(
                         padding: const EdgeInsets.all(20),
-                        child: CustomPaint(
-                          painter: _QRBorderPainter(),
-                        ),
+                        child: CustomPaint(painter: _QRBorderPainter()),
                       ),
                     ),
                   ],
@@ -250,9 +252,7 @@ class _WechatBindPageState extends State<WechatBindPage>
               label: const Text('刷新二维码'),
               style: OutlinedButton.styleFrom(
                 padding: const EdgeInsets.symmetric(vertical: 12),
-                shape: RoundedRectangleBorder(
-                  borderRadius: AppRadius.radiusMD,
-                ),
+                shape: RoundedRectangleBorder(borderRadius: AppRadius.radiusMD),
               ),
             ),
 

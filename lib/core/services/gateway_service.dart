@@ -71,7 +71,8 @@ class AgpMessage {
 class GatewayService {
   WebSocketChannel? _channel;
   final _messageController = StreamController<AgpMessage>.broadcast();
-  final _statusController = StreamController<GatewayConnectionState>.broadcast();
+  final _statusController =
+      StreamController<GatewayConnectionState>.broadcast();
 
   final Set<String> _receivedMsgIds = {};
   static const int _maxMsgIds = 1000;
@@ -108,23 +109,20 @@ class GatewayService {
     _updateState(GatewayConnectionState.connecting);
 
     try {
-      _channel = WebSocketChannel.connect(
-        Uri.parse(url),
-      );
+      _channel = WebSocketChannel.connect(Uri.parse(url));
 
       // 监听连接状态
-      _channel!.ready.then((_) {
-        _onConnected();
-      }, onError: (error) {
-        _onError(error);
-      });
+      _channel!.ready.then(
+        (_) {
+          _onConnected();
+        },
+        onError: (error) {
+          _onError(error);
+        },
+      );
 
       // 监听消息
-      _channel!.stream.listen(
-        _onMessage,
-        onError: _onError,
-        onDone: _onDone,
-      );
+      _channel!.stream.listen(_onMessage, onError: _onError, onDone: _onDone);
     } catch (e) {
       _onError(e);
     }
@@ -159,10 +157,7 @@ class GatewayService {
       msgId: msgId,
       guid: guid,
       method: AgpMessageType.sessionUpdate,
-      payload: {
-        'content': content,
-        'type': 'text',
-      },
+      payload: {'content': content, 'type': 'text'},
     );
 
     sendMessage(message);
@@ -194,12 +189,14 @@ class GatewayService {
 
       // 处理 Ping/Pong
       if (message.method == AgpMessageType.ping) {
-        sendMessage(AgpMessage(
-          msgId: _generateMsgId(),
-          guid: message.guid,
-          method: AgpMessageType.pong,
-          payload: {},
-        ));
+        sendMessage(
+          AgpMessage(
+            msgId: _generateMsgId(),
+            guid: message.guid,
+            method: AgpMessageType.pong,
+            payload: {},
+          ),
+        );
         return;
       }
 
@@ -228,12 +225,14 @@ class GatewayService {
     _heartbeatTimer?.cancel();
     _heartbeatTimer = Timer.periodic(_heartbeatInterval, (_) {
       if (_currentState == GatewayConnectionState.connected) {
-        sendMessage(AgpMessage(
-          msgId: _generateMsgId(),
-          guid: _sessionGuid ?? '',
-          method: AgpMessageType.ping,
-          payload: {'timestamp': DateTime.now().millisecondsSinceEpoch},
-        ));
+        sendMessage(
+          AgpMessage(
+            msgId: _generateMsgId(),
+            guid: _sessionGuid ?? '',
+            method: AgpMessageType.ping,
+            payload: {'timestamp': DateTime.now().millisecondsSinceEpoch},
+          ),
+        );
       }
     });
   }
@@ -256,8 +255,8 @@ class GatewayService {
 
   Duration _calculateReconnectDelay() {
     final exponent = _reconnectAttempts - 1;
-    final delay = _initialReconnectDelay.inMilliseconds *
-        (1 << exponent.clamp(0, 10));
+    final delay =
+        _initialReconnectDelay.inMilliseconds * (1 << exponent.clamp(0, 10));
     final maxDelay = _maxReconnectDelay.inMilliseconds;
     return Duration(milliseconds: delay.clamp(0, maxDelay));
   }

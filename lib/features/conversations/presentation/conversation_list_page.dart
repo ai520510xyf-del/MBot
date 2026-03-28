@@ -8,7 +8,8 @@ class ConversationListPage extends ConsumerStatefulWidget {
   const ConversationListPage({super.key});
 
   @override
-  ConsumerState<ConversationListPage> createState() => _ConversationListPageState();
+  ConsumerState<ConversationListPage> createState() =>
+      _ConversationListPageState();
 }
 
 class _ConversationListPageState extends ConsumerState<ConversationListPage> {
@@ -54,8 +55,6 @@ class _ConversationListPageState extends ConsumerState<ConversationListPage> {
       'updatedAt': DateTime.now().subtract(const Duration(days: 2)),
     },
   ];
-
-  
 
   @override
   Widget build(BuildContext context) {
@@ -190,19 +189,9 @@ class _ConversationListPageState extends ConsumerState<ConversationListPage> {
       child: const Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(
-            Icons.delete_outline,
-            color: Colors.white,
-            size: 28,
-          ),
+          Icon(Icons.delete_outline, color: Colors.white, size: 28),
           SizedBox(height: 4),
-          Text(
-            '删除',
-            style: TextStyle(
-              color: Colors.white,
-              fontSize: 12,
-            ),
-          ),
+          Text('删除', style: TextStyle(color: Colors.white, fontSize: 12)),
         ],
       ),
     );
@@ -267,9 +256,9 @@ class _ConversationListPageState extends ConsumerState<ConversationListPage> {
               title: const Text('置顶'),
               onTap: () {
                 Navigator.pop(context);
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('已置顶对话')),
-                );
+                ScaffoldMessenger.of(
+                  context,
+                ).showSnackBar(const SnackBar(content: Text('已置顶对话')));
               },
             ),
             ListTile(
@@ -277,9 +266,9 @@ class _ConversationListPageState extends ConsumerState<ConversationListPage> {
               title: const Text('标为已读'),
               onTap: () {
                 Navigator.pop(context);
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('已标为已读')),
-                );
+                ScaffoldMessenger.of(
+                  context,
+                ).showSnackBar(const SnackBar(content: Text('已标为已读')));
               },
             ),
             const Divider(height: 1),
@@ -310,9 +299,7 @@ class _ConversationListPageState extends ConsumerState<ConversationListPage> {
         title: const Text('重命名对话'),
         content: TextField(
           controller: controller,
-          decoration: const InputDecoration(
-            border: OutlineInputBorder(),
-          ),
+          decoration: const InputDecoration(border: OutlineInputBorder()),
           autofocus: true,
         ),
         actions: [
@@ -336,7 +323,9 @@ class _ConversationListPageState extends ConsumerState<ConversationListPage> {
     );
   }
 
-  Future<bool> _showDeleteConfirmDialog(Map<String, dynamic> conversation) async {
+  Future<bool> _showDeleteConfirmDialog(
+    Map<String, dynamic> conversation,
+  ) async {
     return await showDialog<bool>(
           context: context,
           builder: (context) => AlertDialog(
@@ -349,9 +338,7 @@ class _ConversationListPageState extends ConsumerState<ConversationListPage> {
               ),
               FilledButton(
                 onPressed: () => Navigator.pop(context, true),
-                style: FilledButton.styleFrom(
-                  backgroundColor: AppColors.error,
-                ),
+                style: FilledButton.styleFrom(backgroundColor: AppColors.error),
                 child: const Text('删除'),
               ),
             ],
@@ -382,14 +369,10 @@ class _ConversationListPageState extends ConsumerState<ConversationListPage> {
   }
 
   Future<void> _handleRefresh() async {
-    
-
     // 模拟刷新
     await Future.delayed(const Duration(seconds: 1));
 
-    if (mounted) {
-      
-    }
+    if (mounted) {}
   }
 
   String _formatMessageCount(Map<String, dynamic> conversation) {

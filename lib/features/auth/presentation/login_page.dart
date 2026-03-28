@@ -7,10 +7,7 @@ import '../../../../theme/theme.dart';
 import 'wechat_bind_page.dart';
 
 /// 登录状态
-enum LoginStep {
-  phoneInput,
-  verificationCode,
-}
+enum LoginStep { phoneInput, verificationCode }
 
 /// 登录页面
 class LoginPage extends ConsumerStatefulWidget {
@@ -24,7 +21,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
   final _phoneController = TextEditingController();
   final _codeController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
-  
+
   LoginStep _currentStep = LoginStep.phoneInput;
   bool _agreeToTerms = false;
   bool _isVerifying = false;
@@ -41,7 +38,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
     setState(() {
       _countdown = 60;
     });
-    
+
     Future.doWhile(() async {
       await Future.delayed(const Duration(seconds: 1));
       if (!mounted) return false;
@@ -67,7 +64,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
       setState(() {
         _isVerifying = true;
       });
-      
+
       // TODO: 验证码验证逻辑
       Future.delayed(const Duration(seconds: 1), () {
         if (mounted) {
@@ -100,7 +97,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 const SizedBox(height: AppSpace.s8),
-                
+
                 // Logo
                 Center(
                   child: Container(
@@ -122,9 +119,9 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                     ),
                   ),
                 ),
-                
+
                 const SizedBox(height: AppSpace.s6),
-                
+
                 // 标题
                 const Text(
                   '欢迎使用 MBot',
@@ -136,7 +133,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                   textAlign: TextAlign.center,
                 ),
                 const SizedBox(height: AppSpace.s2),
-                
+
                 const Text(
                   '口袋里的 AI Agent',
                   style: TextStyle(
@@ -145,9 +142,9 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                   ),
                   textAlign: TextAlign.center,
                 ),
-                
+
                 const SizedBox(height: AppSpace.s10),
-                
+
                 if (_currentStep == LoginStep.phoneInput) ...[
                   // 手机号输入
                   TextFormField(
@@ -172,9 +169,9 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                       return null;
                     },
                   ),
-                  
+
                   const SizedBox(height: AppSpace.s6),
-                  
+
                   // 服务条款
                   Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -232,13 +229,13 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                       ),
                     ],
                   ),
-                  
+
                   const SizedBox(height: AppSpace.s6),
-                  
+
                   // 发送验证码按钮
                   FilledButton(
-                    onPressed: (_agreeToTerms &&
-                            _phoneController.text.length == 11)
+                    onPressed:
+                        (_agreeToTerms && _phoneController.text.length == 11)
                         ? _sendCode
                         : null,
                     style: FilledButton.styleFrom(
@@ -247,14 +244,11 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                         borderRadius: AppRadius.radiusMD,
                       ),
                     ),
-                    child: const Text(
-                      '获取验证码',
-                      style: TextStyle(fontSize: 16),
-                    ),
+                    child: const Text('获取验证码', style: TextStyle(fontSize: 16)),
                   ),
-                  
+
                   const SizedBox(height: AppSpace.s4),
-                  
+
                   // 微信绑定入口
                   OutlinedButton.icon(
                     onPressed: () {
@@ -300,7 +294,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                         ],
                       ),
                       const SizedBox(height: AppSpace.s4),
-                      
+
                       // PIN 输入
                       Pinput(
                         controller: _codeController,
@@ -359,16 +353,14 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                         ),
                         onCompleted: (pin) => _verifyAndLogin(),
                       ),
-                      
+
                       const SizedBox(height: AppSpace.s6),
-                      
+
                       // 重新发送倒计时
                       TextButton(
                         onPressed: _countdown > 0 ? null : _sendCode,
                         child: Text(
-                          _countdown > 0
-                              ? '$_countdown秒后重新发送'
-                              : '重新发送验证码',
+                          _countdown > 0 ? '$_countdown秒后重新发送' : '重新发送验证码',
                           style: TextStyle(
                             color: _countdown > 0
                                 ? AppColors.textTertiary
@@ -376,9 +368,9 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                           ),
                         ),
                       ),
-                      
+
                       const SizedBox(height: AppSpace.s4),
-                      
+
                       // 登录按钮
                       SizedBox(
                         width: double.infinity,
@@ -410,9 +402,9 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                     ],
                   ),
                 ],
-                
+
                 const SizedBox(height: AppSpace.s4),
-                
+
                 // 底部提示
                 Center(
                   child: Text(

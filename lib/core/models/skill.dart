@@ -5,10 +5,13 @@ import 'database.dart';
 enum SkillStatus {
   /// 未安装
   available,
+
   /// 已安装
   installed,
+
   /// 更新可用
   updateAvailable,
+
   /// 已禁用
   disabled,
 }
@@ -17,14 +20,19 @@ enum SkillStatus {
 enum SkillCategory {
   /// 全部
   all,
+
   /// AI
   ai,
+
   /// 文本
   text,
+
   /// 图像
   image,
+
   /// 编程
   code,
+
   /// 效率
   productivity,
 }
@@ -125,7 +133,8 @@ class SkillData {
   }
 
   /// 是否已安装
-  bool get isInstalled => status == SkillStatus.installed || status == SkillStatus.updateAvailable;
+  bool get isInstalled =>
+      status == SkillStatus.installed || status == SkillStatus.updateAvailable;
 
   /// 是否可用
   bool get isAvailable => status == SkillStatus.available;

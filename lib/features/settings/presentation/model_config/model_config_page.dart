@@ -35,11 +35,11 @@ class _ModelConfigPageState extends ConsumerState<ModelConfigPage> {
     final apiKey = prefs.getString('model_api_key') ?? '';
     final providerKey = prefs.getString('model_provider') ?? 'deepseek';
     final modelKey = prefs.getString('model_name') ?? 'deepseek-chat';
-    
+
     setState(() {
       _apiKeyController.text = apiKey;
     });
-    
+
     ref.read(modelConfigProvider.notifier).setProvider(providerKey);
     ref.read(modelConfigProvider.notifier).setModel(modelKey);
   }
@@ -47,11 +47,11 @@ class _ModelConfigPageState extends ConsumerState<ModelConfigPage> {
   Future<void> _saveConfig() async {
     final config = ref.read(modelConfigProvider);
     final prefs = await SharedPreferences.getInstance();
-    
+
     await prefs.setString('model_api_key', _apiKeyController.text);
     await prefs.setString('model_provider', config.provider);
     await prefs.setString('model_name', config.model);
-    
+
     if (mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
@@ -78,7 +78,7 @@ class _ModelConfigPageState extends ConsumerState<ModelConfigPage> {
     try {
       // TODO: 实际的 API 测试请求
       await Future.delayed(const Duration(seconds: 2));
-      
+
       // 模拟测试结果
       final config = ref.read(modelConfigProvider);
       setState(() {
@@ -100,9 +100,7 @@ class _ModelConfigPageState extends ConsumerState<ModelConfigPage> {
     final config = ref.watch(modelConfigProvider);
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('模型配置'),
-      ),
+      appBar: AppBar(title: const Text('模型配置')),
       body: ListView(
         padding: const EdgeInsets.all(AppSpace.s4),
         children: [
@@ -180,9 +178,7 @@ class _ModelConfigPageState extends ConsumerState<ModelConfigPage> {
             label: const Text('保存配置'),
             style: FilledButton.styleFrom(
               padding: const EdgeInsets.symmetric(vertical: 16),
-              shape: RoundedRectangleBorder(
-                borderRadius: AppRadius.radiusMD,
-              ),
+              shape: RoundedRectangleBorder(borderRadius: AppRadius.radiusMD),
             ),
           ),
 
@@ -198,20 +194,16 @@ class _ModelConfigPageState extends ConsumerState<ModelConfigPage> {
               _apiKeyController.clear();
               ref.read(modelConfigProvider.notifier).reset();
               if (mounted) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text('配置已重置'),
-                  ),
-                );
+                ScaffoldMessenger.of(
+                  context,
+                ).showSnackBar(const SnackBar(content: Text('配置已重置')));
               }
             },
             icon: const Icon(Icons.refresh, size: 20),
             label: const Text('重置配置'),
             style: OutlinedButton.styleFrom(
               padding: const EdgeInsets.symmetric(vertical: 16),
-              shape: RoundedRectangleBorder(
-                borderRadius: AppRadius.radiusMD,
-              ),
+              shape: RoundedRectangleBorder(borderRadius: AppRadius.radiusMD),
             ),
           ),
         ],
@@ -244,10 +236,7 @@ class _ModelConfigPageState extends ConsumerState<ModelConfigPage> {
       child: Column(
         children: [
           for (var provider in ModelProvider.values)
-            _buildProviderItem(
-              provider,
-              provider == currentProvider,
-            ),
+            _buildProviderItem(provider, provider == currentProvider),
         ],
       ),
     );
@@ -255,7 +244,7 @@ class _ModelConfigPageState extends ConsumerState<ModelConfigPage> {
 
   Widget _buildProviderItem(ModelProvider provider, bool isSelected) {
     final info = ModelProviderInfo.getInfo(provider);
-    
+
     return InkWell(
       onTap: () {
         ref.read(modelConfigProvider.notifier).setProvider(provider.key);
@@ -277,10 +266,7 @@ class _ModelConfigPageState extends ConsumerState<ModelConfigPage> {
         ),
         child: Row(
           children: [
-            Text(
-              info.emoji,
-              style: const TextStyle(fontSize: 24),
-            ),
+            Text(info.emoji, style: const TextStyle(fontSize: 24)),
             const SizedBox(width: AppSpace.s3),
             Expanded(
               child: Column(
@@ -308,10 +294,7 @@ class _ModelConfigPageState extends ConsumerState<ModelConfigPage> {
               ),
             ),
             if (isSelected)
-              const Icon(
-                Icons.check_circle,
-                color: AppColors.primary,
-              ),
+              const Icon(Icons.check_circle, color: AppColors.primary),
           ],
         ),
       ),
@@ -320,7 +303,7 @@ class _ModelConfigPageState extends ConsumerState<ModelConfigPage> {
 
   Widget _buildModelSelector(String provider, String currentModel) {
     final models = ModelProviderInfo.getModels(provider);
-    
+
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: AppSpace.s3),
       decoration: BoxDecoration(
@@ -333,20 +316,14 @@ class _ModelConfigPageState extends ConsumerState<ModelConfigPage> {
           value: currentModel,
           isExpanded: true,
           dropdownColor: AppColors.surfaceElevated,
-          style: const TextStyle(
-            fontSize: 15,
-            color: AppColors.textPrimary,
-          ),
+          style: const TextStyle(fontSize: 15, color: AppColors.textPrimary),
           items: models.map((model) {
             return DropdownMenuItem<String>(
               value: model['value'],
               child: Row(
                 children: [
                   if (model['icon'] != null) ...[
-                    Text(
-                      model['icon']!,
-                      style: const TextStyle(fontSize: 20),
-                    ),
+                    Text(model['icon']!, style: const TextStyle(fontSize: 20)),
                     const SizedBox(width: AppSpace.s2),
                   ],
                   Expanded(
@@ -397,7 +374,9 @@ class _ModelConfigPageState extends ConsumerState<ModelConfigPage> {
           contentPadding: const EdgeInsets.all(AppSpace.s3),
           suffixIcon: IconButton(
             icon: Icon(
-              _isObscured ? Icons.visibility_outlined : Icons.visibility_off_outlined,
+              _isObscured
+                  ? Icons.visibility_outlined
+                  : Icons.visibility_off_outlined,
               color: AppColors.textSecondary,
             ),
             onPressed: () {
@@ -429,16 +408,14 @@ class _ModelConfigPageState extends ConsumerState<ModelConfigPage> {
         padding: const EdgeInsets.symmetric(vertical: 14),
         foregroundColor: AppColors.primary,
         side: const BorderSide(color: AppColors.primary),
-        shape: RoundedRectangleBorder(
-          borderRadius: AppRadius.radiusMD,
-        ),
+        shape: RoundedRectangleBorder(borderRadius: AppRadius.radiusMD),
       ),
     );
   }
 
   Widget _buildTestResult() {
     final isSuccess = _testResult?.startsWith('✓') ?? false;
-    
+
     return Container(
       padding: const EdgeInsets.all(AppSpace.s3),
       decoration: BoxDecoration(

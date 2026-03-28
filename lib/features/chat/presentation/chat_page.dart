@@ -64,16 +64,15 @@ class _ChatPageState extends ConsumerState<ChatPage> {
     _textController.clear();
 
     try {
-      await ref.read(chatServiceProvider).sendMessage(
-        conversationId: widget.chatId,
-        content: content,
-      );
+      await ref
+          .read(chatServiceProvider)
+          .sendMessage(conversationId: widget.chatId, content: content);
       _scrollToBottom();
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('发送失败: $e')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('发送失败: $e')));
       }
     } finally {
       if (mounted) {
@@ -120,9 +119,7 @@ class _ChatPageState extends ConsumerState<ChatPage> {
           return Column(
             children: [
               // 消息列表
-              Expanded(
-                child: _buildMessagesList(messages),
-              ),
+              Expanded(child: _buildMessagesList(messages)),
 
               // 输入区域
               _buildInputArea(context),
@@ -140,7 +137,9 @@ class _ChatPageState extends ConsumerState<ChatPage> {
         horizontal: AppSpace.s4,
         vertical: AppSpace.s3,
       ),
-      itemCount: messages.length + (_isSending || _pendingAiContent.isNotEmpty ? 1 : 0),
+      itemCount:
+          messages.length +
+          (_isSending || _pendingAiContent.isNotEmpty ? 1 : 0),
       itemBuilder: (context, index) {
         // 显示待发送的 AI 消息
         if (index >= messages.length) {
@@ -151,7 +150,8 @@ class _ChatPageState extends ConsumerState<ChatPage> {
         }
 
         final message = messages[index];
-        final content = message.content.isEmpty && message.sender == MessageSender.ai
+        final content =
+            message.content.isEmpty && message.sender == MessageSender.ai
             ? '...'
             : message.content;
 
@@ -167,7 +167,11 @@ class _ChatPageState extends ConsumerState<ChatPage> {
     );
   }
 
-  Widget _buildAiBubble(BuildContext context, String content, {bool isTyping = false}) {
+  Widget _buildAiBubble(
+    BuildContext context,
+    String content, {
+    bool isTyping = false,
+  }) {
     return Align(
       alignment: Alignment.centerLeft,
       child: Container(
@@ -364,16 +368,17 @@ class _ChatPageState extends ConsumerState<ChatPage> {
       ),
       decoration: const BoxDecoration(
         color: AppColors.surface,
-        border: Border(
-          top: BorderSide(color: AppColors.border, width: 1),
-        ),
+        border: Border(top: BorderSide(color: AppColors.border, width: 1)),
       ),
       child: SafeArea(
         top: false,
         child: Row(
           children: [
             IconButton(
-              icon: const Icon(Icons.attach_file, color: AppColors.textTertiary),
+              icon: const Icon(
+                Icons.attach_file,
+                color: AppColors.textTertiary,
+              ),
               onPressed: () {},
             ),
             Expanded(

@@ -102,11 +102,7 @@ class MemoryState extends _$MemoryState {
   }) async {
     final service = ref.read(memoryServiceProvider);
     final category = service.autoCategorizeMemory(content);
-    await storeMemory(
-      content: content,
-      category: category,
-      source: source,
-    );
+    await storeMemory(content: content, category: category, source: source);
   }
 
   /// 删除记忆
@@ -127,11 +123,7 @@ class MemoryState extends _$MemoryState {
     MemoryCategory? category,
   }) async {
     final service = ref.read(memoryServiceProvider);
-    await service.updateMemory(
-      id: id,
-      content: content,
-      category: category,
-    );
+    await service.updateMemory(id: id, content: content, category: category);
     // 触发刷新
     ref.invalidate(allMemoriesProvider);
     ref.invalidate(filteredMemoriesProvider);

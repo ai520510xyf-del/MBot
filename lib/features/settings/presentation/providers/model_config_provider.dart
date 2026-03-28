@@ -5,12 +5,7 @@ part 'model_config_provider.g.dart';
 part 'model_config_provider.freezed.dart';
 
 /// 模型提供商枚举
-enum ModelProvider {
-  deepseek,
-  glm,
-  qwen,
-  minimax,
-}
+enum ModelProvider { deepseek, glm, qwen, minimax }
 
 /// 模型提供商信息
 class ModelProviderInfo {
@@ -67,26 +62,81 @@ class ModelProviderInfo {
     switch (providerKey) {
       case 'deepseek':
         return [
-          {'value': 'deepseek-chat', 'name': 'DeepSeek Chat', 'icon': '💬', 'description': '通用对话模型'},
-          {'value': 'deepseek-coder', 'name': 'DeepSeek Coder', 'icon': '💻', 'description': '代码生成模型'},
+          {
+            'value': 'deepseek-chat',
+            'name': 'DeepSeek Chat',
+            'icon': '💬',
+            'description': '通用对话模型',
+          },
+          {
+            'value': 'deepseek-coder',
+            'name': 'DeepSeek Coder',
+            'icon': '💻',
+            'description': '代码生成模型',
+          },
         ];
       case 'glm':
         return [
-          {'value': 'glm-4-plus', 'name': 'GLM-4-Plus', 'icon': '🌟', 'description': '最新最强模型'},
-          {'value': 'glm-4', 'name': 'GLM-4', 'icon': '🚀', 'description': '高性能模型'},
-          {'value': 'glm-4-flash', 'name': 'GLM-4-Flash', 'icon': '⚡', 'description': '超高速模型'},
-          {'value': 'glm-4-air', 'name': 'GLM-4-Air', 'icon': '💨', 'description': '轻量级模型'},
+          {
+            'value': 'glm-4-plus',
+            'name': 'GLM-4-Plus',
+            'icon': '🌟',
+            'description': '最新最强模型',
+          },
+          {
+            'value': 'glm-4',
+            'name': 'GLM-4',
+            'icon': '🚀',
+            'description': '高性能模型',
+          },
+          {
+            'value': 'glm-4-flash',
+            'name': 'GLM-4-Flash',
+            'icon': '⚡',
+            'description': '超高速模型',
+          },
+          {
+            'value': 'glm-4-air',
+            'name': 'GLM-4-Air',
+            'icon': '💨',
+            'description': '轻量级模型',
+          },
         ];
       case 'qwen':
         return [
-          {'value': 'qwen-max', 'name': 'Qwen-Max', 'icon': '🌟', 'description': '最强旗舰模型'},
-          {'value': 'qwen-plus', 'name': 'Qwen-Plus', 'icon': '🚀', 'description': '高性价比模型'},
-          {'value': 'qwen-turbo', 'name': 'Qwen-Turbo', 'icon': '⚡', 'description': '超高速响应'},
+          {
+            'value': 'qwen-max',
+            'name': 'Qwen-Max',
+            'icon': '🌟',
+            'description': '最强旗舰模型',
+          },
+          {
+            'value': 'qwen-plus',
+            'name': 'Qwen-Plus',
+            'icon': '🚀',
+            'description': '高性价比模型',
+          },
+          {
+            'value': 'qwen-turbo',
+            'name': 'Qwen-Turbo',
+            'icon': '⚡',
+            'description': '超高速响应',
+          },
         ];
       case 'minimax':
         return [
-          {'value': 'abab6.5s-chat', 'name': 'abab6.5s-chat', 'icon': '🌟', 'description': '最新对话模型'},
-          {'value': 'abab6-chat', 'name': 'abab6-chat', 'icon': '💬', 'description': '标准对话模型'},
+          {
+            'value': 'abab6.5s-chat',
+            'name': 'abab6.5s-chat',
+            'icon': '🌟',
+            'description': '最新对话模型',
+          },
+          {
+            'value': 'abab6-chat',
+            'name': 'abab6-chat',
+            'icon': '💬',
+            'description': '标准对话模型',
+          },
         ];
       default:
         return [];

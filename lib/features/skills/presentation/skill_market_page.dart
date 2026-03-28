@@ -20,10 +20,7 @@ class _SkillMarketPageState extends ConsumerState<SkillMarketPage>
   void initState() {
     super.initState();
     final categories = ref.read(categoryListProvider);
-    _tabController = TabController(
-      length: categories.length,
-      vsync: this,
-    );
+    _tabController = TabController(length: categories.length, vsync: this);
     _tabController.addListener(_handleTabChange);
   }
 
@@ -37,7 +34,9 @@ class _SkillMarketPageState extends ConsumerState<SkillMarketPage>
   void _handleTabChange() {
     if (_tabController.indexIsChanging) {
       final categories = ref.read(categoryListProvider);
-      ref.read(selectedCategoryProvider.notifier).setCategory(categories[_tabController.index]);
+      ref
+          .read(selectedCategoryProvider.notifier)
+          .setCategory(categories[_tabController.index]);
     }
   }
 
@@ -54,10 +53,7 @@ class _SkillMarketPageState extends ConsumerState<SkillMarketPage>
           IconButton(
             icon: const Icon(Icons.search),
             onPressed: () {
-              showSearch(
-                context: context,
-                delegate: _SkillSearchDelegate(ref),
-              );
+              showSearch(context: context, delegate: _SkillSearchDelegate(ref));
             },
           ),
           IconButton(
@@ -99,22 +95,24 @@ class _SkillMarketPageState extends ConsumerState<SkillMarketPage>
       unselectedLabelColor: AppColors.textTertiary,
       indicatorColor: AppColors.primary,
       indicatorSize: TabBarIndicatorSize.label,
-      labelStyle: const TextStyle(
-        fontSize: 14,
-        fontWeight: FontWeight.w600,
-      ),
+      labelStyle: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
       unselectedLabelStyle: const TextStyle(
         fontSize: 14,
         fontWeight: FontWeight.w400,
       ),
       onTap: (index) {
-        ref.read(selectedCategoryProvider.notifier).setCategory(categories[index]);
+        ref
+            .read(selectedCategoryProvider.notifier)
+            .setCategory(categories[index]);
       },
       tabs: categories.map((c) => Tab(text: categoryDisplayName(c))).toList(),
     );
   }
 
-  Widget _buildSkillGrid(AsyncValue<List<SkillData>> skillsAsync, SkillCategory category) {
+  Widget _buildSkillGrid(
+    AsyncValue<List<SkillData>> skillsAsync,
+    SkillCategory category,
+  ) {
     return skillsAsync.when(
       data: (skills) {
         // 过滤当前分类的技能
@@ -181,12 +179,13 @@ class _SkillMarketPageState extends ConsumerState<SkillMarketPage>
 
         return Container(
           height: 60,
-          padding: const EdgeInsets.symmetric(horizontal: AppSpace.s4, vertical: AppSpace.s2),
+          padding: const EdgeInsets.symmetric(
+            horizontal: AppSpace.s4,
+            vertical: AppSpace.s2,
+          ),
           decoration: BoxDecoration(
             color: AppColors.surface,
-            border: Border(
-              top: BorderSide(color: AppColors.border, width: 1),
-            ),
+            border: Border(top: BorderSide(color: AppColors.border, width: 1)),
           ),
           child: Row(
             children: [
@@ -238,10 +237,7 @@ class _SkillCard extends ConsumerWidget {
   final SkillData skill;
   final VoidCallback onTap;
 
-  const _SkillCard({
-    required this.skill,
-    required this.onTap,
-  });
+  const _SkillCard({required this.skill, required this.onTap});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -271,7 +267,10 @@ class _SkillCard extends ConsumerWidget {
                       borderRadius: AppRadius.radiusMD,
                     ),
                     child: Center(
-                      child: Text(skill.emoji, style: const TextStyle(fontSize: 24)),
+                      child: Text(
+                        skill.emoji,
+                        style: const TextStyle(fontSize: 24),
+                      ),
                     ),
                   ),
                   const Spacer(),
@@ -354,7 +353,9 @@ class _SkillDetailSheetState extends ConsumerState<_SkillDetailSheet> {
   @override
   Widget build(BuildContext context) {
     final skillState = ref.watch(skillStateProvider);
-    final isInstalled = skillState[widget.skill.id] == SkillStatus.installed || widget.skill.isInstalled;
+    final isInstalled =
+        skillState[widget.skill.id] == SkillStatus.installed ||
+        widget.skill.isInstalled;
 
     return Container(
       height: MediaQuery.of(context).size.height * 0.6,
@@ -390,7 +391,10 @@ class _SkillDetailSheetState extends ConsumerState<_SkillDetailSheet> {
                         borderRadius: AppRadius.radiusLG,
                       ),
                       child: Center(
-                        child: Text(widget.skill.emoji, style: const TextStyle(fontSize: 32)),
+                        child: Text(
+                          widget.skill.emoji,
+                          style: const TextStyle(fontSize: 32),
+                        ),
                       ),
                     ),
                     const SizedBox(width: AppSpace.s4),
@@ -502,9 +506,13 @@ class _SkillDetailSheetState extends ConsumerState<_SkillDetailSheet> {
                         setState(() => _isInstalling = true);
                         try {
                           if (isInstalled) {
-                            await ref.read(skillStateProvider.notifier).uninstallSkill(widget.skill.id);
+                            await ref
+                                .read(skillStateProvider.notifier)
+                                .uninstallSkill(widget.skill.id);
                           } else {
-                            await ref.read(skillStateProvider.notifier).installSkill(widget.skill.id);
+                            await ref
+                                .read(skillStateProvider.notifier)
+                                .installSkill(widget.skill.id);
                           }
                           // 刷新列表
                           ref.invalidate(availableSkillsProvider);
@@ -516,8 +524,12 @@ class _SkillDetailSheetState extends ConsumerState<_SkillDetailSheet> {
                         }
                       },
                 style: FilledButton.styleFrom(
-                  backgroundColor: isInstalled ? AppColors.surface : AppColors.primary,
-                  foregroundColor: isInstalled ? AppColors.textPrimary : Colors.white,
+                  backgroundColor: isInstalled
+                      ? AppColors.surface
+                      : AppColors.primary,
+                  foregroundColor: isInstalled
+                      ? AppColors.textPrimary
+                      : Colors.white,
                 ),
                 child: _isInstalling
                     ? const SizedBox(
@@ -556,10 +568,7 @@ class _StatItem extends StatelessWidget {
         const SizedBox(width: 4),
         Text(
           label,
-          style: const TextStyle(
-            fontSize: 13,
-            color: AppColors.textSecondary,
-          ),
+          style: const TextStyle(fontSize: 13, color: AppColors.textSecondary),
         ),
       ],
     );
@@ -740,7 +749,10 @@ class _SkillSearchDelegate extends SearchDelegate<String> {
         child: CircularProgressIndicator(color: AppColors.primary),
       ),
       error: (error, stack) => Center(
-        child: Text('加载失败: $error', style: const TextStyle(color: AppColors.error)),
+        child: Text(
+          '加载失败: $error',
+          style: const TextStyle(color: AppColors.error),
+        ),
       ),
     );
   }

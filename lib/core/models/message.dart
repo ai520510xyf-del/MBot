@@ -2,19 +2,10 @@ import 'package:drift/drift.dart' as drift;
 import 'database.dart';
 
 /// 消息发送者类型
-enum MessageSender {
-  user,
-  ai,
-  tool,
-}
+enum MessageSender { user, ai, tool }
 
 /// 消息状态
-enum MessageStatus {
-  pending,
-  sending,
-  sent,
-  failed,
-}
+enum MessageStatus { pending, sending, sent, failed }
 
 /// 消息数据模型 (不可变)
 class MessageData {

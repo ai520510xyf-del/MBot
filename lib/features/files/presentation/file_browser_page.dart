@@ -110,7 +110,11 @@ class _FileBrowserPageState extends ConsumerState<FileBrowserPage> {
     var files = _mockFiles;
 
     if (_searchQuery.isNotEmpty) {
-      files = files.where((f) => f.name.toLowerCase().contains(_searchQuery.toLowerCase())).toList();
+      files = files
+          .where(
+            (f) => f.name.toLowerCase().contains(_searchQuery.toLowerCase()),
+          )
+          .toList();
     }
 
     // 文件夹优先，然后按名称排序
@@ -164,8 +168,8 @@ class _FileBrowserPageState extends ConsumerState<FileBrowserPage> {
             child: _filteredFiles.isEmpty
                 ? _buildEmptyState()
                 : _isGridView
-                    ? _buildGridView()
-                    : _buildListView(),
+                ? _buildGridView()
+                : _buildListView(),
           ),
 
           // 底部状态栏
@@ -183,20 +187,20 @@ class _FileBrowserPageState extends ConsumerState<FileBrowserPage> {
       ),
       decoration: BoxDecoration(
         color: AppColors.surface,
-        border: Border(
-          bottom: BorderSide(color: AppColors.border),
-        ),
+        border: Border(bottom: BorderSide(color: AppColors.border)),
       ),
       child: Row(
         children: [
-          const Icon(Icons.folder_outlined, size: 18, color: AppColors.textTertiary),
+          const Icon(
+            Icons.folder_outlined,
+            size: 18,
+            color: AppColors.textTertiary,
+          ),
           const SizedBox(width: AppSpace.s2),
           Expanded(
             child: SingleChildScrollView(
               scrollDirection: Axis.horizontal,
-              child: Row(
-                children: _buildBreadcrumbItems(),
-              ),
+              child: Row(children: _buildBreadcrumbItems()),
             ),
           ),
         ],
@@ -213,22 +217,18 @@ class _FileBrowserPageState extends ConsumerState<FileBrowserPage> {
         onTap: () => _navigateToPath('/'),
         child: Text(
           '根目录',
-          style: const TextStyle(
-            color: AppColors.primary,
-            fontSize: 14,
-          ),
+          style: const TextStyle(color: AppColors.primary, fontSize: 14),
         ),
       ),
     );
 
     for (var i = 0; i < parts.length; i++) {
-      items.add(const Padding(
-        padding: EdgeInsets.symmetric(horizontal: 4),
-        child: Text(
-          '/',
-          style: TextStyle(color: AppColors.textTertiary),
+      items.add(
+        const Padding(
+          padding: EdgeInsets.symmetric(horizontal: 4),
+          child: Text('/', style: TextStyle(color: AppColors.textTertiary)),
         ),
-      ));
+      );
 
       final isLast = i == parts.length - 1;
       items.add(
@@ -332,10 +332,7 @@ class _FileBrowserPageState extends ConsumerState<FileBrowserPage> {
         ),
         subtitle: Text(
           _formatFileSize(file.size),
-          style: const TextStyle(
-            fontSize: 12,
-            color: AppColors.textTertiary,
-          ),
+          style: const TextStyle(fontSize: 12, color: AppColors.textTertiary),
         ),
         trailing: _buildFileTrailing(file),
         onTap: () => _handleFileTap(file),
@@ -406,31 +403,35 @@ class _FileBrowserPageState extends ConsumerState<FileBrowserPage> {
         iconColor = AppColors.textSecondary;
     }
 
-    return Icon(
-      file.type.icon,
-      size: size,
-      color: iconColor,
-    );
+    return Icon(file.type.icon, size: size, color: iconColor);
   }
 
   Widget _buildFileTrailing(FileItem file) {
     if (file.type == FileType.folder) {
-      return const Icon(Icons.chevron_right, size: 18, color: AppColors.textTertiary);
+      return const Icon(
+        Icons.chevron_right,
+        size: 18,
+        color: AppColors.textTertiary,
+      );
     }
     return PopupMenuButton<String>(
       onSelected: (value) {
         // TODO: 实现文件操作
         if (value == 'download') {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('下载 ${file.name}')),
-          );
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(SnackBar(content: Text('下载 ${file.name}')));
         } else if (value == 'delete') {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('删除 ${file.name}')),
-          );
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(SnackBar(content: Text('删除 ${file.name}')));
         }
       },
-      icon: const Icon(Icons.more_vert, size: 18, color: AppColors.textTertiary),
+      icon: const Icon(
+        Icons.more_vert,
+        size: 18,
+        color: AppColors.textTertiary,
+      ),
       itemBuilder: (context) => [
         const PopupMenuItem(
           value: 'download',
@@ -457,20 +458,21 @@ class _FileBrowserPageState extends ConsumerState<FileBrowserPage> {
   }
 
   Widget _buildStatusBar() {
-    final folderCount = _filteredFiles.where((f) => f.type == FileType.folder).length;
-    final fileCount = _filteredFiles.where((f) => f.type != FileType.folder).length;
-    final totalSize = _filteredFiles.where((f) => f.type != FileType.folder).fold<int>(
-          0,
-          (sum, f) => sum + f.size,
-        );
+    final folderCount = _filteredFiles
+        .where((f) => f.type == FileType.folder)
+        .length;
+    final fileCount = _filteredFiles
+        .where((f) => f.type != FileType.folder)
+        .length;
+    final totalSize = _filteredFiles
+        .where((f) => f.type != FileType.folder)
+        .fold<int>(0, (sum, f) => sum + f.size);
 
     return Container(
       padding: const EdgeInsets.all(AppSpace.s4),
       decoration: BoxDecoration(
         color: AppColors.surface,
-        border: Border(
-          top: BorderSide(color: AppColors.border),
-        ),
+        border: Border(top: BorderSide(color: AppColors.border)),
       ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -499,10 +501,7 @@ class _FileBrowserPageState extends ConsumerState<FileBrowserPage> {
         ),
         Text(
           label,
-          style: const TextStyle(
-            fontSize: 10,
-            color: AppColors.textTertiary,
-          ),
+          style: const TextStyle(fontSize: 10, color: AppColors.textTertiary),
         ),
       ],
     );
@@ -539,16 +538,16 @@ class _FileBrowserPageState extends ConsumerState<FileBrowserPage> {
       _navigateToPath(newPath);
     } else {
       // TODO: 打开文件
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('打开 ${file.name}')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('打开 ${file.name}')));
     }
   }
 
   void _navigateToPath(String path) {
     setState(() {
       if (path == _currentPath) return;
-      
+
       // 如果是返回上级目录
       if (!path.contains(_currentPath) && _pathHistory.length > 1) {
         _pathHistory.removeLast();
@@ -561,7 +560,8 @@ class _FileBrowserPageState extends ConsumerState<FileBrowserPage> {
   String _formatFileSize(int bytes) {
     if (bytes < 1024) return '$bytes B';
     if (bytes < 1024 * 1024) return '${(bytes / 1024).toStringAsFixed(1)} KB';
-    if (bytes < 1024 * 1024 * 1024) return '${(bytes / (1024 * 1024)).toStringAsFixed(1)} MB';
+    if (bytes < 1024 * 1024 * 1024)
+      return '${(bytes / (1024 * 1024)).toStringAsFixed(1)} MB';
     return '${(bytes / (1024 * 1024 * 1024)).toStringAsFixed(1)} GB';
   }
 

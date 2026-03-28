@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'app_colors.dart';
 import 'app_radius.dart';
-import 'app_colors.dart';
 
 /// MBot Mobile 完整主题配置
 class AppTheme {
@@ -68,10 +67,7 @@ class AppTheme {
           disabledForegroundColor: DarkColors.textTertiary,
           padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
           shape: RoundedRectangleBorder(borderRadius: AppRadius.radiusMD),
-          textStyle: const TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.w600,
-          ),
+          textStyle: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
         ),
       ),
 
@@ -79,10 +75,7 @@ class AppTheme {
       textButtonTheme: TextButtonThemeData(
         style: TextButton.styleFrom(
           foregroundColor: AppColors.primary,
-          textStyle: const TextStyle(
-            fontSize: 14,
-            fontWeight: FontWeight.w500,
-          ),
+          textStyle: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
         ),
       ),
 
@@ -120,7 +113,10 @@ class AppTheme {
         unselectedItemColor: DarkColors.textTertiary,
         type: BottomNavigationBarType.fixed,
         elevation: 8,
-        selectedLabelStyle: TextStyle(fontSize: 12, fontWeight: FontWeight.w500),
+        selectedLabelStyle: TextStyle(
+          fontSize: 12,
+          fontWeight: FontWeight.w500,
+        ),
         unselectedLabelStyle: TextStyle(fontSize: 12),
       ),
 
@@ -132,13 +128,14 @@ class AppTheme {
       ),
 
       // 图标主题
-      iconTheme: const IconThemeData(
-        color: DarkColors.textSecondary,
-        size: 24,
-      ),
+      iconTheme: const IconThemeData(color: DarkColors.textSecondary, size: 24),
 
       // 文字主题
-      textTheme: _buildTextTheme(DarkColors.textPrimary, DarkColors.textSecondary, DarkColors.textTertiary),
+      textTheme: _buildTextTheme(
+        DarkColors.textPrimary,
+        DarkColors.textSecondary,
+        DarkColors.textTertiary,
+      ),
     );
   }
 
@@ -202,10 +199,7 @@ class AppTheme {
           disabledForegroundColor: LightColors.textTertiary,
           padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
           shape: RoundedRectangleBorder(borderRadius: AppRadius.radiusMD),
-          textStyle: const TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.w600,
-          ),
+          textStyle: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
         ),
       ),
 
@@ -213,10 +207,7 @@ class AppTheme {
       textButtonTheme: TextButtonThemeData(
         style: TextButton.styleFrom(
           foregroundColor: AppColors.primary,
-          textStyle: const TextStyle(
-            fontSize: 14,
-            fontWeight: FontWeight.w500,
-          ),
+          textStyle: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
         ),
       ),
 
@@ -254,7 +245,10 @@ class AppTheme {
         unselectedItemColor: LightColors.textTertiary,
         type: BottomNavigationBarType.fixed,
         elevation: 8,
-        selectedLabelStyle: TextStyle(fontSize: 12, fontWeight: FontWeight.w500),
+        selectedLabelStyle: TextStyle(
+          fontSize: 12,
+          fontWeight: FontWeight.w500,
+        ),
         unselectedLabelStyle: TextStyle(fontSize: 12),
       ),
 
@@ -272,11 +266,19 @@ class AppTheme {
       ),
 
       // 文字主题
-      textTheme: _buildTextTheme(LightColors.textPrimary, LightColors.textSecondary, LightColors.textTertiary),
+      textTheme: _buildTextTheme(
+        LightColors.textPrimary,
+        LightColors.textSecondary,
+        LightColors.textTertiary,
+      ),
     );
   }
 
-  static TextTheme _buildTextTheme(Color primary, Color secondary, Color tertiary) {
+  static TextTheme _buildTextTheme(
+    Color primary,
+    Color secondary,
+    Color tertiary,
+  ) {
     return TextTheme(
       displayLarge: TextStyle(
         fontSize: 32,

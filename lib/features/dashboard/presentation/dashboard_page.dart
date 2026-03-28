@@ -51,15 +51,21 @@ class DashboardPage extends ConsumerWidget {
               data: (agents) {
                 final onlineCount = agents.where((a) => a.isOnline).length;
                 final busyCount = agents.where((a) => a.isBusy).length;
-                final offlineCount = agents.where((a) => !a.isOnline && !a.isBusy).length;
+                final offlineCount = agents
+                    .where((a) => !a.isOnline && !a.isBusy)
+                    .length;
 
                 return Row(
                   children: [
-                    Expanded(child: _AgentStatusCard.online(count: onlineCount)),
+                    Expanded(
+                      child: _AgentStatusCard.online(count: onlineCount),
+                    ),
                     const SizedBox(width: AppSpace.s3),
                     Expanded(child: _AgentStatusCard.busy(count: busyCount)),
                     const SizedBox(width: AppSpace.s3),
-                    Expanded(child: _AgentStatusCard.offline(count: offlineCount)),
+                    Expanded(
+                      child: _AgentStatusCard.offline(count: offlineCount),
+                    ),
                   ],
                 );
               },
@@ -76,13 +82,37 @@ class DashboardPage extends ConsumerWidget {
               data: (stats) {
                 return Row(
                   children: [
-                    Expanded(child: _StatCard(icon: '💬', value: stats.conversationCount.toString(), label: '对话数')),
+                    Expanded(
+                      child: _StatCard(
+                        icon: '💬',
+                        value: stats.conversationCount.toString(),
+                        label: '对话数',
+                      ),
+                    ),
                     const SizedBox(width: AppSpace.s3),
-                    Expanded(child: _StatCard(icon: '⚙️', value: stats.skillCallCount.toString(), label: '技能调用')),
+                    Expanded(
+                      child: _StatCard(
+                        icon: '⚙️',
+                        value: stats.skillCallCount.toString(),
+                        label: '技能调用',
+                      ),
+                    ),
                     const SizedBox(width: AppSpace.s3),
-                    Expanded(child: _StatCard(icon: '🎯', value: stats.taskCount.toString(), label: '任务数')),
+                    Expanded(
+                      child: _StatCard(
+                        icon: '🎯',
+                        value: stats.taskCount.toString(),
+                        label: '任务数',
+                      ),
+                    ),
                     const SizedBox(width: AppSpace.s3),
-                    Expanded(child: _StatCard(icon: '⏱️', value: stats.formattedResponseTime, label: '响应时间')),
+                    Expanded(
+                      child: _StatCard(
+                        icon: '⏱️',
+                        value: stats.formattedResponseTime,
+                        label: '响应时间',
+                      ),
+                    ),
                   ],
                 );
               },
@@ -107,7 +137,9 @@ class DashboardPage extends ConsumerWidget {
                 }
 
                 return Column(
-                  children: agents.map((agent) => _AgentCard(agent: agent)).toList(),
+                  children: agents
+                      .map((agent) => _AgentCard(agent: agent))
+                      .toList(),
                 );
               },
               loading: () => const Center(
@@ -129,7 +161,9 @@ class DashboardPage extends ConsumerWidget {
             channelsAsync.when(
               data: (channels) {
                 return Column(
-                  children: channels.map((channel) => _ChannelCard(channel: channel)).toList(),
+                  children: channels
+                      .map((channel) => _ChannelCard(channel: channel))
+                      .toList(),
                 );
               },
               loading: () => const _ShimmerColumn(3),
@@ -192,19 +226,19 @@ class _AgentStatusCard extends StatelessWidget {
   final Color color;
 
   const _AgentStatusCard.online({required this.count})
-      : title = '在线',
-        status = '运行中',
-        color = AppColors.success;
+    : title = '在线',
+      status = '运行中',
+      color = AppColors.success;
 
   const _AgentStatusCard.busy({required this.count})
-      : title = '忙碌',
-        status = '处理中',
-        color = AppColors.warning;
+    : title = '忙碌',
+      status = '处理中',
+      color = AppColors.warning;
 
   const _AgentStatusCard.offline({required this.count})
-      : title = '离线',
-        status = '未连接',
-        color = AppColors.error;
+    : title = '离线',
+      status = '未连接',
+      color = AppColors.error;
 
   @override
   Widget build(BuildContext context) {
@@ -232,10 +266,7 @@ class _AgentStatusCard extends StatelessWidget {
               Container(
                 width: 8,
                 height: 8,
-                decoration: BoxDecoration(
-                  color: color,
-                  shape: BoxShape.circle,
-                ),
+                decoration: BoxDecoration(color: color, shape: BoxShape.circle),
               ),
               const SizedBox(width: 6),
               Text(
@@ -298,10 +329,7 @@ class _StatCard extends StatelessWidget {
           const SizedBox(height: 2),
           Text(
             label,
-            style: const TextStyle(
-              fontSize: 11,
-              color: AppColors.textTertiary,
-            ),
+            style: const TextStyle(fontSize: 11, color: AppColors.textTertiary),
           ),
         ],
       ),
@@ -362,7 +390,9 @@ class _AgentCard extends ConsumerWidget {
                         vertical: 2,
                       ),
                       decoration: BoxDecoration(
-                        color: _getStatusColor(agent.status).withValues(alpha: 0.1),
+                        color: _getStatusColor(
+                          agent.status,
+                        ).withValues(alpha: 0.1),
                         borderRadius: AppRadius.radiusSM,
                       ),
                       child: Text(
@@ -546,10 +576,7 @@ class _TaskItem extends StatelessWidget {
           ),
           Text(
             task.time,
-            style: const TextStyle(
-              fontSize: 12,
-              color: AppColors.textTertiary,
-            ),
+            style: const TextStyle(fontSize: 12, color: AppColors.textTertiary),
           ),
         ],
       ),
@@ -571,9 +598,7 @@ class _ShimmerRow extends StatelessWidget {
         (index) => Expanded(
           child: Container(
             height: 80,
-            margin: EdgeInsets.only(
-              right: index < count - 1 ? AppSpace.s3 : 0,
-            ),
+            margin: EdgeInsets.only(right: index < count - 1 ? AppSpace.s3 : 0),
             decoration: BoxDecoration(
               color: AppColors.surface,
               borderRadius: AppRadius.radiusLG,

@@ -22,14 +22,13 @@ final goRouterProvider = Provider<GoRouter>((ref) {
         pageBuilder: (context, state) =>
             const MaterialPage(child: SplashPage()),
       ),
-      
+
       // 登录页
       GoRoute(
         path: '/login',
-        pageBuilder: (context, state) =>
-            const MaterialPage(child: LoginPage()),
+        pageBuilder: (context, state) => const MaterialPage(child: LoginPage()),
       ),
-      
+
       // 带底部导航的 Shell Route
       ShellRoute(
         builder: (context, state, child) {
@@ -63,9 +62,7 @@ final goRouterProvider = Provider<GoRouter>((ref) {
         path: '/chat/:id',
         pageBuilder: (context, state) {
           final chatId = state.pathParameters['id'] ?? '';
-          return MaterialPage(
-            child: ChatPage(chatId: chatId),
-          );
+          return MaterialPage(child: ChatPage(chatId: chatId));
         },
       ),
     ],

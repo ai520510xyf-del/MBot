@@ -1,7 +1,7 @@
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import '../models/agent.dart';
 import '../services/agent_service.dart';
-import 'skill_providers.dart';
+import 'providers.dart';
 
 part 'agent_providers.g.dart';
 
