@@ -1,4 +1,4 @@
-package com.qclaw.qclaw_mobile
+package com.mbot.mobile
 
 import io.flutter.embedding.android.FlutterActivity
 
