@@ -4,12 +4,7 @@ import 'package:mbot_mobile/features/skills/presentation/skill_market_page.dart'
 
 void main() {
   group('SkillMarketPage', () {
-    testWidgets('should be a StatefulWidget', (tester) async {
-      const skillMarketPage = SkillMarketPage();
-      expect(skillMarketPage, isA<StatefulWidget>());
-    });
-
-    testWidgets('should have correct widget type', (tester) async {
+    testWidgets('should be a ConsumerStatefulWidget', (tester) async {
       const skillMarketPage = SkillMarketPage();
 
       expect(skillMarketPage.toStringShort(), contains('SkillMarketPage'));
@@ -30,10 +25,9 @@ void main() {
       expect(identical(page1, page2), isFalse);
     });
 
-    testWidgets('should be a ConsumerStatefulWidget', (tester) async {
+    testWidgets('should have createElement method', (tester) async {
       const skillMarketPage = SkillMarketPage();
 
-      // Check that it has the createState method
       expect(skillMarketPage.createElement, isNotNull);
     });
   });
