@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../core/providers/root_nav_provider.dart';
+import '../features/auth/presentation/splash_page.dart';
+import '../features/auth/presentation/login_page.dart';
 import '../features/conversations/presentation/conversation_list_page.dart';
 import '../features/chat/presentation/chat_page.dart';
 import '../features/skills/presentation/skill_market_page.dart';
@@ -11,9 +13,23 @@ import '../features/dashboard/presentation/dashboard_page.dart';
 /// GoRouter 配置
 final goRouterProvider = Provider<GoRouter>((ref) {
   return GoRouter(
-    initialLocation: '/',
+    initialLocation: '/splash',
     debugLogDiagnostics: true,
     routes: [
+      // 启动页
+      GoRoute(
+        path: '/splash',
+        pageBuilder: (context, state) =>
+            const MaterialPage(child: SplashPage()),
+      ),
+      
+      // 登录页
+      GoRoute(
+        path: '/login',
+        pageBuilder: (context, state) =>
+            const MaterialPage(child: LoginPage()),
+      ),
+      
       // 带底部导航的 Shell Route
       ShellRoute(
         builder: (context, state, child) {
