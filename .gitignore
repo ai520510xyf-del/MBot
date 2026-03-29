@@ -31,9 +31,9 @@ migrate_working_dir_
 /build/
 /coverage/
 
-# 代码生成相关
-*.g.dart
-*.freezed.dart
+# 代码生成相关 — .g.dart 文件必须提交，否则 CI 编译失败
+# *.g.dart
+# *.freezed.dart
 
 # Symbolication related
 app.*.symbols
