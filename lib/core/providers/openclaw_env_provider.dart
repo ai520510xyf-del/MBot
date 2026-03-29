@@ -1,4 +1,3 @@
-import 'dart:async';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import '../services/openclaw_env_service.dart';
 
@@ -9,26 +8,23 @@ enum EnvStage {
   /// 未开始
   idle,
 
-  /// 检查 Termux
-  termux,
-
-  /// 安装/检查 proot-distro
-  proot,
-
-  /// 安装/检查 Ubuntu
-  distro,
-
-  /// 安装/检查 Node.js
+  /// Node.js
   nodejs,
 
-  /// 安装/检查 OpenClaw
-  openclaw,
+  /// 创建环境
+  env,
 
-  /// 配置 OpenClaw
+  /// 安装 OpenClaw
+  install,
+
+  /// 配置
   config,
 
   /// 完成
   done,
+
+  /// 启动 Gateway
+  gateway,
 
   /// 错误
   error,
@@ -38,6 +34,7 @@ enum EnvStage {
 class EnvState {
   final EnvStage stage;
   final String message;
+  final double progress; // 0.0 ~ 1.0
   final bool isInitialized;
   final bool isGatewayRunning;
   final List<String> logs;
@@ -45,6 +42,7 @@ class EnvState {
   const EnvState({
     this.stage = EnvStage.idle,
     this.message = '',
+    this.progress = 0.0,
     this.isInitialized = false,
     this.isGatewayRunning = false,
     this.logs = const [],
@@ -53,6 +51,7 @@ class EnvState {
   EnvState copyWith({
     EnvStage? stage,
     String? message,
+    double? progress,
     bool? isInitialized,
     bool? isGatewayRunning,
     List<String>? logs,
@@ -60,6 +59,7 @@ class EnvState {
     return EnvState(
       stage: stage ?? this.stage,
       message: message ?? this.message,
+      progress: progress ?? this.progress,
       isInitialized: isInitialized ?? this.isInitialized,
       isGatewayRunning: isGatewayRunning ?? this.isGatewayRunning,
       logs: logs ?? this.logs,
@@ -82,31 +82,31 @@ class OpenClawEnv extends _$OpenClawEnv {
     return const EnvState();
   }
 
-  void _onProgress(String stage, String message) {
+  void _onProgress(String stage, double progress, String message) {
     final envStage = EnvStage.values.firstWhere(
       (e) => e.name == stage,
       orElse: () => EnvStage.idle,
     );
-    state = state.copyWith(stage: envStage, message: message);
+    state = state.copyWith(stage: envStage, progress: progress, message: message);
   }
 
   void _onLog(String log) {
     final newLogs = [...state.logs, log];
-    // 保留最近 200 条日志
     if (newLogs.length > 200) {
       newLogs.removeRange(0, newLogs.length - 200);
     }
     state = state.copyWith(logs: newLogs);
   }
 
-  /// 初始化环境（安装 proot + Node.js + OpenClaw）
+  /// 初始化环境
   Future<bool> initialize() async {
-    state = state.copyWith(stage: EnvStage.proot, message: '开始初始化...');
+    state = state.copyWith(stage: EnvStage.nodejs, message: '开始初始化...');
     final result = await _service!.initialize();
     if (result) {
       state = state.copyWith(
         isInitialized: true,
         stage: EnvStage.done,
+        progress: 1.0,
         message: '初始化完成',
       );
     } else {
@@ -117,7 +117,7 @@ class OpenClawEnv extends _$OpenClawEnv {
 
   /// 启动 Gateway
   Future<bool> startGateway() async {
-    state = state.copyWith(message: '启动 Gateway...');
+    state = state.copyWith(message: '启动 Gateway...', stage: EnvStage.gateway);
     final result = await _service!.startGateway();
     state = state.copyWith(
       isGatewayRunning: result,

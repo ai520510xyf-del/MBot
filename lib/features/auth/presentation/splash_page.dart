@@ -141,18 +141,16 @@ class _SplashPageState extends ConsumerState<SplashPage>
     switch (stage) {
       case EnvStage.idle:
         return '准备中...';
-      case EnvStage.termux:
-        return '检查环境...';
-      case EnvStage.proot:
-        return '配置 Linux 环境...';
-      case EnvStage.distro:
-        return '安装 Ubuntu...';
       case EnvStage.nodejs:
-        return '安装 Node.js...';
-      case EnvStage.openclaw:
+        return '检查 Node.js...';
+      case EnvStage.env:
+        return '创建环境...';
+      case EnvStage.install:
         return '安装 OpenClaw...';
       case EnvStage.config:
         return '配置 OpenClaw...';
+      case EnvStage.gateway:
+        return '启动 Gateway...';
       case EnvStage.done:
         return '初始化完成';
       case EnvStage.error:
@@ -256,7 +254,9 @@ class _SplashPageState extends ConsumerState<SplashPage>
                               ? 1.0
                               : envState.stage == EnvStage.error
                                   ? 0
-                                  : null, // indeterminate
+                                  : envState.progress > 0
+                                      ? envState.progress
+                                      : null, // indeterminate
                           backgroundColor: AppColors.border,
                           valueColor: const AlwaysStoppedAnimation<Color>(
                             AppColors.primary,
