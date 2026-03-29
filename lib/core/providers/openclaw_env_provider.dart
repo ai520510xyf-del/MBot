@@ -1,5 +1,6 @@
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import '../services/openclaw_env_service.dart';
+import '../services/openclaw_config.dart';
 
 part 'openclaw_env_provider.g.dart';
 
@@ -137,5 +138,10 @@ class OpenClawEnv extends _$OpenClawEnv {
     await stopGateway();
     await Future.delayed(const Duration(seconds: 1));
     return startGateway();
+  }
+
+  /// 更新 API Key
+  Future<void> updateApiKey(String apiKey) async {
+    await _service!.updateApiKey(apiKey);
   }
 }

@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:io';
 import 'package:flutter/services.dart';
 import 'nodejs_mobile_bridge.dart';
+import 'openclaw_config.dart';
 
 /// OpenClaw 内嵌环境管理服务
 ///
@@ -75,11 +76,9 @@ class OpenClawEnvService {
         _log('OpenClaw 已存在，跳过安装');
       }
 
-      // Step 4: 验证安装
-      _progress('config', 0.8, '验证安装...');
-      if (!await File(openclawBin).exists()) {
-        throw Exception('OpenClaw 安装验证失败');
-      }
+      // Step 4: 写入默认配置
+      _progress('config', 0.8, '写入配置...');
+      await _writeDefaultConfig(homeDir);
 
       _initialized = true;
       _progress('done', 1.0, '初始化完成！');
@@ -211,6 +210,20 @@ class OpenClawEnvService {
     await NodejsMobileBridge.stopNodeProcess();
     _nodePid = null;
     throw TimeoutException('OpenClaw 安装超时（10分钟）');
+  }
+
+  /// 写入默认 OpenClaw 配置
+  Future<void> _writeDefaultConfig(String homeDir) async {
+    final configDir = '$homeDir/.openclaw';
+    await OpenClawConfig.writeConfig(configDir);
+    _log('默认配置已写入 $configDir/openclaw.json');
+  }
+
+  /// 更新 API Key
+  Future<void> updateApiKey(String apiKey) async {
+    if (_openclawHome == null) throw Exception('环境未初始化');
+    await OpenClawConfig.updateApiKey('$_openclawHome/.openclaw', apiKey);
+    _log('API Key 已更新');
   }
 
   void _progress(String stage, double progress, String message) {
