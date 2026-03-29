@@ -31,6 +31,9 @@ jobs:
       - name: Get dependencies
         run: flutter pub get
 
+      - name: Clean build cache
+        run: flutter clean
+
       - name: Analyze
         run: dart analyze lib/
         continue-on-error: true
