@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/providers/theme_provider.dart';
 import '../../../../core/providers/gateway_provider.dart';
+import '../../../../core/providers/ws_connection_provider.dart';
 import '../../../../core/services/gateway_service.dart';
 import '../../../../theme/theme.dart';
 import 'memory_page.dart';
@@ -11,9 +12,6 @@ import 'model_config/model_config_page.dart';
 
 /// 本地 OpenClaw Gateway 地址
 const String _localGatewayUrl = 'ws://127.0.0.1:78789';
-
-/// Gateway 连接状态 Provider
-final gatewayConnectedProvider = StateProvider<bool>((ref) => false);
 
 /// 设置页
 class SettingsPage extends ConsumerStatefulWidget {
@@ -59,21 +57,21 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
               setState(() {
                 _isConnecting = false;
                 _gatewayStatus = '已连接 ✓  $_localGatewayUrl';
-                ref.read(gatewayConnectedProvider.notifier).state = true;
+                ref.read(wsConnectionProvider.notifier).setConnected(true);
               });
               break;
             case GatewayConnectionState.failed:
               setState(() {
                 _isConnecting = false;
                 _gatewayStatus = '连接失败，请确认 OpenClaw 已启动';
-                ref.read(gatewayConnectedProvider.notifier).state = false;
+                ref.read(wsConnectionProvider.notifier).setConnected(false);
               });
               break;
             case GatewayConnectionState.disconnected:
               setState(() {
                 _isConnecting = false;
                 _gatewayStatus = '已断开';
-                ref.read(gatewayConnectedProvider.notifier).state = false;
+                ref.read(wsConnectionProvider.notifier).setConnected(false);
               });
               break;
             default:
@@ -96,7 +94,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
   @override
   Widget build(BuildContext context) {
     final themeMode = ref.watch(themeModeProvider);
-    final isConnected = ref.watch(gatewayConnectedProvider);
+    final isConnected = ref.watch(wsConnectionProvider);
 
     return Scaffold(
       appBar: AppBar(title: const Text('设置')),
