@@ -157,8 +157,9 @@ class MainActivity : FlutterActivity() {
     private fun isNodeAlive(): Boolean {
         val proc = nodeProcess ?: return false
         return try {
-            proc.alive()
+            proc.alive
         } catch (e: Exception) {
+            try { proc.exitValue() } catch (_: Exception) {}
             false
         }
     }
