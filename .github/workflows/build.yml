@@ -42,22 +42,20 @@ jobs:
           path: build/app/outputs/flutter-apk/app-release.apk
 
       - name: Create Release
-        uses: softprops/action-gh-release@v2
-        with:
-          tag: v0.2.0
-          name: MBot v0.2.0
-          body: |
-            📱 MBot Mobile — OpenClaw 移动端 AI Agent
-
-            ## 功能
-            - 内嵌 Node.js 运行时（libnode.so）
-            - 自动安装 OpenClaw Gateway
-            - 默认智谱 GLM 模型
-            - 流式 AI 对话
-            - 技能市场
-            - 记忆管理
-          files: build/app/outputs/flutter-apk/app-release.apk
-          draft: false
-          prerelease: true
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh release delete v0.2.0 --yes 2>/dev/null || true
+          gh release create v0.2.0 \
+            --title "MBot v0.2.0" \
+            --notes "📱 MBot Mobile — OpenClaw 移动端 AI Agent
+
+          ## 功能
+          - 内嵌 Node.js 运行时（libnode.so）
+          - 自动安装 OpenClaw Gateway
+          - 默认智谱 GLM 模型
+          - 流式 AI 对话
+          - 技能市场
+          - 记忆管理" \
+            --prerelease \
+            build/app/outputs/flutter-apk/app-release.apk
