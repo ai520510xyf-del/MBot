@@ -1,20 +1,31 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
-import '../../../../theme/theme.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import '../../../../core/services/gateway_service.dart';
+import '../../../../core/providers/gateway_provider.dart';
+import '../../../../theme/theme.dart';
 
-/// 启动页 - 带动画的 Logo 展示
-class SplashPage extends StatefulWidget {
+/// 本地 OpenClaw Gateway 地址
+const String _localGatewayUrl = 'ws://127.0.0.1:78789';
+
+/// 启动页 - 自动连接本地 Gateway 后跳转主页
+class SplashPage extends ConsumerStatefulWidget {
   const SplashPage({super.key});
 
   @override
-  State<SplashPage> createState() => _SplashPageState();
+  ConsumerState<SplashPage> createState() => _SplashPageState();
 }
 
-class _SplashPageState extends State<SplashPage>
+class _SplashPageState extends ConsumerState<SplashPage>
     with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   late Animation<double> _scaleAnimation;
   late Animation<double> _fadeAnimation;
+
+  String _statusText = '正在启动...';
+  StreamSubscription<GatewayConnectionState>? _statusSub;
+  bool _navigated = false;
 
   @override
   void initState() {
@@ -36,18 +47,56 @@ class _SplashPageState extends State<SplashPage>
 
     _controller.forward();
 
-    // 自动跳转到主页
-    Future.delayed(const Duration(seconds: 2), () {
-      if (mounted) {
-        context.go('/');
-      }
+    // 动画完成后开始连接 Gateway
+    Future.delayed(const Duration(milliseconds: 1500), () {
+      if (mounted) _connectGateway();
     });
   }
 
   @override
   void dispose() {
+    _statusSub?.cancel();
     _controller.dispose();
     super.dispose();
+  }
+
+  Future<void> _connectGateway() async {
+    setState(() => _statusText = '正在连接 OpenClaw Gateway...');
+
+    try {
+      final gateway = ref.read(gatewayServiceProvider);
+
+      _statusSub = gateway.statusStream.listen((state) {
+        if (!mounted || _navigated) return;
+
+        switch (state) {
+          case GatewayConnectionState.connected:
+            _navigateToHome();
+          case GatewayConnectionState.failed:
+            setState(() => _statusText = 'Gateway 连接失败，正在重试...');
+          case GatewayConnectionState.disconnected:
+            setState(() => _statusText = 'Gateway 已断开，正在重连...');
+          default:
+            break;
+        }
+      });
+
+      await gateway.connect(_localGatewayUrl);
+    } catch (e) {
+      if (mounted && !_navigated) {
+        setState(() => _statusText = '连接失败，5秒后重试...');
+        // 5秒后重试
+        Future.delayed(const Duration(seconds: 5), () {
+          if (mounted && !_navigated) _connectGateway();
+        });
+      }
+    }
+  }
+
+  void _navigateToHome() {
+    if (_navigated) return;
+    _navigated = true;
+    context.go('/');
   }
 
   @override
@@ -115,6 +164,16 @@ class _SplashPageState extends State<SplashPage>
                         ),
                       ),
                       const SizedBox(height: AppSpace.s8),
+
+                      // 状态文字
+                      Text(
+                        _statusText,
+                        style: const TextStyle(
+                          fontSize: 13,
+                          color: AppColors.textTertiary,
+                        ),
+                      ),
+                      const SizedBox(height: AppSpace.s4),
 
                       // 加载指示器
                       const SizedBox(
