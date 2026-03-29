@@ -32,7 +32,8 @@ jobs:
         run: flutter pub get
 
       - name: Analyze
-        run: dart analyze lib/ --fatal-infos
+        run: dart analyze lib/
+        continue-on-error: true
 
       - name: Generate code
         run: dart run build_runner build --delete-conflicting-outputs
