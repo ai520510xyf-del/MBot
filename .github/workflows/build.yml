@@ -60,8 +60,8 @@ jobs:
         if: always()
         uses: softprops/action-gh-release@v2
         with:
-          tag: v0.2.0-${{ github.sha_short }}
-          name: MBot v0.2.0-${{ github.sha_short }}
+          tag: v0.2.0
+          name: MBot v0.2.0
           body: |
             📱 MBot Mobile — OpenClaw 移动端 AI Agent
             
