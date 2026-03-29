@@ -52,9 +52,6 @@ class OpenClawEnvService {
       // Step 1: 获取内嵌 Node.js 路径
       _progress('nodejs', 0.1, '初始化 Node.js 运行时...');
       _nodeBinaryPath = await NodejsMobileBridge.getNodeBinaryPath();
-      if (_nodeBinaryPath == null) {
-        throw Exception('未找到内嵌 Node.js，请检查 App 安装完整性');
-      }
       _log('Node.js 路径: $_nodeBinaryPath');
 
       // Step 2: 创建工作目录

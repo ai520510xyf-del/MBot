@@ -1,6 +1,5 @@
 package com.mbot.mobile
 
-import android.os.Bundle
 import android.util.Log
 import io.flutter.embedding.android.FlutterActivity
 import io.flutter.embedding.engine.FlutterEngine
@@ -54,15 +53,9 @@ class MainActivity : FlutterActivity() {
     }
 
     /// 解析 Node.js 可执行路径
-    ///
-    /// nodejs-mobile 的 libnode.so 同时就是可执行文件，
-    /// Android 的 linker 可以直接执行 .so 文件。
-    private fun resolveNodeBinary(): String? {
-        val abi = getAbi()
-
-        // 搜索路径：App native lib 目录
+    private fun resolveNodeBinary(): String {
         val searchPaths = listOf(
-            applicationInfo.nativeLibraryDir,  // /data/data/.../lib/arm64
+            applicationInfo.nativeLibraryDir,
         )
 
         for (base in searchPaths) {
@@ -73,17 +66,8 @@ class MainActivity : FlutterActivity() {
             }
         }
 
-        Log.e(TAG, "libnode.so not found. ABI=$abi, paths=$searchPaths")
-        return null
-    }
-
-    /// 获取当前 ABI
-    private fun getAbi(): String {
-        return try {
-            Build.SUPPORTED_ABIS[0]
-        } catch (e: Exception) {
-            "arm64-v8a"
-        }
+        Log.e(TAG, "libnode.so not found")
+        error("libnode.so not found")
     }
 
     /// 启动 Node.js 进程
@@ -93,25 +77,21 @@ class MainActivity : FlutterActivity() {
         workDir: String
     ): Long {
         val nodePath = resolveNodeBinary()
-            ?: throw RuntimeException("libnode.so not found")
 
         val cmd = mutableListOf(nodePath)
         cmd.addAll(args)
 
-        Log.i(TAG, "Starting: ${cmd.take(3).joinToString(" ")}${if (cmd.size > 3) " ..." else ""}")
+        Log.i(TAG, "Starting Node.js: ${cmd.take(3).joinToString(" ")}${if (cmd.size > 3) " ..." else ""}")
         Log.i(TAG, "Work dir: $workDir")
 
         val pb = ProcessBuilder(cmd)
         pb.directory(File(workDir))
         pb.redirectErrorStream(false)
 
-        // 设置环境变量
         val procEnv = pb.environment()
         procEnv.clear()
         procEnv.putAll(System.getenv())
-        // 确保动态链接器能找到库
         procEnv["LD_LIBRARY_PATH"] = "${applicationInfo.nativeLibraryDir}:${procEnv.getOrDefault("LD_LIBRARY_PATH", "")}"
-        // 合并调用方传入的环境变量
         procEnv.putAll(env)
 
         nodeProcess = pb.start()
@@ -124,9 +104,7 @@ class MainActivity : FlutterActivity() {
                         Log.d(TAG, "[node] $line")
                     }
                 }
-            } catch (e: Exception) {
-                // 进程结束时可能抛异常，忽略
-            }
+            } catch (_: Exception) {}
         }
         nodeThread?.name = "node-stdout-reader"
         nodeThread?.isDaemon = true
@@ -147,13 +125,22 @@ class MainActivity : FlutterActivity() {
             start()
         }
 
-        return nodeProcess!!.pid().toLong()
+        // 获取 PID
+        val pid = try {
+            val field = Process::class.java.getDeclaredMethod("pid")
+            field.invoke(nodeProcess) as Int
+        } catch (e: Exception) { -1 }
+        return pid.toLong()
     }
 
     /// 停止 Node.js 进程
     private fun stopNode() {
         val proc = nodeProcess ?: return
-        Log.i(TAG, "Stopping node (pid=${proc.pid()})")
+        val pid = try {
+            val field = Process::class.java.getDeclaredMethod("pid")
+            field.invoke(proc) as Int
+        } catch (e: Exception) { 0 }
+        Log.i(TAG, "Stopping node (pid=$pid)")
         proc.destroy()
         try {
             if (!proc.waitFor(5, TimeUnit.SECONDS)) {
@@ -170,7 +157,7 @@ class MainActivity : FlutterActivity() {
     private fun isNodeAlive(): Boolean {
         val proc = nodeProcess ?: return false
         return try {
-            proc.pid() > 0 && proc.isAlive
+            proc.alive()
         } catch (e: Exception) {
             false
         }

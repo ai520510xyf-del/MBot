@@ -10,10 +10,10 @@ class NodejsMobileBridge {
   static const MethodChannel _channel = MethodChannel('com.mbot.mobile/nodejs');
 
   /// 获取 Node.js 二进制路径
-  static Future<String?> getNodeBinaryPath() async {
+  static Future<String> getNodeBinaryPath() async {
     try {
-      final path = await _channel.invokeMethod<String?>('getNodeBinaryPath');
-      return path;
+      final path = await _channel.invokeMethod<String>('getNodeBinaryPath');
+      return path!;
     } on PlatformException catch (e) {
       throw Exception('获取 Node.js 路径失败: ${e.message}');
     }
